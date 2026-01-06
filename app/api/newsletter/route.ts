@@ -190,12 +190,21 @@ export async function POST(request: NextRequest) {
     // Opt-In E-Mail senden (wenn gespeichert)
     if (saved) {
       try {
-        const { sendNewsletterOptIn } = await import('@/lib/resend');
-        await sendNewsletterOptIn(
-          body.email,
-          body.first_name || body.vorname || 'Liebe/r',
-          optInToken
-        ).catch(err => console.error('Error sending opt-in email:', err));
+        const { sendNewsletterOptIn, sendNewsletterNotification } = await import('@/lib/resend');
+        Promise.all([
+          sendNewsletterOptIn(
+            body.email,
+            body.first_name || body.vorname || 'Liebe/r',
+            optInToken
+          ).catch(err => console.error('Error sending opt-in email:', err)),
+          sendNewsletterNotification({
+            email: body.email,
+            firstName: body.first_name || body.vorname,
+            lastName: body.last_name || body.nachname,
+            hasDisability: body.has_disability === 'ja' || body.beeintraechtigung === 'ja',
+            interests: body.interests || body.interessiert || [],
+          }).catch(err => console.error('Error sending notification email:', err)),
+        ]);
       } catch (emailError) {
         console.error('E-Mail-Versand fehlgeschlagen:', emailError);
       }

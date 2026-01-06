@@ -131,6 +131,7 @@ export default function NewsletterPage() {
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
+          autoCloseDelay={30000}
         />
       )}
 

@@ -372,6 +372,7 @@ export default function BookingPage() {
             type="success"
             message="Vielen Dank! Deine Anfrage wurde erfolgreich gesendet. Wir melden uns bald bei dir."
             onClose={() => setSubmitStatus("idle")}
+            autoCloseDelay={30000}
           />
         )}
 
@@ -380,6 +381,7 @@ export default function BookingPage() {
             type="error"
             message="Es ist ein Fehler aufgetreten. Bitte versuche es erneut oder kontaktiere uns direkt per E-Mail."
             onClose={() => setSubmitStatus("idle")}
+            autoCloseDelay={30000}
           />
         )}
 

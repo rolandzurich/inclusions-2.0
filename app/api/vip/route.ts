@@ -127,27 +127,69 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // E-Mails senden (async) - nur wenn gespeichert
-    if (saved) {
-      try {
-        const { sendVIPConfirmation, sendVIPNotification } = await import('@/lib/resend');
-        Promise.all([
-          sendVIPConfirmation(body.email, body.name, body.event_date).catch(err => 
-            console.error('Error sending confirmation email:', err)
-          ),
-          sendVIPNotification({
-            name: body.name,
-            email: body.email,
-            phone: body.phone,
-            eventDate: body.event_date,
-            eventLocation: body.event_location,
-            message: body.message,
-          }).catch(err => 
-            console.error('Error sending notification email:', err)
-          ),
-        ]);
-      } catch (emailError) {
-        console.error('E-Mail-Versand fehlgeschlagen:', emailError);
+    // E-Mails senden (immer, auch wenn Speichern fehlgeschlagen ist)
+    try {
+      const { sendVIPConfirmation, sendVIPNotification, resend, resendApiKey } = await import('@/lib/resend');
+      
+      console.log('📧 E-Mail-Versand wird vorbereitet...');
+      console.log('📧 RESEND_API_KEY vorhanden:', !!resendApiKey);
+      console.log('📧 Resend-Instanz vorhanden:', !!resend);
+      console.log('📧 Empfänger E-Mail:', body.email);
+      console.log('📧 Name:', body.name);
+      
+      if (!resend) {
+        console.error('❌ Resend nicht konfiguriert - RESEND_API_KEY fehlt');
+        console.error('❌ Bitte setze RESEND_API_KEY in den Umgebungsvariablen');
+      } else {
+        console.log('📧 Versuche VIP-E-Mails zu senden...');
+        console.log('📧 Bestätigung an:', body.email);
+        console.log('📧 Benachrichtigung an: info@inclusions.zone, roland.luthi@gmail.com');
+        
+        // E-Mails einzeln senden für besseres Error-Handling
+        console.log('📧 Starte Versand der Bestätigungs-E-Mail...');
+        const confirmationResult = await sendVIPConfirmation(body.email, body.name, body.event_date);
+        
+        if (confirmationResult?.error) {
+          console.error('❌ Bestätigungs-E-Mail Fehler:', confirmationResult.error);
+          console.error('❌ Fehler-Details:', JSON.stringify(confirmationResult, null, 2));
+        } else {
+          console.log('✅ Bestätigungs-E-Mail erfolgreich gesendet');
+          if (confirmationResult?.id) {
+            console.log('   E-Mail-ID:', confirmationResult.id);
+          }
+          if (confirmationResult?.data) {
+            console.log('   E-Mail-Daten:', JSON.stringify(confirmationResult.data, null, 2));
+          }
+        }
+        
+        console.log('📧 Starte Versand der Benachrichtigungs-E-Mail...');
+        const notificationResult = await sendVIPNotification({
+          name: body.name,
+          email: body.email,
+          phone: body.phone,
+          eventDate: body.event_date,
+          eventLocation: body.event_location,
+          message: body.message,
+        });
+        
+        if (notificationResult?.error) {
+          console.error('❌ Benachrichtigungs-E-Mail Fehler:', notificationResult.error);
+          console.error('❌ Fehler-Details:', JSON.stringify(notificationResult, null, 2));
+        } else {
+          console.log('✅ Benachrichtigungs-E-Mail erfolgreich gesendet');
+          if (notificationResult?.id) {
+            console.log('   E-Mail-ID:', notificationResult.id);
+          }
+          if (notificationResult?.data) {
+            console.log('   E-Mail-Daten:', JSON.stringify(notificationResult.data, null, 2));
+          }
+        }
+      }
+    } catch (emailError) {
+      console.error('❌ E-Mail-Versand fehlgeschlagen:', emailError);
+      if (emailError instanceof Error) {
+        console.error('❌ Fehler-Details:', emailError.message);
+        console.error('❌ Stack:', emailError.stack);
       }
     }
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getUpcomingEvents, getPastEvents, formatDate } from "@/lib/event-utils";
-import { getLineupItems, getDJById, getDJPairById } from "@/lib/dj-utils";
+import { getLineupItems, getDJById, getDJPairById, getLineupPairDisplayName } from "@/lib/dj-utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -75,7 +75,11 @@ export default function EventsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-semibold">{item.data.name}</p>
+                          <p className="font-semibold">
+                            {item.type === "pair" 
+                              ? (getLineupPairDisplayName(item.data.id) || item.data.name)
+                              : `${item.data.name} & Inclusions DJ`}
+                          </p>
                           {item.type === "pair" && (
                             <p className="text-xs text-white/60">DJ Pair</p>
                           )}

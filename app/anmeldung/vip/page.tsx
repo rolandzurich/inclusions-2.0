@@ -203,7 +203,7 @@ export default function VIPAnmeldungPage() {
       if (!vip.alter) {
         newErrors[`vip_${index}_alter`] = "Alter ist erforderlich";
       } else if (parseInt(vip.alter) < 20) {
-        newErrors[`vip_${index}_alter`] = "Du musst mindestens 20 Jahre alt sein";
+        newErrors[`vip_${index}_alter`] = "Du bist leider zu jung. Wenn du 20 Jahre alt bist, darst du gerne kommen.";
       }
       if (!vip.ivAusweis) {
         newErrors[`vip_${index}_ivAusweis`] = "Bitte gib an, ob ein IV-Ausweis vorhanden ist";
@@ -347,6 +347,7 @@ export default function VIPAnmeldungPage() {
           type={notification.type}
           message={notification.message}
           onClose={() => setNotification(null)}
+          autoCloseDelay={30000}
         />
       )}
 
@@ -370,14 +371,14 @@ export default function VIPAnmeldungPage() {
           </p>
           <ul className="text-sm text-white/80 space-y-1 list-disc list-inside">
             <li><strong>Anmeldung im Vorfeld erforderlich</strong></li>
-            <li><strong>Du musst mindestens 20 Jahre alt sein</strong></li>
+            <li><strong>Du musst mindestens 20 Jahre alt sein. Wenn du 20 Jahre alt bist, darst du gerne kommen.</strong></li>
             <li>Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</li>
             <li>Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein – Freunde, Familie und Betreuer laden wir ein, ein Ticket zu kaufen, um den <span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen. <a href="https://supermarket.li" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></li>
           </ul>
         </div>
       </section>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} noValidate className="space-y-8">
         {/* Wer meldet an? */}
         <div className="rounded-2xl bg-white/5 p-6 border border-white/10">
           <h2 className="text-xl font-semibold mb-4">Wer meldet an?</h2>

@@ -87,4 +87,15 @@ export function getPairDisplayName(pairId: string): string | undefined {
   return `${pairWithDJs.dj1.name} & ${pairWithDJs.dj2.name}`;
 }
 
+/**
+ * Generiert den Anzeigenamen für ein DJ Pair im Lineup
+ * (z.B. "Samy Jackson & Inclusions DJ" statt "Samy Jackson & DJ Bächli")
+ */
+export function getLineupPairDisplayName(pairId: string): string | undefined {
+  const pairWithDJs = getDJPairWithDJs(pairId);
+  if (!pairWithDJs) return undefined;
+  
+  return `${pairWithDJs.dj1.name} & Inclusions DJ`;
+}
+
 
