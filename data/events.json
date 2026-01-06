@@ -1,0 +1,45 @@
+{
+  "events": [
+    {
+      "id": "inclusions-2nd-edition",
+      "name": "Inclusions 2",
+      "date": "2026-04-25",
+      "location": "Supermarket Zürich",
+      "description": "Wir feiern wieder gemeinsam – mit DJs, Dance Crew und vielen Begegnungen. Die Profi DJ's werden zusammen mit Inclusions DJ's (Menschen mit Beeinträchtigung) auflegen. Die Inclusions DJ's werden von den Resident DJ's gecoached.",
+      "lineup": [
+        "samy-jackson-dj-baechli",
+        "hoibaer-jerry",
+        "miniart-sarita",
+        "zagara",
+        "coco-bewegt"
+      ],
+      "status": "upcoming",
+      "video": "/videos/next-event.mp4"
+    },
+    {
+      "id": "inclusions-3rd-edition",
+      "name": "Inclusions 3",
+      "date": "2026-10-03",
+      "location": "Supermarket Zürich",
+      "description": "Weitere Details folgen in Kürze.",
+      "status": "upcoming"
+    },
+    {
+      "id": "inclusions-1st-edition",
+      "name": "Inclusions 1. Edition",
+      "date": "2025-09-27",
+      "location": "Supermarket Zürich",
+      "description": "Über 400 Menschen – mit und ohne Beeinträchtigung – tanzten zusammen. Energie. Verbindung. Menschlichkeit. Pure Freude.",
+      "lineup": [
+        "samy-jackson-dj-baechli",
+        "hoibaer-jerry",
+        "miniart-sarita",
+        "zagara",
+        "coco-bewegt"
+      ],
+      "status": "past"
+    }
+  ]
+}
+
+

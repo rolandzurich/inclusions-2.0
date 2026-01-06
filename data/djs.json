@@ -1,0 +1,108 @@
+{
+  "djs": [
+    {
+      "id": "samy-jackson",
+      "name": "Samy Jackson",
+      "image": "/images/samy-jackson.png",
+      "text": "Ein Leben im Takt: Death Metal, Clubkultur und Soundtracks. Nach meinem vierjährigen Studium an der Academy of Contemporary Music Zürich hab ich mit Gitarre, Schlagzeug, Bass und Piano beschäftigt und mich in eher rohe Gefilden wie Death- und Black Metal bewegt. Meine ersten Schritte im elektronischen Bereich hab ich als «DJ RX» und mit meinem Live-Projekt «Cycle Repair» in der Dachkantine und dem Rohstofflager gemacht. Seit 2006 feiere ich als die eine Hälfte des international bekannten DJ- und Produzenten-Duos Animal Trainer grosse Erfolge.",
+      "hasDisability": false,
+      "bookableIndividually": true
+    },
+    {
+      "id": "dj-baechli",
+      "name": "DJ Bächli",
+      "text": "DJ Bächli ist ein talentierter DJ mit Beeinträchtigung, der zusammen mit Samy Jackson das erste DJ Pair von Inclusions bildet.",
+      "hasDisability": true,
+      "bookableIndividually": false
+    },
+    {
+      "id": "hoibaer",
+      "name": "Hoibaer",
+      "image": "/images/hoibaer.png",
+      "text": "Hoibaer ist Teil des Inclusions DJ Pools und legt zusammen mit Jerry auf.",
+      "hasDisability": false,
+      "bookableIndividually": true
+    },
+    {
+      "id": "jerry",
+      "name": "Jerry",
+      "text": "Jerry ist ein DJ mit Beeinträchtigung und bildet zusammen mit Hoibaer ein DJ Pair.",
+      "hasDisability": true,
+      "bookableIndividually": false
+    },
+    {
+      "id": "miniart",
+      "name": "_miniArt°°°",
+      "image": "/images/miniart.png",
+      "text": "_miniArt°°° Züri DJ ist Teil des Inclusions DJ Pools und legt zusammen mit Sarita auf.",
+      "hasDisability": false,
+      "bookableIndividually": true
+    },
+    {
+      "id": "sarita",
+      "name": "Sarita",
+      "text": "Sarita ist eine DJ mit Beeinträchtigung und bildet zusammen mit _miniArt°°° ein DJ Pair.",
+      "hasDisability": true,
+      "bookableIndividually": false
+    },
+    {
+      "id": "zagara",
+      "name": "Zagara",
+      "image": "/images/zagara.png",
+      "text": "Zagara ist Teil des Inclusions DJ Pools.",
+      "hasDisability": false,
+      "bookableIndividually": true
+    },
+    {
+      "id": "coco-bewegt",
+      "name": "Coco.bewegt",
+      "image": "/images/coco-bewegt.png",
+      "text": "Coco.bewegt nimmt dich mit auf eine Reise, die dein Herz berührt. Mit viel Liebe, Gefühl und Tiefe gestaltet sie ihre Sets – mal sphärisch, mal deep mit treibendem Bass, manchmal auch ein bisschen dark. Ihre musikalische Reise begann mit dem DJ-Duo Gans Voll, heute kuratiert sie ihr eigenes Daytime-Rave-Format «Tanz am Morge mit Zmorge» in Kooperation mit Inclusions und der Stiftung RgZ.",
+      "hasDisability": false,
+      "bookableIndividually": true
+    },
+    {
+      "id": "sandro",
+      "name": "Sandro",
+      "text": "Sandro ist Teil des Inclusions DJ Pools und bildet zusammen mit Zagara ein DJ Pair.",
+      "hasDisability": true,
+      "bookableIndividually": false
+    }
+  ],
+  "pairs": [
+    {
+      "id": "samy-jackson-dj-baechli",
+      "name": "Samy Jackson & DJ Bächli",
+      "dj1Id": "samy-jackson",
+      "dj2Id": "dj-baechli",
+      "text": "Das erste DJ Pair von Inclusions. Samy Jackson und DJ Bächli legen zusammen auf und schaffen ein einzigartiges Erlebnis.",
+      "image": "/images/samy-jackson-dj-baechli.png"
+    },
+    {
+      "id": "hoibaer-jerry",
+      "name": "Hoibaer & Jerry",
+      "dj1Id": "hoibaer",
+      "dj2Id": "jerry",
+      "text": "Hoibaer und Jerry bilden ein starkes DJ Pair und bringen das Inclusions-Gefühl auf die Tanzfläche.",
+      "image": "/images/hoibaer-jerry.png"
+    },
+    {
+      "id": "miniart-sarita",
+      "name": "_miniArt°°° & Sarita",
+      "dj1Id": "miniart",
+      "dj2Id": "sarita",
+      "text": "_miniArt°°° und Sarita schaffen zusammen ein besonderes musikalische Erlebnis.",
+      "image": "/images/miniart-sarita.png"
+    },
+    {
+      "id": "zagara-sandro",
+      "name": "Zagara",
+      "dj1Id": "zagara",
+      "dj2Id": "sandro",
+      "text": "Zagara & Sandro bringen als DJ Pair treibende, melodische elektronische Musik auf dein Event und stehen für das Inclusions-Gefühl auf der Tanzfläche.",
+      "image": "/images/zagara-sandro.png"
+    }
+  ]
+}
+
+
