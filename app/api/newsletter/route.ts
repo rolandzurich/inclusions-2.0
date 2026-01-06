@@ -50,12 +50,14 @@ export async function POST(request: NextRequest) {
     let existing = null;
     try {
       const { supabaseAdmin } = await import('@/lib/supabase');
-      const { data } = await supabaseAdmin
-        .from('newsletter_subscribers')
-        .select('id, status, opt_in_confirmed_at')
-        .eq('email', body.email.toLowerCase().trim())
-        .single();
-      existing = data;
+      if (supabaseAdmin) {
+        const { data } = await supabaseAdmin
+          .from('newsletter_subscribers')
+          .select('id, status, opt_in_confirmed_at')
+          .eq('email', body.email.toLowerCase().trim())
+          .single();
+        existing = data;
+      }
     } catch (supabaseError) {
       // Supabase nicht verfügbar, weiter ohne Prüfung
       console.log('Supabase nicht verfügbar');
@@ -73,6 +75,10 @@ export async function POST(request: NextRequest) {
         try {
           const { supabaseAdmin } = await import('@/lib/supabase');
           const { sendNewsletterOptIn } = await import('@/lib/resend');
+          
+          if (!supabaseAdmin) {
+            throw new Error('Supabase nicht verfügbar');
+          }
           
           const { data: updated } = await supabaseAdmin
             .from('newsletter_subscribers')

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,6 +8,15 @@ export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Dynamisch Supabase importieren
+    const { supabaseAdmin } = await import('@/lib/supabase');
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'Supabase nicht verfügbar.' },
+        { status: 503 }
+      );
     }
 
     // Stats parallel abrufen

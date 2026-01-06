@@ -43,8 +43,16 @@
      - Publish directory: `.next`
    - Umgebungsvariablen hinzufügen:
      - `GEMINI_API_KEY`: Dein API Key
+     - `RESEND_API_KEY`: Dein Resend API Key (falls verwendet)
+     - Weitere benötigte Variablen
 
 3. **Deploy starten** - Netlify baut automatisch bei jedem Push
+
+4. **Preview-Deployments für Pull Requests aktivieren:**
+   - Site settings → Build & deploy → Deploy contexts
+   - "Deploy previews" aktivieren
+   - Bei jedem Pull Request erstellt Netlify automatisch eine Preview-URL
+   - Die Preview-URL erscheint als Kommentar im GitHub Pull Request
 
 ### Option 3: Manueller Upload (Drag & Drop)
 

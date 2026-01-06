@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
 import { sendNewsletterWelcome } from '@/lib/resend';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +10,12 @@ export async function GET(request: NextRequest) {
 
     if (!token) {
       return NextResponse.redirect(new URL('/newsletter?error=missing-token', request.url));
+    }
+
+    // Dynamisch Supabase importieren
+    const { supabaseAdmin } = await import('@/lib/supabase');
+    if (!supabaseAdmin) {
+      return NextResponse.redirect(new URL('/newsletter?error=service-unavailable', request.url));
     }
 
     // Subscriber mit Token finden

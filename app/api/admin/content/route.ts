@@ -13,6 +13,9 @@ export async function GET(request: NextRequest) {
     // Dynamisch Supabase importieren, falls verfügbar
     try {
       const { supabaseAdmin } = await import('@/lib/supabase');
+      if (!supabaseAdmin) {
+        throw new Error('Supabase nicht verfügbar');
+      }
       
       const { data, error } = await supabaseAdmin
         .from('content_blocks')
@@ -60,6 +63,9 @@ export async function POST(request: NextRequest) {
 
     try {
       const { supabaseAdmin } = await import('@/lib/supabase');
+      if (!supabaseAdmin) {
+        throw new Error('Supabase nicht verfügbar');
+      }
       
       const { data, error } = await supabaseAdmin
         .from('content_blocks')

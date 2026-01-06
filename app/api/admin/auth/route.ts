@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
     // Falls Supabase verfügbar ist, versuche es damit
     try {
       const { supabaseAdmin } = await import('@/lib/supabase');
+      if (!supabaseAdmin) {
+        throw new Error('Supabase nicht verfügbar');
+      }
       const { data: authData, error: authError } = await supabaseAdmin.auth.signInWithPassword({
         email,
         password,

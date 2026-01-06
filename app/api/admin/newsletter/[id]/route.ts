@@ -14,6 +14,9 @@ export async function DELETE(
 
     try {
       const { supabaseAdmin } = await import('@/lib/supabase');
+      if (!supabaseAdmin) {
+        throw new Error('Supabase nicht verfügbar');
+      }
       
       const { error } = await supabaseAdmin
         .from('newsletter_subscribers')

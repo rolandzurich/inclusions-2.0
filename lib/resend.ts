@@ -290,7 +290,7 @@ export async function sendVIPConfirmation(to: string, name: string, eventDate?: 
     const result = await resend.emails.send({
       from: fromEmail,
       to,
-      replyTo: adminEmail,
+      reply_to: adminEmail,
       subject: 'Ihre VIP-Anmeldung ist angekommen - Inclusions',
       html: `
         <!DOCTYPE html>
@@ -372,7 +372,7 @@ export async function sendVIPNotification(data: {
       const result1 = await resend.emails.send({
         from: fromEmail,
         to: 'roland.luthi@gmail.com',
-        replyTo: data.email,
+        reply_to: data.email,
         subject: emailSubject,
         html: emailHtml,
         text: emailText,
@@ -395,7 +395,7 @@ export async function sendVIPNotification(data: {
         const result2 = await resend.emails.send({
           from: fromEmail,
           to: adminEmail,
-          replyTo: data.email,
+          reply_to: data.email,
           subject: emailSubject,
           html: emailHtml,
           text: emailText,

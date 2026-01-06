@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 // GET: Öffentlicher Zugriff auf published Content Blocks
 export async function GET(request: NextRequest) {
   try {
+    const { supabase } = await import('@/lib/supabase');
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Service nicht verfügbar.' },
+        { status: 503 }
+      );
+    }
+
     const url = new URL(request.url);
     const key = url.searchParams.get('key');
 
@@ -72,6 +78,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Key ist erforderlich.' },
         { status: 400 }
+      );
+    }
+
+    const { supabaseAdmin } = await import('@/lib/supabase');
+    if (!supabaseAdmin) {
+      return NextResponse.json(
+        { error: 'Supabase nicht verfügbar.' },
+        { status: 503 }
       );
     }
 
