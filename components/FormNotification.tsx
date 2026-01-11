@@ -17,19 +17,12 @@ export function FormNotification({
   message,
   onClose,
   autoClose = true,
-  autoCloseDelay = 5000,
+  autoCloseDelay = 8000, // Standard: 8 Sekunden (länger als vorher)
 }: FormNotificationProps) {
   const notificationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll zur Nachricht, damit sie sichtbar ist
-    if (notificationRef.current) {
-      notificationRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-
+    // Die Notification ist fixed positioniert, also immer sichtbar
     // Auto-close nach delay
     if (autoClose && onClose) {
       const timer = setTimeout(() => {
@@ -99,21 +92,22 @@ export function FormNotification({
   return (
     <div
       ref={notificationRef}
-      className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4 animate-slide-down`}
+      className={`fixed left-1/2 transform -translate-x-1/2 z-[60] w-full max-w-md px-4 animate-slide-down
+        top-20 md:top-24`}
       role="alert"
       aria-live="polite"
     >
       <div
-        className={`flex items-start gap-3 p-4 rounded-xl border ${styles[type]} shadow-lg backdrop-blur-sm`}
+        className={`flex items-start gap-3 p-4 md:p-5 rounded-xl border ${styles[type]} shadow-lg backdrop-blur-sm`}
       >
         <div className="flex-shrink-0 mt-0.5">{icons[type]}</div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium leading-relaxed">{message}</p>
+          <p className="text-sm md:text-base font-medium leading-relaxed">{message}</p>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="flex-shrink-0 text-current/70 hover:text-current transition-colors"
+            className="flex-shrink-0 text-current/70 hover:text-current transition-colors p-1 -mr-1"
             aria-label="Nachricht schließen"
           >
             <svg
@@ -135,4 +129,5 @@ export function FormNotification({
     </div>
   );
 }
+
 

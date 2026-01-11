@@ -159,7 +159,7 @@ export default function BookingPage() {
       <section>
         <h1 className="text-4xl font-bold">Booking – DJs &amp; DJ Pairs</h1>
         <p className="mt-3 text-lg text-white/70">
-          Buche unsere Resident DJs, DJ Pairs oder die Inclusions Dance Crew für dein Event. Die DJ
+          Buche unsere Resident DJs, DJ Pairs oder die Inclusions Dance Crew für deinen Event. Die DJ
           Pairs sind ein USP von Inclusions – professionelle DJs legen zusammen mit DJs mit
           Beeinträchtigung auf.
         </p>
@@ -171,7 +171,7 @@ export default function BookingPage() {
           <h2 className="text-3xl font-semibold">DJ Pairs buchen</h2>
           <p className="mt-2 text-white/70">
             Diese DJ Pairs können zusammen gebucht werden und bringen das Inclusions-Gefühl auf
-            dein Event.
+            deinen Event.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -225,7 +225,7 @@ export default function BookingPage() {
                   )}
                 </div>
                 {pair.text && (
-                  <p className="text-sm text-white/70 line-clamp-2">{pair.text}</p>
+                  <p className="text-sm text-white/70">{pair.text}</p>
                 )}
               </button>
             );
@@ -288,7 +288,7 @@ export default function BookingPage() {
                     Einzeln buchbar
                   </span>
                 </div>
-                {dj.text && <p className="text-sm text-white/70 line-clamp-2">{dj.text}</p>}
+                {dj.text && <p className="text-sm text-white/70">{dj.text}</p>}
               </button>
             );
           })}

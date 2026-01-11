@@ -35,6 +35,14 @@ export default function MedienPage() {
             </div>
           </div>
         </div>
+
+        {/* Wieso Inclusions */}
+        <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-6 space-y-3">
+          <h2 className="text-2xl md:text-3xl font-semibold text-white">Wieso haben wir INCLUSIONS ins Leben gerufen?</h2>
+          <p className="text-white/90 leading-relaxed">
+            Ganz einfach: Weil es Menschen mit Beeinträchtigung verdient haben an einer richtig coolen Techno-Party mit dabei zu sein und so richtig abfeiern zu dürfen. Deshalb sind diese Menschen auch unsere VIP Gäste und profitieren von kostenlosem Eintritt und Vergünstigungen an der Bar.
+          </p>
+        </div>
       </section>
 
       {/* Was macht Inclusions besonders */}
@@ -174,13 +182,6 @@ export default function MedienPage() {
               Social Media Vorlagen, Pressemappen und weiteres Material zum Download.
             </p>
           </div>
-        </div>
-
-        <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-6">
-          <p className="text-white/90">
-            <strong className="text-white">Wieso haben wir Inclusions ins Leben gerufen?</strong><br />
-            Weil es VIP-Gäste, Menschen mit Beeinträchtigung verdient haben.
-          </p>
         </div>
       </section>
 

@@ -11,6 +11,9 @@ interface VIPRegistration {
   event_date?: string;
   event_location?: string;
   message?: string;
+  viewed_at?: string;
+  is_duplicate?: boolean;
+  status?: string;
 }
 
 export default function VIPPage() {
@@ -40,6 +43,30 @@ export default function VIPPage() {
       console.error('Error fetching registrations:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectRegistration = async (registration: VIPRegistration) => {
+    setSelectedRegistration(registration);
+    
+    // Mark as viewed if not already viewed
+    if (!registration.viewed_at) {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+        await fetch(`/api/admin/vip/${registration.id}`, {
+          method: 'GET', // GET automatically marks as viewed
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        // Update local state
+        setRegistrations(registrations.map(r => 
+          r.id === registration.id ? { ...r, viewed_at: new Date().toISOString() } : r
+        ));
+      } catch (error) {
+        console.error('Error marking as viewed:', error);
+      }
     }
   };
 
@@ -80,21 +107,40 @@ export default function VIPPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Alle Anmeldungen ({registrations.length})</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Alle Anmeldungen ({registrations.length})</h2>
+            <div className="text-sm text-gray-400">
+              Neu: {registrations.filter(r => !r.viewed_at).length}
+            </div>
+          </div>
           <div className="space-y-2 max-h-[600px] overflow-y-auto">
             {registrations.map((registration) => (
               <div
                 key={registration.id}
-                onClick={() => setSelectedRegistration(registration)}
+                onClick={() => handleSelectRegistration(registration)}
                 className={`p-4 rounded cursor-pointer border ${
                   selectedRegistration?.id === registration.id
                     ? 'border-brand-pink bg-gray-700'
+                    : !registration.viewed_at
+                    ? 'border-blue-500 bg-blue-500/10'
                     : 'border-gray-700 hover:border-gray-600'
                 }`}
               >
                 <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold">{registration.name}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold">{registration.name}</p>
+                      {registration.is_duplicate && (
+                        <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
+                          Doppelt
+                        </span>
+                      )}
+                      {!registration.viewed_at && (
+                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">
+                          Neu
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-400">{registration.email}</p>
                     {registration.event_date && (
                       <p className="text-xs text-gray-500 mt-1">{registration.event_date}</p>
@@ -157,10 +203,22 @@ export default function VIPPage() {
                     <p className="whitespace-pre-wrap">{selectedRegistration.message}</p>
                   </div>
                 )}
+                {selectedRegistration.is_duplicate && (
+                  <div>
+                    <p className="text-sm text-gray-400">Hinweis</p>
+                    <p className="text-yellow-400 font-semibold">⚠️ Doppelte E-Mail-Adresse</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-gray-400">Erstellt am</p>
                   <p>{new Date(selectedRegistration.created_at).toLocaleString('de-CH')}</p>
                 </div>
+                {selectedRegistration.viewed_at && (
+                  <div>
+                    <p className="text-sm text-gray-400">Angeschaut am</p>
+                    <p>{new Date(selectedRegistration.viewed_at).toLocaleString('de-CH')}</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

@@ -21,7 +21,19 @@ export async function GET(request: NextRequest) {
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          return NextResponse.json(data);
+          // Markiere Duplikate basierend auf E-Mail
+          const emailCounts = new Map<string, number>();
+          data.forEach((item: any) => {
+            const count = emailCounts.get(item.email.toLowerCase()) || 0;
+            emailCounts.set(item.email.toLowerCase(), count + 1);
+          });
+          
+          const enrichedData = data.map((item: any) => ({
+            ...item,
+            is_duplicate: (emailCounts.get(item.email.toLowerCase()) || 0) > 1,
+          }));
+          
+          return NextResponse.json(enrichedData);
         }
       }
     } catch (supabaseError) {

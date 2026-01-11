@@ -115,19 +115,49 @@ export default function HomePage() {
                   <ColoredText text="INCLUSIONS" /> <ColoredText text="2" />
                 </div>
               </div>
-              <div className="space-y-4 animate-fade-in mt-auto pb-8 md:pb-12 lg:pb-16">
-                <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-white/90 tracking-wide">
-                  SAVE THE DATE!
-                </p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-brand-pink">
+              <div className="space-y-4 animate-fade-in mt-auto pb-4 md:pb-6">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bangers font-bold text-brand-pink">
                   25.04.2026
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-white/80">
+                <p className="text-lg md:text-xl lg:text-2xl font-bangers text-white/80">
                   13:00 - 21:00
                 </p>
-                <p className="text-lg md:text-xl lg:text-2xl text-white/80">
+                <p className="text-lg md:text-xl lg:text-2xl font-bangers text-white/80">
                   Club Supermarket, Zürich
                 </p>
+              </div>
+              
+              {/* Lineup und Buttons - weiter unten positioniert */}
+              <div className="space-y-4 animate-fade-in pb-12 md:pb-16 lg:pb-20 mt-12 md:mt-16 lg:mt-20">
+                <div className="space-y-2">
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white font-semibold">
+                    Lineup
+                  </p>
+                  <p className="text-lg md:text-xl lg:text-2xl font-bangers text-white/90">
+                    Samy Jackson · Hoibaer · _miniArt°°° · Zagara · Coco.bewegt & Inclusions DJ's
+                  </p>
+                </div>
+                <div className="flex flex-row gap-4 justify-center items-start">
+                  <Link
+                    href="https://supermarket.li"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
+                  >
+                    Ticket kaufen
+                  </Link>
+                  <div className="flex flex-col items-center gap-1">
+                    <Link
+                      href="/anmeldung/vip"
+                      className="rounded-full border-2 border-white px-6 py-3 text-lg font-semibold text-white hover:bg-white/10 transition-colors"
+                    >
+                      VIP Anmeldung
+                    </Link>
+                    <p className="text-xs text-white/80 text-center whitespace-nowrap">
+                      Gratis Eintritt für Menschen mit Beeinträchtigung
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -158,12 +188,13 @@ export default function HomePage() {
         <h2 className="text-3xl font-semibold text-white">Was ist Inclusions?</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            "Gemeinsam anders. Bei Inclusions schaffen wir Räume, in denen Menschen echt und auf Augenhöhe zusammenkommen.",
-            "Musik verbindet. Wir feiern eine Clubkultur, die offen für alle ist – unabhängig von Fähigkeit, Herkunft oder Background.",
-            "Eine neue Bewegung. Nach dem Erfolg der ersten Edition gehen wir den Weg weiter: vom Event zur Community."
-          ].map((text) => (
-            <article key={text} className="rounded-2xl bg-white/5 p-6 text-lg text-white/80">
-              {text}
+            { title: "Gemeinsam anders", text: "Bei Inclusions schaffen wir Räume, in denen Menschen echt und auf Augenhöhe zusammenkommen." },
+            { title: "Musik verbindet", text: "Wir feiern eine Clubkultur, die offen für alle ist – unabhängig von Fähigkeit, Herkunft oder Background." },
+            { title: "Eine neue Bewegung", text: "Nach dem Erfolg der ersten Edition gehen wir den Weg weiter: vom Event zur Community." }
+          ].map((item) => (
+            <article key={item.title} className="rounded-2xl bg-white/5 p-6">
+              <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
+              <p className="text-lg text-white/80">{item.text}</p>
             </article>
           ))}
         </div>
@@ -428,25 +459,22 @@ export default function HomePage() {
       {/* Partner */}
       <section className="space-y-6">
         <div className="text-center">
-          <h2 className="text-3xl font-semibold text-white">Unsere Partner</h2>
-          <p className="mt-2 text-white/70">
-            Dank unserer Partner wird aus einer Idee eine Bewegung.
-          </p>
+          <h2 className="text-3xl font-semibold text-white">Dank unserer Partner wird aus einer Idee eine Bewegung.</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
           {[
-            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true },
             { name: "insieme Zürich", logo: "/images/partners/insieme.png", hasLogo: true },
             { name: "Supermarket", logo: "/images/partners/supermarket.png", hasLogo: true },
             { name: "TIXI Taxi", logo: "/images/partners/tixi.png", hasLogo: true },
             { name: "BCK", logo: "/images/partners/bck.png", hasLogo: true },
             { name: "Manroof", logo: "/images/partners/manroof.png", hasLogo: true },
-            { name: "SIMPLY AGENCY", logo: "/images/partners/simply.png", hasLogo: true },
+            { name: "Tanz am Morgen", logo: "/images/partners/tanz-am-morgen.png", hasLogo: true },
             { name: "AVTL Content", logo: "/images/partners/avtl.png", hasLogo: true },
             { name: "Colette M", logo: "/images/partners/colette-m.png", hasLogo: true },
             { name: "Alex Flach", logo: "/images/partners/alex-flach.png", hasLogo: true },
             { name: "Animaltrainer", logo: "/images/partners/animaltrainer.png", hasLogo: true },
             { name: "Hitschfilm", logo: "/images/partners/hitschfilm.png", hasLogo: true },
+            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true },
           ].map((partner, index) => (
             <div
               key={index}
@@ -465,10 +493,10 @@ export default function HomePage() {
         <div className="text-center pt-4">
           <Link
             href="/spenden"
-            className="inline-flex items-center gap-2 text-sm text-brand-pink hover:text-brand-pink/80 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
             Partner werden
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
@@ -485,7 +513,7 @@ export default function HomePage() {
         <div className="flex flex-wrap gap-4 items-center">
           <Link
             href="/spenden"
-            className="inline-flex rounded-full border border-brand-pink px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
+            className="inline-flex rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
             Bewegung unterstützen
           </Link>
@@ -498,7 +526,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-semibold text-white">Momente der Inklusion</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {quotes.map((quote) => (
-            <article key={quote} className="rounded-3xl bg-white/5 p-6 text-lg text-white/80">
+            <article key={quote} className="rounded-3xl bg-white/15 p-6 text-lg text-white/90">
               {quote}
             </article>
           ))}
@@ -509,8 +537,7 @@ export default function HomePage() {
       <section className="space-y-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Resident DJs & DJ Pairs</p>
-            <h2 className="text-3xl font-semibold text-white mt-2">Unsere DJs</h2>
+            <h2 className="text-3xl font-semibold text-white">Unsere DJs</h2>
             <p className="mt-3 text-white/80 max-w-2xl">
               Ein USP von Inclusions sind die DJ Pairs: professionelle DJs legen zusammen mit DJs mit 
               Beeinträchtigung auf und schaffen ein inklusives, zugängliches Erlebnis auf der Tanzfläche.
@@ -579,7 +606,7 @@ export default function HomePage() {
                     )}
                   </div>
                   {pair.text && (
-                    <p className="text-sm text-white/70 mb-4 line-clamp-2">{pair.text}</p>
+                    <p className="text-sm text-white/70 mb-4">{pair.text}</p>
                   )}
                   <Link
                     href={`/djs?pair=${pair.id}`}
@@ -652,14 +679,29 @@ export default function HomePage() {
                         )}
                       </div>
                       {dj.text && (
-                        <p className="text-sm text-white/70 mb-4 line-clamp-3">{dj.text}</p>
+                        <p className="text-sm text-white/70 mb-4">{dj.text}</p>
                       )}
-                      <Link
-                        href={`/djs?dj=${dj.id}`}
-                        className="inline-block text-sm text-brand-pink hover:text-brand-pink/80 transition-colors"
-                      >
-                        Jetzt buchen →
-                      </Link>
+                      <div className="flex items-center gap-3">
+                        {dj.soundcloud && (
+                          <a
+                            href={dj.soundcloud}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-brand-pink hover:text-brand-pink/80 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.84-.179-.84-.66 0-.359.24-.66.54-.779 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.242 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+                            </svg>
+                            SoundCloud
+                          </a>
+                        )}
+                        <Link
+                          href={`/djs?dj=${dj.id}`}
+                          className="inline-block text-sm text-brand-pink hover:text-brand-pink/80 transition-colors"
+                        >
+                          Jetzt buchen →
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -673,7 +715,7 @@ export default function HomePage() {
             href="/djs"
             className="inline-flex items-center rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
-            DJs für dein Event buchen
+            DJs für deinen Event buchen
           </Link>
         </div>
       </section>
@@ -695,8 +737,7 @@ export default function HomePage() {
         <div className="relative z-10 p-8 md:p-12 space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Inclusions Dance Crew</p>
-              <h2 className="text-3xl font-semibold text-white mt-2">Tanz, Energie, Inklusion</h2>
+              <h2 className="text-3xl font-bangers font-semibold text-white">Dance Crew - Tanz, Energie, Inklusion</h2>
               <p className="mt-3 text-white/80 max-w-2xl">
                 Unsere Dance Crew bringt die Inclusions-Energie auf deine Bühne, in deinen Club oder an dein Festival. 
                 Menschen mit und ohne Beeinträchtigung tanzen gemeinsam – professionell, kraftvoll und zutiefst berührend.{" "}

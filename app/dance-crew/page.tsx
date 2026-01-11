@@ -92,9 +92,6 @@ export default function DanceCrewPage() {
       {/* Hero */}
       <section className="grid gap-10 md:grid-cols-2 items-center">
         <div className="space-y-4">
-          <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">
-            Inclusions Dance Crew
-          </p>
           <h1 className="text-4xl md:text-5xl font-bold">
             Die Inclusions Dance Crew –{" "}
             <span className="text-brand-pink">Tanz, Energie, Inklusion.</span>
@@ -169,16 +166,11 @@ export default function DanceCrewPage() {
 
       {/* Medien – Bilder & Videos */}
       <section className="space-y-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-3xl font-semibold">Momente mit der Dance Crew</h2>
-            <p className="mt-2 text-white/90 max-w-2xl leading-relaxed">
-              Hier kannst du Eindrücke der Inclusions Dance Crew zeigen – Fotos von Auftritten,
-              Proben oder Behind-the-Scenes sowie Videos, die die Energie auf der Bühne spürbar machen.
-            </p>
-          </div>
-          <p className="text-sm text-white/60">
-            Ersetze die Platzhalterbilder/-videos später durch dein eigenes Material.
+        <div>
+          <h2 className="text-3xl font-semibold">Momente mit der Dance Crew</h2>
+          <p className="mt-2 text-white/90 max-w-2xl leading-relaxed">
+            Hier kannst du Eindrücke der Inclusions Dance Crew zeigen – Fotos von Auftritten,
+            Proben oder Behind-the-Scenes sowie Videos, die die Energie auf der Bühne spürbar machen.
           </p>
         </div>
 
@@ -258,35 +250,16 @@ export default function DanceCrewPage() {
 
       {/* Booking Formular */}
       <section id="booking-form" className="rounded-3xl bg-white/10 p-8 space-y-6 scroll-mt-24">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="space-y-3 flex-1">
-            <h2 className="text-3xl font-semibold">Dance Crew buchen</h2>
-            <p className="text-white/90 max-w-2xl leading-relaxed">
-              Du möchtest die Inclusions Dance Crew für deinen Event buchen?
-              Fülle das Formular aus und wir melden uns bei dir mit weiteren
-              Informationen, Verfügbarkeit und Konditionen.
-            </p>
-            <p className="text-sm text-white/60">
-              Die Anfrage ist unverbindlich. Wir melden uns persönlich bei dir.
-            </p>
-          </div>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="rounded-full border border-brand-pink text-brand-pink px-6 py-3 hover:bg-brand-pink/10 transition-colors whitespace-nowrap flex items-center gap-2"
-            style={{ 
-              borderColor: '#FF04D3',
-              color: '#FF04D3'
-            }}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#FF04D3' }}>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Zurück
-          </a>
+        <div className="space-y-3">
+          <h2 className="text-3xl font-semibold">Dance Crew buchen</h2>
+          <p className="text-white/90 max-w-2xl leading-relaxed">
+            Du möchtest die Inclusions Dance Crew für deinen Event buchen?
+            Fülle das Formular aus und wir melden uns bei dir mit weiteren
+            Informationen, Verfügbarkeit und Konditionen.
+          </p>
+          <p className="text-sm text-white/60">
+            Die Anfrage ist unverbindlich. Wir melden uns persönlich bei dir.
+          </p>
         </div>
 
         {submitStatus === "success" && (

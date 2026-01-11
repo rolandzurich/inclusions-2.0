@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { FormNotification } from "@/components/FormNotification";
 
+type SubmitStatus = "idle" | "success" | "error";
+
 export default function NewsletterPage() {
   const [formData, setFormData] = useState({
     vorname: "",
@@ -13,10 +15,8 @@ export default function NewsletterPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>("idle");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -78,6 +78,9 @@ export default function NewsletterPage() {
       return;
     }
 
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+
     try {
       const response = await fetch('/api/newsletter', {
         method: 'POST',
@@ -97,10 +100,7 @@ export default function NewsletterPage() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        setNotification({
-          type: "success",
-          message: result.message || 'Vielen Dank für deine Anmeldung! Bitte bestätige deine E-Mail-Adresse.',
-        });
+        setSubmitStatus("success");
         // Formular zurücksetzen
         setFormData({
           vorname: "",
@@ -110,27 +110,32 @@ export default function NewsletterPage() {
           interessiert: [],
         });
       } else {
-        setNotification({
-          type: "error",
-          message: result.message || 'Fehler bei der Anmeldung. Bitte versuche es erneut.',
-        });
+        setSubmitStatus("error");
       }
     } catch (error) {
       console.error('Error submitting newsletter form:', error);
-      setNotification({
-        type: "error",
-        message: 'Fehler bei der Anmeldung. Bitte versuche es erneut.',
-      });
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <main className="min-h-screen max-w-3xl px-4 py-12 mx-auto space-y-10 text-white">
-      {notification && (
+      {submitStatus === "success" && (
         <FormNotification
-          type={notification.type}
-          message={notification.message}
-          onClose={() => setNotification(null)}
+          type="success"
+          message="Vielen Dank für deine Anmeldung! Bitte bestätige deine E-Mail-Adresse, indem du auf den Link in der E-Mail klickst, die wir dir gerade gesendet haben."
+          onClose={() => setSubmitStatus("idle")}
+          autoCloseDelay={30000}
+        />
+      )}
+
+      {submitStatus === "error" && (
+        <FormNotification
+          type="error"
+          message="Es ist ein Fehler aufgetreten. Bitte versuche es erneut oder kontaktiere uns direkt per E-Mail."
+          onClose={() => setSubmitStatus("idle")}
           autoCloseDelay={30000}
         />
       )}
@@ -284,9 +289,10 @@ export default function NewsletterPage() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full md:w-auto rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
+          disabled={isSubmitting}
+          className="w-full md:w-auto rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Anmelden
+          {isSubmitting ? "Wird gesendet..." : "Anmelden"}
         </button>
       </form>
     </main>

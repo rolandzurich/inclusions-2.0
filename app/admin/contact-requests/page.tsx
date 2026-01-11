@@ -15,6 +15,8 @@ interface ContactRequest {
   event_location?: string;
   event_type?: string;
   status: string;
+  viewed_at?: string;
+  is_duplicate?: boolean;
 }
 
 export default function ContactRequestsPage() {
@@ -44,6 +46,30 @@ export default function ContactRequestsPage() {
       console.error('Error fetching requests:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectRequest = async (request: ContactRequest) => {
+    setSelectedRequest(request);
+    
+    // Mark as viewed if not already viewed
+    if (!request.viewed_at) {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+        await fetch(`/api/admin/contact-requests/${request.id}`, {
+          method: 'GET', // GET automatically marks as viewed
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        // Update local state
+        setRequests(requests.map(r => 
+          r.id === request.id ? { ...r, viewed_at: new Date().toISOString() } : r
+        ));
+      } catch (error) {
+        console.error('Error marking as viewed:', error);
+      }
     }
   };
 
@@ -84,21 +110,40 @@ export default function ContactRequestsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-gray-800 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">Alle Booking-Anfragen ({requests.length})</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Alle Booking-Anfragen ({requests.length})</h2>
+            <div className="text-sm text-gray-400">
+              Neu: {requests.filter(r => !r.viewed_at).length}
+            </div>
+          </div>
           <div className="space-y-2 max-h-[600px] overflow-y-auto">
             {requests.map((request) => (
               <div
                 key={request.id}
-                onClick={() => setSelectedRequest(request)}
+                onClick={() => handleSelectRequest(request)}
                 className={`p-4 rounded cursor-pointer border ${
                   selectedRequest?.id === request.id
                     ? 'border-brand-pink bg-gray-700'
+                    : !request.viewed_at
+                    ? 'border-blue-500 bg-blue-500/10'
                     : 'border-gray-700 hover:border-gray-600'
                 }`}
               >
                 <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold">{request.name}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold">{request.name}</p>
+                      {request.is_duplicate && (
+                        <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
+                          Doppelt
+                        </span>
+                      )}
+                      {!request.viewed_at && (
+                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">
+                          Neu
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-gray-400">{request.email}</p>
                     {request.booking_item && (
                       <p className="text-xs text-gray-500 mt-1">{request.booking_item}</p>
@@ -197,10 +242,22 @@ export default function ContactRequestsPage() {
                   <p className="text-sm text-gray-400">Status</p>
                   <p className="font-semibold">{selectedRequest.status || 'new'}</p>
                 </div>
+                {selectedRequest.is_duplicate && (
+                  <div>
+                    <p className="text-sm text-gray-400">Hinweis</p>
+                    <p className="text-yellow-400 font-semibold">⚠️ Doppelte E-Mail-Adresse</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-gray-400">Erstellt am</p>
                   <p>{new Date(selectedRequest.created_at).toLocaleString('de-CH')}</p>
                 </div>
+                {selectedRequest.viewed_at && (
+                  <div>
+                    <p className="text-sm text-gray-400">Angeschaut am</p>
+                    <p>{new Date(selectedRequest.viewed_at).toLocaleString('de-CH')}</p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (

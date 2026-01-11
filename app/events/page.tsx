@@ -90,12 +90,52 @@ export default function EventsPage() {
                 </div>
               )}
 
-              <Link
-                href="/anmeldung"
-                className="mt-6 inline-flex rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-brand-dark"
-              >
-                Infos erhalten
-              </Link>
+              {/* CTAs für beide Zielgruppen */}
+              <div className="mt-6 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Ticket kaufen - Party People */}
+                  <a
+                    href="https://supermarket.li"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
+                  >
+                    <span>Ticket kaufen</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+
+                  {/* VIP-Anmeldung */}
+                  <Link
+                    href="/anmeldung/vip"
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-brand-pink px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
+                  >
+                    <span>VIP-Anmeldung</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+                
+                {/* VIP-Hinweis */}
+                <div className="rounded-xl bg-brand-pink/10 border border-brand-pink/30 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-pink/20 flex items-center justify-center mt-0.5">
+                      <svg className="w-4 h-4 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-white mb-1">VIP-Anmeldung: Gratis Eintritt</p>
+                      <p className="text-xs text-white/80">
+                        Menschen mit Beeinträchtigung erhalten mit IV-Ausweis kostenlosen Eintritt. 
+                        Melde dich als VIP an und erlebe Inclusions gratis!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="w-full mt-6 md:mt-0 aspect-square">
               <iframe

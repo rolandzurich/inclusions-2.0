@@ -51,8 +51,8 @@
     {
       "id": 7,
       "filename": "rueckblick-7.png",
-      "title": "Launch der Webseite",
-      "description": "Launch-Event der Inclusions Webseite",
+      "title": "März 2025: Launch der Webseite",
+      "description": "Launch der Inclusions Webseite im März 2025",
       "category": "events",
       "order": 2
     },
@@ -114,9 +114,9 @@
     },
     {
       "id": 15,
-      "filename": "rueckblick-15.png",
+      "filename": "joza-zeier.jpeg",
       "title": "Mit Joza - wichtiger Unterstützer",
-      "description": "Treffen mit Joza, einem wichtigen Unterstützer von Inclusions",
+      "description": "Joza Zeier (Watchman) - wichtiger Unterstützer von Inclusions",
       "category": "sponsoren",
       "order": 15
     },

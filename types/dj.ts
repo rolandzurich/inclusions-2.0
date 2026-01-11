@@ -3,6 +3,7 @@ export interface DJ {
   name: string;
   image?: string;
   text?: string;
+  soundcloud?: string;
   hasDisability: boolean;
   bookableIndividually: boolean;
 }

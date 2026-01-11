@@ -49,7 +49,7 @@ export default function AboutPage() {
                 Über uns
               </h1>
               <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto [text-shadow:_1px_1px_4px_rgb(0_0_0_/_80%)]">
-                Gemeinsam schaffen wir Räume, in denen Musik verbindet und Inklusion gelebt wird.
+                Gemeinsam schaffen wir Momente und berühren Herzen, in denen Musik verbindet und Inklusion gelebt wird.
               </p>
             </div>
           </div>
@@ -209,16 +209,16 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {[
-            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true },
             { name: "insieme Zürich", logo: "/images/partners/insieme.png", hasLogo: true },
             { name: "Supermarket", logo: "/images/partners/supermarket.png", hasLogo: true },
             { name: "TIXI Taxi", logo: "/images/partners/tixi.png", hasLogo: true },
             { name: "BCK", logo: "/images/partners/bck.png", hasLogo: true },
-            { name: "SIMPLY AGENCY", logo: "/images/partners/simply.png", hasLogo: true },
+            { name: "Tanz am Morgen", logo: "/images/partners/tanz-am-morgen.png", hasLogo: true },
             { name: "AVTL Content", logo: "/images/partners/avtl.png", hasLogo: true },
             { name: "Colette M", logo: "/images/partners/colette-m.png", hasLogo: true },
             { name: "Alex Flach", logo: "/images/partners/alex-flach.png", hasLogo: true },
             { name: "Hitschfilm", logo: "/images/partners/hitschfilm.png", hasLogo: true },
+            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true },
           ].map((partner, index) => (
             <div
               key={index}

@@ -7,6 +7,8 @@ interface Stats {
   newsletterSubscribers: number;
   vipRegistrations: number;
   recentContactRequests: any[];
+  newContactRequests: number;
+  newVIPRegistrations: number;
 }
 
 export default function AdminDashboardPage() {
@@ -48,7 +50,14 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-400 mb-2">Booking-Anfragen</h3>
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-lg font-semibold text-gray-400">Booking-Anfragen</h3>
+            {stats?.newContactRequests && stats.newContactRequests > 0 && (
+              <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
+                {stats.newContactRequests} neu
+              </span>
+            )}
+          </div>
           <p className="text-3xl font-bold text-brand-pink">
             {stats?.contactRequests || 0}
           </p>
@@ -60,7 +69,14 @@ export default function AdminDashboardPage() {
           </p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-400 mb-2">VIP-Anmeldungen</h3>
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-lg font-semibold text-gray-400">VIP-Anmeldungen</h3>
+            {stats?.newVIPRegistrations && stats.newVIPRegistrations > 0 && (
+              <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
+                {stats.newVIPRegistrations} neu
+              </span>
+            )}
+          </div>
           <p className="text-3xl font-bold text-brand-pink">
             {stats?.vipRegistrations || 0}
           </p>

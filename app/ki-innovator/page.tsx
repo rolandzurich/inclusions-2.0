@@ -429,7 +429,7 @@ export default function KIInnovatorPage() {
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-brand-pink px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
             aria-label="Zur Startseite navigieren"
           >
             <span>Zur Startseite</span>

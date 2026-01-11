@@ -20,15 +20,17 @@ export async function GET(request: NextRequest) {
     }
 
     // Stats parallel abrufen
-    const [contactRequests, newsletterSubscribers, vipRegistrations, recentRequests] = await Promise.all([
+    const [contactRequests, newsletterSubscribers, vipRegistrations, recentRequests, newContactRequests, newVIPRegistrations] = await Promise.all([
       supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }),
       supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('status', 'confirmed'),
       supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }),
       supabaseAdmin
         .from('contact_requests')
-        .select('id, created_at, name, email, booking_item')
+        .select('id, created_at, name, email, booking_item, viewed_at')
         .order('created_at', { ascending: false })
         .limit(5),
+      supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }).is('viewed_at', null),
+      supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }).is('viewed_at', null),
     ]);
 
     return NextResponse.json({
@@ -36,6 +38,8 @@ export async function GET(request: NextRequest) {
       newsletterSubscribers: newsletterSubscribers.count || 0,
       vipRegistrations: vipRegistrations.count || 0,
       recentContactRequests: recentRequests.data || [],
+      newContactRequests: newContactRequests.count || 0,
+      newVIPRegistrations: newVIPRegistrations.count || 0,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);

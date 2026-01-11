@@ -85,7 +85,38 @@ export default function NewsletterPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Newsletter Abonnenten</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={async () => {
+              try {
+                const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+                const response = await fetch('/api/admin/newsletter/export', {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                  },
+                });
+                if (response.ok) {
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `mailchimp-export-${new Date().toISOString().split('T')[0]}.csv`;
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+                } else {
+                  alert('Fehler beim Exportieren');
+                }
+              } catch (error) {
+                console.error('Error exporting:', error);
+                alert('Fehler beim Exportieren');
+              }
+            }}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm"
+          >
+            📥 Für Mailchimp exportieren (CSV)
+          </button>
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded ${filter === 'all' ? 'bg-brand-pink text-black' : 'bg-gray-700'}`}
