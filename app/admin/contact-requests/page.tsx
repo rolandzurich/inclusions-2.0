@@ -100,6 +100,55 @@ export default function ContactRequestsPage() {
     }
   };
 
+  const handleExportCSV = () => {
+    // CSV Header
+    const headers = [
+      'Datum',
+      'Name',
+      'E-Mail',
+      'Telefon',
+      'Booking-Typ',
+      'Gebuchtes Item',
+      'Event-Datum',
+      'Event-Ort',
+      'Art des Events',
+      'Nachricht',
+      'Status'
+    ];
+
+    // CSV Rows
+    const rows = requests.map(request => [
+      new Date(request.created_at).toLocaleString('de-CH'),
+      request.name || '',
+      request.email || '',
+      request.phone || '',
+      request.booking_type || '',
+      request.booking_item || '',
+      request.event_date || '',
+      request.event_location || '',
+      request.event_type || '',
+      (request.message || '').replace(/\n/g, ' ').replace(/"/g, '""'),
+      request.status || 'new'
+    ]);
+
+    // CSV Content
+    const csvContent = [
+      headers.map(h => `"${h}"`).join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Download
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `booking-anfragen-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return <div className="text-center py-12">Lädt...</div>;
   }
@@ -107,6 +156,15 @@ export default function ContactRequestsPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">Booking-Anfragen</h1>
+
+      <div className="mb-4">
+        <button
+          onClick={handleExportCSV}
+          className="px-4 py-2 bg-brand-pink hover:bg-brand-pink/80 rounded text-white font-semibold"
+        >
+          📥 Als CSV exportieren
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-gray-800 rounded-lg p-6">

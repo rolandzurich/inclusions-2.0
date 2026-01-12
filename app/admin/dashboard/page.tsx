@@ -9,6 +9,7 @@ interface Stats {
   recentContactRequests: any[];
   newContactRequests: number;
   newVIPRegistrations: number;
+  newNewsletterSubscribers: number;
 }
 
 export default function AdminDashboardPage() {
@@ -63,7 +64,14 @@ export default function AdminDashboardPage() {
           </p>
         </div>
         <div className="bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-400 mb-2">Newsletter Abonnenten</h3>
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-lg font-semibold text-gray-400">Newsletter Abonnenten</h3>
+            {stats?.newNewsletterSubscribers && stats.newNewsletterSubscribers > 0 && (
+              <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
+                {stats.newNewsletterSubscribers} neu
+              </span>
+            )}
+          </div>
           <p className="text-3xl font-bold text-brand-pink">
             {stats?.newsletterSubscribers || 0}
           </p>

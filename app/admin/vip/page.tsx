@@ -11,6 +11,9 @@ interface VIPRegistration {
   event_date?: string;
   event_location?: string;
   message?: string;
+  company?: string;
+  number_of_guests?: number;
+  special_requirements?: string;
   viewed_at?: string;
   is_duplicate?: boolean;
   status?: string;
@@ -97,6 +100,55 @@ export default function VIPPage() {
     }
   };
 
+  const handleExportCSV = () => {
+    // CSV Header für Google Sheets
+    const headers = [
+      'Datum',
+      'Name',
+      'E-Mail',
+      'Telefon',
+      'Event-Datum',
+      'Event-Ort',
+      'Nachricht',
+      'Firma',
+      'Anzahl Gäste',
+      'Besondere Anforderungen',
+      'Status'
+    ];
+
+    // CSV Rows
+    const rows = registrations.map(reg => [
+      new Date(reg.created_at).toLocaleString('de-CH'),
+      reg.name || '',
+      reg.email || '',
+      reg.phone || '',
+      reg.event_date || '',
+      reg.event_location || '',
+      (reg.message || '').replace(/\n/g, ' ').replace(/"/g, '""'),
+      (reg as any).company || '',
+      (reg as any).number_of_guests || '',
+      ((reg as any).special_requirements || '').replace(/\n/g, ' ').replace(/"/g, '""'),
+      reg.status || 'new'
+    ]);
+
+    // CSV Content mit BOM für Excel/Google Sheets
+    const csvContent = [
+      headers.map(h => `"${h}"`).join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Download
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `vip-anmeldungen-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return <div className="text-center py-12">Lädt...</div>;
   }
@@ -104,6 +156,15 @@ export default function VIPPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8">VIP-Anmeldungen</h1>
+
+      <div className="mb-4">
+        <button
+          onClick={handleExportCSV}
+          className="px-4 py-2 bg-brand-pink hover:bg-brand-pink/80 rounded text-white font-semibold"
+        >
+          📥 Als CSV exportieren (für Google Sheets)
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-gray-800 rounded-lg p-6">
@@ -201,6 +262,24 @@ export default function VIPPage() {
                   <div>
                     <p className="text-sm text-gray-400">Nachricht</p>
                     <p className="whitespace-pre-wrap">{selectedRegistration.message}</p>
+                  </div>
+                )}
+                {selectedRegistration.company && (
+                  <div>
+                    <p className="text-sm text-gray-400">Firma</p>
+                    <p>{selectedRegistration.company}</p>
+                  </div>
+                )}
+                {selectedRegistration.number_of_guests && (
+                  <div>
+                    <p className="text-sm text-gray-400">Anzahl Gäste</p>
+                    <p>{selectedRegistration.number_of_guests}</p>
+                  </div>
+                )}
+                {selectedRegistration.special_requirements && (
+                  <div>
+                    <p className="text-sm text-gray-400">Besondere Anforderungen</p>
+                    <p className="whitespace-pre-wrap">{selectedRegistration.special_requirements}</p>
                   </div>
                 )}
                 {selectedRegistration.is_duplicate && (

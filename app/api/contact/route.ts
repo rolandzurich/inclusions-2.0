@@ -126,41 +126,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // E-Mails senden (async, nicht blockierend) - nur wenn gespeichert
-    if (saved) {
-      try {
-        const { sendContactConfirmation, sendBookingConfirmation, sendContactNotification } = await import('@/lib/resend');
-        
-        // Bestätigung: Booking-spezifisch oder allgemein
-        const isBooking = body.booking_type || body.type || body.booking_item;
-        const confirmationPromise = isBooking
-          ? sendBookingConfirmation(
-              body.email,
-              body.name,
-              body.booking_item,
-              body.event_date,
-              body.event_location
-            )
-          : sendContactConfirmation(body.email, body.name);
-        
-        Promise.all([
-          confirmationPromise.catch(err => 
-            console.error('Error sending confirmation email:', err)
-          ),
-          sendContactNotification({
-            name: body.name,
-            email: body.email,
-            phone: body.phone,
-            message: body.message,
-            bookingType: body.booking_type || body.type,
-            bookingItem: body.booking_item,
-          }).catch(err => 
-            console.error('Error sending notification email:', err)
-          ),
-        ]);
-      } catch (emailError) {
-        console.error('E-Mail-Versand fehlgeschlagen:', emailError);
-      }
+    // E-Mails senden (async, nicht blockierend) - immer senden, auch wenn Speichern fehlgeschlagen ist
+    try {
+      const { sendContactConfirmation, sendBookingConfirmation, sendContactNotification } = await import('@/lib/resend');
+      
+      // Bestätigung: Booking-spezifisch oder allgemein
+      const isBooking = body.booking_type || body.type || body.booking_item;
+      const confirmationPromise = isBooking
+        ? sendBookingConfirmation(
+            body.email,
+            body.name,
+            body.booking_item,
+            body.event_date,
+            body.event_location
+          )
+        : sendContactConfirmation(body.email, body.name);
+      
+      Promise.all([
+        confirmationPromise.catch(err => 
+          console.error('Error sending confirmation email:', err)
+        ),
+        sendContactNotification({
+          name: body.name,
+          email: body.email,
+          phone: body.phone,
+          message: body.message,
+          bookingType: body.booking_type || body.type,
+          bookingItem: body.booking_item,
+        }).catch(err => 
+          console.error('Error sending notification email:', err)
+        ),
+      ]);
+    } catch (emailError) {
+      console.error('E-Mail-Versand fehlgeschlagen:', emailError);
     }
 
     return NextResponse.json(

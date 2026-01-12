@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Stats parallel abrufen
-    const [contactRequests, newsletterSubscribers, vipRegistrations, recentRequests, newContactRequests, newVIPRegistrations] = await Promise.all([
+    const [contactRequests, newsletterSubscribers, vipRegistrations, recentRequests, newContactRequests, newVIPRegistrations, newNewsletterSubscribers] = await Promise.all([
       supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }),
-      supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).eq('status', 'confirmed'),
+      supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }), // Alle zählen, nicht nur confirmed
       supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }),
       supabaseAdmin
         .from('contact_requests')
@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
         .limit(5),
       supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }).is('viewed_at', null),
       supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }).is('viewed_at', null),
+      supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).is('viewed_at', null),
     ]);
 
     return NextResponse.json({
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
       recentContactRequests: recentRequests.data || [],
       newContactRequests: newContactRequests.count || 0,
       newVIPRegistrations: newVIPRegistrations.count || 0,
+      newNewsletterSubscribers: newNewsletterSubscribers.count || 0,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);

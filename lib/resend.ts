@@ -103,41 +103,43 @@ export async function sendContactNotification(data: {
   // Sende E-Mails einzeln
   const results = [];
   
-  // An roland.luthi@gmail.com
-  try {
-    const result1 = await resend.emails.send({
-      from: fromEmail,
-      to: 'roland.luthi@gmail.com',
-      subject: emailSubject,
-      html: emailHtml,
-      text: emailText,
-    });
-    if (!result1.error) {
-      console.log('✅ Kontakt-Benachrichtigung an roland.luthi@gmail.com gesendet');
-      results.push({ email: 'roland.luthi@gmail.com', id: result1.data?.id });
-    }
-  } catch (error) {
-    console.error('❌ Fehler:', error);
-  }
-  
-  // An info@inclusions.zone (wird im Test-Modus blockiert)
-  if (adminEmail && adminEmail !== 'roland.luthi@gmail.com') {
+  // Primär an info@inclusions.zone
+  if (adminEmail) {
     try {
-      const result2 = await resend.emails.send({
+      const result1 = await resend.emails.send({
         from: fromEmail,
         to: adminEmail,
         subject: emailSubject,
         html: emailHtml,
         text: emailText,
       });
-      if (!result2.error) {
+      if (!result1.error) {
         console.log(`✅ Kontakt-Benachrichtigung an ${adminEmail} gesendet`);
-        results.push({ email: adminEmail, id: result2.data?.id });
+        results.push({ email: adminEmail, id: result1.data?.id });
       } else {
-        console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus)`);
+        console.warn(`⚠️ ${adminEmail} Fehler:`, result1.error);
       }
     } catch (error) {
-      console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus)`);
+      console.error(`❌ Fehler beim Senden an ${adminEmail}:`, error);
+    }
+  }
+  
+  // Fallback an roland.luthi@gmail.com (nur wenn adminEmail nicht funktioniert)
+  if (results.length === 0) {
+    try {
+      const result2 = await resend.emails.send({
+        from: fromEmail,
+        to: 'roland.luthi@gmail.com',
+        subject: emailSubject,
+        html: emailHtml,
+        text: emailText,
+      });
+      if (!result2.error) {
+        console.log('✅ Kontakt-Benachrichtigung an roland.luthi@gmail.com gesendet (Fallback)');
+        results.push({ email: 'roland.luthi@gmail.com', id: result2.data?.id });
+      }
+    } catch (error) {
+      console.error('❌ Fehler:', error);
     }
   }
 
@@ -235,41 +237,43 @@ export async function sendNewsletterNotification(data: {
   // Sende E-Mails einzeln
   const results = [];
   
-  // An roland.luthi@gmail.com
-  try {
-    const result1 = await resend.emails.send({
-      from: fromEmail,
-      to: 'roland.luthi@gmail.com',
-      subject: 'Neue Newsletter-Anmeldung - Inclusions',
-      html: emailHtml,
-      text: emailText,
-    });
-    if (!result1.error) {
-      console.log('✅ Newsletter-Benachrichtigung an roland.luthi@gmail.com gesendet');
-      results.push({ email: 'roland.luthi@gmail.com', id: result1.data?.id });
-    }
-  } catch (error) {
-    console.error('❌ Fehler:', error);
-  }
-  
-  // An info@inclusions.zone (wird im Test-Modus blockiert)
-  if (adminEmail && adminEmail !== 'roland.luthi@gmail.com') {
+  // Primär an info@inclusions.zone
+  if (adminEmail) {
     try {
-      const result2 = await resend.emails.send({
+      const result1 = await resend.emails.send({
         from: fromEmail,
         to: adminEmail,
         subject: 'Neue Newsletter-Anmeldung - Inclusions',
         html: emailHtml,
         text: emailText,
       });
-      if (!result2.error) {
+      if (!result1.error) {
         console.log(`✅ Newsletter-Benachrichtigung an ${adminEmail} gesendet`);
-        results.push({ email: adminEmail, id: result2.data?.id });
+        results.push({ email: adminEmail, id: result1.data?.id });
       } else {
-        console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus)`);
+        console.warn(`⚠️ ${adminEmail} Fehler:`, result1.error);
       }
     } catch (error) {
-      console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus)`);
+      console.error(`❌ Fehler beim Senden an ${adminEmail}:`, error);
+    }
+  }
+  
+  // Fallback an roland.luthi@gmail.com (nur wenn adminEmail nicht funktioniert)
+  if (results.length === 0) {
+    try {
+      const result2 = await resend.emails.send({
+        from: fromEmail,
+        to: 'roland.luthi@gmail.com',
+        subject: 'Neue Newsletter-Anmeldung - Inclusions',
+        html: emailHtml,
+        text: emailText,
+      });
+      if (!result2.error) {
+        console.log('✅ Newsletter-Benachrichtigung an roland.luthi@gmail.com gesendet (Fallback)');
+        results.push({ email: 'roland.luthi@gmail.com', id: result2.data?.id });
+      }
+    } catch (error) {
+      console.error('❌ Fehler:', error);
     }
   }
 
@@ -363,36 +367,14 @@ export async function sendVIPNotification(data: {
     
     const emailSubject = `Neue VIP-Anmeldung${data.eventDate ? `: ${data.eventDate}` : ''}`;
 
-    // Sende E-Mails einzeln (Resend Test-Modus erlaubt nur Account-E-Mail)
+    // Sende E-Mails einzeln
     const results = [];
     
-    // 1. An roland.luthi@gmail.com (funktioniert im Test-Modus)
-    console.log(`📧 Sende VIP-Benachrichtigung an: roland.luthi@gmail.com`);
-    try {
-      const result1 = await resend.emails.send({
-        from: fromEmail,
-        to: 'roland.luthi@gmail.com',
-        reply_to: data.email,
-        subject: emailSubject,
-        html: emailHtml,
-        text: emailText,
-      });
-      
-      if (result1.error) {
-        console.error('❌ Fehler bei roland.luthi@gmail.com:', result1.error);
-      } else {
-        console.log('✅ Benachrichtigung an roland.luthi@gmail.com gesendet, ID:', result1.data?.id);
-        results.push({ email: 'roland.luthi@gmail.com', id: result1.data?.id });
-      }
-    } catch (error) {
-      console.error('❌ Fehler beim Senden an roland.luthi@gmail.com:', error);
-    }
-    
-    // 2. An info@inclusions.zone (wird im Test-Modus blockiert, aber versuchen wir trotzdem)
-    if (adminEmail && adminEmail !== 'roland.luthi@gmail.com') {
-      console.log(`📧 Versuche VIP-Benachrichtigung an: ${adminEmail}`);
+    // Primär an info@inclusions.zone
+    if (adminEmail) {
+      console.log(`📧 Sende VIP-Benachrichtigung an: ${adminEmail}`);
       try {
-        const result2 = await resend.emails.send({
+        const result1 = await resend.emails.send({
           from: fromEmail,
           to: adminEmail,
           reply_to: data.email,
@@ -401,15 +383,38 @@ export async function sendVIPNotification(data: {
           text: emailText,
         });
         
-        if (result2.error) {
-          console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus - normal):`, result2.error.message);
-          console.warn(`   E-Mail wird nach Domain-Verifizierung funktionieren`);
+        if (result1.error) {
+          console.warn(`⚠️ ${adminEmail} Fehler:`, result1.error);
         } else {
-          console.log(`✅ Benachrichtigung an ${adminEmail} gesendet, ID:`, result2.data?.id);
-          results.push({ email: adminEmail, id: result2.data?.id });
+          console.log(`✅ Benachrichtigung an ${adminEmail} gesendet, ID:`, result1.data?.id);
+          results.push({ email: adminEmail, id: result1.data?.id });
         }
       } catch (error) {
-        console.warn(`⚠️ ${adminEmail} blockiert (Test-Modus):`, error instanceof Error ? error.message : 'Unbekannter Fehler');
+        console.error(`❌ Fehler beim Senden an ${adminEmail}:`, error);
+      }
+    }
+    
+    // Fallback an roland.luthi@gmail.com (nur wenn adminEmail nicht funktioniert)
+    if (results.length === 0) {
+      console.log(`📧 Sende VIP-Benachrichtigung an: roland.luthi@gmail.com (Fallback)`);
+      try {
+        const result2 = await resend.emails.send({
+          from: fromEmail,
+          to: 'roland.luthi@gmail.com',
+          reply_to: data.email,
+          subject: emailSubject,
+          html: emailHtml,
+          text: emailText,
+        });
+        
+        if (result2.error) {
+          console.error('❌ Fehler bei roland.luthi@gmail.com:', result2.error);
+        } else {
+          console.log('✅ Benachrichtigung an roland.luthi@gmail.com gesendet (Fallback), ID:', result2.data?.id);
+          results.push({ email: 'roland.luthi@gmail.com', id: result2.data?.id });
+        }
+      } catch (error) {
+        console.error('❌ Fehler beim Senden an roland.luthi@gmail.com:', error);
       }
     }
 

@@ -105,7 +105,13 @@ export default function BookingPage() {
             : selectedType === "pair"
             ? selectedPair?.name
             : selectedDanceCrew?.name,
-        ...formData,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        event_date: formData.eventDate, // Korrigiert: eventDate -> event_date
+        event_location: formData.eventLocation, // Korrigiert: eventLocation -> event_location
+        event_type: formData.eventType, // Korrigiert: eventType -> event_type
         honeypot: '', // Honeypot-Feld
       };
 
