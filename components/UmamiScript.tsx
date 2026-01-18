@@ -14,7 +14,7 @@ export default function UmamiScript() {
     <Script
       src={`${umamiUrl}/script.js`}
       data-website-id={umamiWebsiteId}
-      strategy="afterInteractive"
+      strategy="lazyOnload"
     />
   );
 }

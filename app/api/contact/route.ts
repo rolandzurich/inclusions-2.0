@@ -86,6 +86,31 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ Contact request gespeichert via Supabase:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addContactRequestToSheet }) => {
+            addContactRequestToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              name: data.name,
+              email: data.email,
+              phone: data.phone,
+              message: data.message,
+              booking_type: data.booking_type,
+              booking_item: data.booking_item,
+              event_date: data.event_date,
+              event_location: data.event_location,
+              event_type: data.event_type,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              ip_address: data.ip_address,
+              status: data.status,
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         }
       }
     } catch (supabaseError) {
@@ -118,6 +143,31 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ Contact request gespeichert via direkter DB:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addContactRequestToSheet }) => {
+            addContactRequestToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              name: data.name,
+              email: data.email,
+              phone: data.phone,
+              message: data.message,
+              booking_type: data.booking_type,
+              booking_item: data.booking_item,
+              event_date: data.event_date,
+              event_location: data.event_location,
+              event_type: data.event_type,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              ip_address: data.ip_address,
+              status: data.status || 'new',
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         } else {
           console.error('❌ Fehler beim Speichern:', error);
         }
@@ -153,6 +203,13 @@ export async function POST(request: NextRequest) {
           message: body.message,
           bookingType: body.booking_type || body.type,
           bookingItem: body.booking_item,
+          eventDate: body.event_date,
+          eventLocation: body.event_location,
+          eventType: body.event_type,
+          sourceUrl: sourceUrl,
+          utmSource: utmSource || undefined,
+          utmMedium: utmMedium || undefined,
+          utmCampaign: utmCampaign || undefined,
         }).catch(err => 
           console.error('Error sending notification email:', err)
         ),

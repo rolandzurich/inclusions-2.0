@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PartnerLogo } from "@/components/PartnerLogo";
+import { getAboutPageSchema, getBreadcrumbSchema, getPersonSchema, getBaseUrl } from "@/lib/geo-schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -20,9 +21,50 @@ export const metadata: Metadata = {
   },
 };
 
+const team = [
+  {
+    name: "Reto Willi",
+    role: "Co-Founder",
+    position: "Arbeitsagoge, Gastro und Eventmanagement",
+    image: "/images/reto-willi.png",
+    description: "Ein engagierter Arbeitsagoge mit über 20 Jahren Berufserfahrung in Sozialarbeit, Gastronomie und Eventmanagement. Fachlich versiert in der Betreuung und Förderung von Mitarbeitenden sowie in der Organisation inklusiver Projekte. Empathisch, lösungsorientiert und ein natürlicher Motivator, der sich für agile Führung und die Förderung individueller Potenziale einsetzt. Die Leidenschaft zur elektronischen Musik trägt er schon seit vielen Jahren in sich.",
+    motivation: "Ich habe dieses Projekt ins Leben gerufen, weil ich dazu beitragen möchte, dass alle Menschen – unabhängig von ihren Fähigkeiten – die gleichen Chancen und Möglichkeiten haben. Es erfüllt mich, eine unterstützende und offene Umgebung zu schaffen, in der jeder sich wertgeschätzt und akzeptiert fühlt.",
+  },
+  {
+    name: "Roland Lüthi",
+    role: "Co-Founder",
+    position: "Betreuer und Eventorganisation bei insieme Zürich",
+    image: "/images/roland-luethi.png",
+    description: "Als vielseitiger Marketing-Generalist und Event-Innovator mit über 20 Jahren Erfahrung bringt er digitale Strategien und kreative Konzepte zusammen, um nachhaltige und inklusive Projekte zu realisieren. Seine Expertise reicht von Digital Marketing und Brand Development bis hin zur Organisation von Achtsamkeits- und Inklusions-Events. Seine Leidenschaft für elektronische Musik, die Erfahrung in der Betreuung und Organisation für Anlässe für Menschen mit Beeinträchtigung ermöglichen es ihm, innovative Formate zu entwickeln, die Menschen zusammenbringen und inspirieren.",
+    motivation: "Seit zwei Jahren arbeite ich bei insieme Zürich für Menschen mit Beeinträchtigung. Ich habe viele von ihnen in mein Herz geschlossen und sehe sie einfach als andere Menschen. Ich möchte, dass mehr Leute dieselbe Erfahrung machen.",
+  },
+];
+
 export default function AboutPage() {
+  const baseUrl = getBaseUrl();
+  const jsonLdAbout = getAboutPageSchema(
+    "Inclusions ist ein Verein aus Zürich. Wir schaffen sichere Räume, in denen Menschen mit und ohne Beeinträchtigung Clubkultur erleben – barrierearm, wertschätzend und echt. Lerne Reto Willi und Roland Lüthi kennen.",
+    baseUrl + "/ueber-uns"
+  );
+  const jsonLdBreadcrumb = getBreadcrumbSchema([
+    { name: "Inclusions", url: "/" },
+    { name: "Über uns", url: "/ueber-uns" },
+  ]);
+  const jsonLdPersons = team.map((p) =>
+    getPersonSchema({
+      name: p.name,
+      jobTitle: p.role,
+      image: p.image,
+      description: p.description,
+      worksFor: { name: "Inclusions", url: baseUrl },
+    })
+  );
+
   return (
     <main className="min-h-screen max-w-6xl px-4 py-12 mx-auto space-y-16 text-white">
+      {[jsonLdAbout, jsonLdBreadcrumb, ...jsonLdPersons].map((s, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
+      ))}
       {/* Hero Section */}
       <section className="space-y-8">
         <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden group">
@@ -58,8 +100,8 @@ export default function AboutPage() {
 
       <section className="space-y-4">
         <p className="text-white/70">
-          Inclusions ist ein Verein aus Zürich. Wir schaffen sichere Räume, in denen Menschen mit und
-          ohne Beeinträchtigung Clubkultur erleben – barrierearm, wertschätzend und echt.
+          Inclusions ist ein Verein aus Zürich, politisch und religiös neutral. Wir schaffen sichere Räume, in denen Menschen mit und
+          ohne Beeinträchtigung Clubkultur erleben – wertschätzend und echt.
         </p>
       </section>
 
@@ -67,7 +109,7 @@ export default function AboutPage() {
       <section className="space-y-8 rounded-2xl bg-white/5 p-8">
         <div className="space-y-4">
           <h2 className="text-3xl font-bold text-brand-pink">Inclusions - Die Vision</h2>
-          <p className="text-lg text-white/90 leading-relaxed">
+          <p className="text-lg text-white/90 leading-relaxed max-w-read">
             Stell dir eine Welt vor, in der Musik und Tanz keine Grenzen kennen – eine Welt, in der Menschen mit und ohne Beeinträchtigung zusammenkommen, um zu feiern, zu kreieren und Neues zu erschaffen. Mit der Inclusions setzen wir ein Zeichen: Wir verbinden Welten, brechen Barrieren und schaffen ein einmaliges Erlebnis, das Leben verändert.
           </p>
         </div>
@@ -157,24 +199,7 @@ export default function AboutPage() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        {[
-          {
-            name: "Reto Willi",
-            role: "Co-Founder",
-            position: "Arbeitsagoge, Gastro und Eventmanagement",
-            image: "/images/reto-willi.png",
-            description: "Ein engagierter Arbeitsagoge mit über 20 Jahren Berufserfahrung in Sozialarbeit, Gastronomie und Eventmanagement. Fachlich versiert in der Betreuung und Förderung von Mitarbeitenden sowie in der Organisation inklusiver Projekte. Empathisch, lösungsorientiert und ein natürlicher Motivator, der sich für agile Führung und die Förderung individueller Potenziale einsetzt. Die Leidenschaft zur elektronischen Musik trägt er schon seit vielen Jahren in sich.",
-            motivation: "Ich habe dieses Projekt ins Leben gerufen, weil ich dazu beitragen möchte, dass alle Menschen – unabhängig von ihren Fähigkeiten – die gleichen Chancen und Möglichkeiten haben. Es erfüllt mich, eine unterstützende und offene Umgebung zu schaffen, in der jeder sich wertgeschätzt und akzeptiert fühlt."
-          },
-          {
-            name: "Roland Lüthi",
-            role: "Co-Founder",
-            position: "Betreuer und Eventorganisation bei insieme Zürich",
-            image: "/images/roland-luethi.png",
-            description: "Als vielseitiger Marketing-Generalist und Event-Innovator mit über 20 Jahren Erfahrung bringt er digitale Strategien und kreative Konzepte zusammen, um nachhaltige und inklusive Projekte zu realisieren. Seine Expertise reicht von Digital Marketing und Brand Development bis hin zur Organisation von Achtsamkeits- und Inklusions-Events. Seine Leidenschaft für elektronische Musik, die Erfahrung in der Betreuung und Organisation für Anlässe für Menschen mit Beeinträchtigung ermöglichen es ihm, innovative Formate zu entwickeln, die Menschen zusammenbringen und inspirieren.",
-            motivation: "Seit zwei Jahren arbeite ich bei insieme Zürich für Menschen mit Beeinträchtigung. Ich habe viele von ihnen in mein Herz geschlossen und sehe sie einfach als andere Menschen. Ich möchte, dass mehr Leute dieselbe Erfahung machen."
-          }
-        ].map((person) => (
+        {team.map((person) => (
           <article key={person.name} className="rounded-2xl bg-white/5 p-6">
             <div className="h-80 rounded-2xl overflow-hidden relative group">
               <div className="absolute inset-0 animate-float">
@@ -209,30 +234,50 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {[
-            { name: "insieme Zürich", logo: "/images/partners/insieme.png", hasLogo: true },
-            { name: "Supermarket", logo: "/images/partners/supermarket.png", hasLogo: true },
-            { name: "TIXI Taxi", logo: "/images/partners/tixi.png", hasLogo: true },
-            { name: "BCK", logo: "/images/partners/bck.png", hasLogo: true },
-            { name: "Tanz am Morgen", logo: "/images/partners/tanz-am-morgen.png", hasLogo: true },
-            { name: "AVTL Content", logo: "/images/partners/avtl.png", hasLogo: true },
-            { name: "Colette M", logo: "/images/partners/colette-m.png", hasLogo: true },
-            { name: "Alex Flach", logo: "/images/partners/alex-flach.png", hasLogo: true },
-            { name: "Hitschfilm", logo: "/images/partners/hitschfilm.png", hasLogo: true },
-            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true },
-          ].map((partner, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 h-32"
-            >
-              {partner.hasLogo ? (
-                <PartnerLogo src={partner.logo} alt={partner.name} />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-xs text-white/70 text-center px-2">{partner.name}</span>
-                </div>
-              )}
-            </div>
-          ))}
+            { name: "insieme Zürich", logo: "/images/partners/insieme.png", hasLogo: true, url: "https://insieme-zuerich.ch/" },
+            { name: "Supermarket", logo: "/images/partners/supermarket.png", hasLogo: true, url: "https://supermarket.li/" },
+            { name: "Animaltrainer", logo: "/images/partners/animaltrainer.png", hasLogo: true, url: "https://www.schoolofsound.ch/" },
+            { name: "Colette M", logo: "/images/partners/colette-m.png", hasLogo: true, url: "https://www.magicdancers.ch/" },
+            { name: "TIXI Taxi", logo: "/images/partners/tixi.png", hasLogo: true, url: "https://tixi.ch/" },
+            { name: "BCK", logo: "/images/partners/bck.png", hasLogo: true, url: "https://bckzh.ch/" },
+            { name: "Manroof", logo: "/images/partners/manroof.png", hasLogo: true, url: "https://www.manroof.ch/" },
+            { name: "AVTL Content", logo: "/images/partners/avtl.png", hasLogo: true, url: "https://avtlcontent.com/" },
+            { name: "Alex Flach", logo: "/images/partners/alex-flach.png", hasLogo: true, url: "https://www.instagram.com/alex_flach2605/" },
+            { name: "Hitschfilm", logo: "/images/partners/hitschfilm.png", hasLogo: true, url: "https://www.hitschfilm.zuerich/" },
+            { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true, url: "https://www.watchman.academy/" },
+            { name: "Tanz am Morgen", logo: "/images/partners/tanz-am-morgen.jpg", hasLogo: true, url: "https://www.instagram.com/coco.bewegt/" },
+          ].map((partner, index) => {
+            const content = partner.hasLogo ? (
+              <PartnerLogo src={partner.logo} alt={partner.name} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-xs text-white/70 text-center px-2">{partner.name}</span>
+              </div>
+            );
+
+            if (partner.url) {
+              return (
+                <Link
+                  key={index}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 h-32"
+                >
+                  {content}
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 h-32"
+              >
+                {content}
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>

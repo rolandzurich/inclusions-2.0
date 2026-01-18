@@ -35,10 +35,11 @@ export function FormNotification({
 
   if (!message) return null;
 
+  /* Neuro-inclusive: weichere Feedback-Farben, weniger alarmierend */
   const styles = {
-    success: "bg-green-500/20 text-green-400 border-green-500/30",
-    error: "bg-red-500/20 text-red-400 border-red-500/30",
-    info: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    success: "bg-green-500/20 text-green-300 border-green-500/25",
+    error: "bg-amber-500/15 text-amber-200 border-amber-500/25",
+    info: "bg-blue-500/15 text-blue-200 border-blue-500/25",
   };
 
   const icons = {
@@ -107,7 +108,7 @@ export function FormNotification({
         {onClose && (
           <button
             onClick={onClose}
-            className="flex-shrink-0 text-current/70 hover:text-current transition-colors p-1 -mr-1"
+            className="flex-shrink-0 text-current/70 hover:text-current transition-colors duration-200 ease-in-out p-1 -mr-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-current focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             aria-label="Nachricht schließen"
           >
             <svg

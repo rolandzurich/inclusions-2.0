@@ -40,6 +40,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               >
                 Content
               </a>
+              <a
+                href="/admin/djs"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
+              >
+                DJ-Texte
+              </a>
             </div>
           </div>
         </div>

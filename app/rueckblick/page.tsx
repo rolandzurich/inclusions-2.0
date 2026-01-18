@@ -208,7 +208,9 @@ export default function RueckblickPage() {
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <Link
-            href="/events"
+            href="https://supermarket.li/events/inclusions/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
             <span>Zum nächsten Event</span>

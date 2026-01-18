@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { getAllDJs, getAllDJPairs, getDJPairWithDJs, getBookableDJs, getDJById, getPairDisplayName } from "@/lib/dj-utils";
@@ -146,8 +145,11 @@ export default function DJsPage() {
         <div>
           <h2 className="text-3xl font-semibold">DJ Pairs</h2>
           <p className="mt-2 text-white/70">
-            Diese DJ Pairs können zusammen gebucht werden. Sie bringen das Inclusions-Gefühl auf
-            deinen Event und kombinieren Erfahrung aus der Clubszene mit gelebter Inklusion.
+            Diese DJ Pairs können gemeinsam gebucht werden. Sie bringen das Inclusions-Gefühl auf
+            deinen Event und verbinden Cluberfahrung mit gelebter Inklusion.
+          </p>
+          <p className="mt-2 text-white/70">
+            Die Zusammensetzungen entwickeln sich weiter und können sich ändern: Beim DJ-Coaching kommen regelmässig neue talentierte Menschen mit Beeinträchtigung dazu, die DJ werden möchten.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -311,30 +313,17 @@ export default function DJsPage() {
 
       {/* Booking Formular */}
       <section id="booking-form" className="rounded-3xl bg-white/10 p-8 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="space-y-3 flex-1">
-            <h2 className="text-3xl font-semibold">
-              Booking-Anfrage {selectedBookingName ? `für ${selectedBookingName}` : "für DJs & DJ Pairs"}
-            </h2>
-            <p className="text-white/80 max-w-2xl">
-              Du möchtest unsere Resident DJs oder DJ Pairs für deinen Event buchen? Fülle das Formular aus 
-              und wir melden uns bei dir mit weiteren Informationen, Verfügbarkeit und Konditionen.
-            </p>
-            <p className="text-sm text-white/60">
-              Die Anfrage ist unverbindlich. Wir melden uns persönlich bei dir.
-            </p>
-          </div>
-          <div className="md:flex-shrink-0">
-            <Link
-              href="/djs#"
-              className="inline-flex items-center gap-2 rounded-full border border-brand-pink px-6 py-3 text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              zurück
-            </Link>
-          </div>
+        <div className="space-y-3">
+          <h2 className="text-3xl font-semibold">
+            Booking-Anfrage {selectedBookingName ? `für ${selectedBookingName}` : "für DJs & DJ Pairs"}
+          </h2>
+          <p className="text-white/80 max-w-2xl">
+            Du möchtest unsere Resident DJs oder DJ Pairs für deinen Event buchen? Fülle das Formular aus 
+            und wir melden uns bei dir mit weiteren Informationen, Verfügbarkeit und Konditionen.
+          </p>
+          <p className="text-sm text-white/60">
+            Die Anfrage ist unverbindlich. Wir melden uns persönlich bei dir.
+          </p>
         </div>
 
         {submitStatus === "success" && (

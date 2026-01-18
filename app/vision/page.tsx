@@ -1,5 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Vision - Inclusions Inklusion & Gesellschaft",
+  description: "Inclusions setzt sich für eine Gesellschaft ein, in der kulturelle Teilhabe, Begegnung und Inklusion selbstverständlich sind. Menschenrechte, UNO-Behindertenrechtskonvention, Agenda 2030.",
+  openGraph: {
+    title: "Vision - Inclusions Inklusion & Gesellschaft",
+    description: "Für eine Gesellschaft, in der kulturelle Teilhabe, Begegnung und Inklusion selbstverständlich sind.",
+    images: [{ url: "/images/ueber-uns-hero.jpg", width: 1200, height: 630, alt: "Inclusions Vision - Gemeinsam für Inklusion" }],
+  },
+};
 
 export default function VisionPage() {
   return (

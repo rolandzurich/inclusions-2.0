@@ -12,6 +12,58 @@ declare global {
 type SpeechRecognition = any;
 type SpeechRecognitionEvent = any;
 
+/** Lustiges, freundliches Icon: signalisiert klar «mit Inclusi sprechen» (Gesicht + Schallwellen) */
+function InclusiIcon({ className = "w-14 h-14" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      {/* Kopf/Kreis – freundlich, weich */}
+      <circle cx="32" cy="32" r="28" fill="#FF04D3" fillOpacity="0.95" />
+      <circle cx="32" cy="32" r="28" stroke="white" strokeWidth="2" fill="none" />
+      {/* Augen */}
+      <circle cx="24" cy="28" r="4" fill="white" />
+      <circle cx="40" cy="28" r="4" fill="white" />
+      {/* Lächeln */}
+      <path
+        d="M 22 38 Q 32 46 42 38"
+        stroke="white"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Schallwellen – deutlich «Sprechen» */}
+      <path
+        d="M 48 24 Q 58 32 48 40"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M 52 20 Q 66 32 52 44"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.9"
+      />
+      <path
+        d="M 56 16 Q 74 32 56 48"
+        stroke="white"
+        strokeWidth="1"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
 export function VoiceAgent() {
   const [isListening, setIsListening] = useState(false);
   const [lastUserText, setLastUserText] = useState("");
@@ -19,21 +71,46 @@ export function VoiceAgent() {
   const [isSupported, setIsSupported] = useState<boolean | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const stopSpeakingRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
-    try {
-      if (typeof window !== "undefined") {
-        const SpeechRecognition =
+    let cancelled = false;
+
+    function detectSupport(): boolean {
+      try {
+        if (typeof window === "undefined") return false;
+        const Sp =
           (window as any).SpeechRecognition ||
           (window as any).webkitSpeechRecognition;
-        setIsSupported(!!SpeechRecognition);
+        return !!Sp;
+      } catch {
+        return false;
       }
+    }
+
+    // Sofort prüfen und setzen
+    setIsMounted(true);
+    try {
+      setIsSupported(detectSupport());
     } catch (e) {
       console.error("Fehler beim Prüfen der Browser-Unterstützung:", e);
       setIsSupported(false);
     }
+
+    // Fallback: Falls nach 1s noch "Lade..." (z.B. verzögerte Effects), Status erzwingen
+    const fallback = setTimeout(() => {
+      if (cancelled) return;
+      setIsMounted(true);
+      setIsSupported((prev) => (prev === null ? detectSupport() : prev));
+    }, 1000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(fallback);
+    };
   }, []);
 
   function getRecognition(): SpeechRecognition | null {
@@ -71,12 +148,54 @@ export function VoiceAgent() {
   function speak(text: string) {
     try {
       if (typeof window === "undefined") return;
+      
+      // Stoppe vorherige Sprachausgabe
+      window.speechSynthesis.cancel();
+      setIsSpeaking(true);
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "de-CH";
       utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        stopSpeakingRef.current = null;
+        // Focus zurück auf Button für bessere Navigation
+        buttonRef.current?.focus();
+      };
+      
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        stopSpeakingRef.current = null;
+      };
+      
       window.speechSynthesis.speak(utterance);
+      
+      // Speichere Stop-Funktion
+      stopSpeakingRef.current = () => {
+        window.speechSynthesis.cancel();
+        setIsSpeaking(false);
+        stopSpeakingRef.current = null;
+      };
     } catch (e) {
       console.error("Fehler beim Sprechen:", e);
+      setIsSpeaking(false);
+    }
+  }
+
+  function stopSpeaking() {
+    if (stopSpeakingRef.current) {
+      stopSpeakingRef.current();
+    }
+  }
+
+  // Keyboard-Navigation
+  function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleClick();
     }
   }
 
@@ -181,65 +300,160 @@ export function VoiceAgent() {
 
   if (!isMounted || isSupported === null) {
     return (
-      <div className="mt-8 rounded-2xl bg-white/10 p-4 text-white space-y-4">
-        <h2 className="text-xl font-semibold">
-          Mit mir sprechen (Test-Voice-Agent)
-        </h2>
-        <p className="text-sm text-white/80">Lade...</p>
-      </div>
+      <section 
+        className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-3"
+        aria-label="Inclusi – Sprach-Assistent"
+      >
+        <div className="flex items-center gap-3">
+          <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0" />
+          <div>
+            <h2 className="text-xl font-semibold">Inclusi</h2>
+            <p className="text-sm text-white/80" aria-live="polite">Lade...</p>
+          </div>
+        </div>
+      </section>
     );
   }
 
   if (isSupported === false) {
     return (
-      <div className="mt-8 rounded-2xl bg-white/10 p-4 text-white space-y-4">
-        <h2 className="text-xl font-semibold">
-          Mit mir sprechen (Test-Voice-Agent)
-        </h2>
-        <p className="text-sm text-white/80">
-          Dein Browser unterstützt leider keine Spracherkennung. Bitte verwende Chrome oder Edge.
-        </p>
-      </div>
+      <section 
+        className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-3"
+        aria-label="Inclusi – Sprach-Assistent"
+      >
+        <div className="flex items-center gap-3">
+          <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0" />
+          <div>
+            <h2 className="text-xl font-semibold">Inclusi</h2>
+            <p className="text-sm text-white/80" role="alert">
+              Dein Browser unterstützt leider keine Spracherkennung. Bitte verwende Chrome oder Edge.
+            </p>
+          </div>
+        </div>
+      </section>
     );
   }
 
+  const statusText = isListening 
+    ? "Ich höre zu. Sprich jetzt." 
+    : isSpeaking 
+    ? "Ich spreche gerade." 
+    : "Bereit zum Zuhören.";
+
   return (
-    <div className="mt-8 rounded-2xl bg-white/10 p-4 text-white space-y-4">
-      <h2 className="text-xl font-semibold">
-        Mit mir sprechen (Test-Voice-Agent)
-      </h2>
-      <p className="text-sm text-white/80">
-        Klicke auf den Knopf, sprich einen Satz und höre die Antwort.
-      </p>
+    <section 
+      className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-4"
+      aria-label="Inclusi – Sprach-Assistent für barrierefreie Infos"
+    >
+      <div className="flex items-start gap-3">
+        <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex-shrink-0" />
+      <div className="min-w-0">
+        <h2 className="text-xl md:text-2xl font-semibold">Inclusi</h2>
+        <p className="text-sm md:text-base text-white/90 mt-1">
+          Dein Sprach-Assistent: Infos zu Inclusions per Sprache – besonders für Menschen mit Beeinträchtigung.
+        </p>
+        <p className="text-sm text-white/70 mt-1">
+          Klicke auf den Knopf oder drücke Enter, stelle eine Frage und höre die Antwort.
+        </p>
+      </div>
+      </div>
+
+      {/* Live-Region für Status-Updates */}
+      <div 
+        aria-live="polite" 
+        aria-atomic="true" 
+        className="sr-only"
+      >
+        {statusText}
+        {error && `Fehler: ${error}`}
+        {lastUserText && `Du hast gesagt: ${lastUserText}`}
+        {lastReply && `Inclusi antwortet: ${lastReply}`}
+      </div>
 
       {error && (
-        <div className="text-sm text-red-400 bg-red-500/20 p-2 rounded">
+        <div 
+          className="text-sm text-amber-200 bg-amber-500/15 p-3 rounded-xl border border-amber-500/25"
+          role="alert"
+          aria-live="assertive"
+        >
+          <span className="font-semibold">Fehler: </span>
           {error}
         </div>
       )}
 
-      <button
-        onClick={handleClick}
-        className={`px-4 py-2 rounded-full font-semibold ${
-          isListening ? "bg-red-500" : "bg-brand-pink"
-        } text-black`}
-      >
-        {isListening ? "Zuhören stoppen" : "Mit mir sprechen"}
-      </button>
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-wrap">
+        <button
+          ref={buttonRef}
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          className={`px-6 py-3 rounded-full font-semibold text-black transition-all duration-250 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-gray ${
+            isListening 
+              ? "bg-red-600 hover:bg-red-500 animate-pulse" 
+              : "bg-brand-pink hover:bg-brand-pink/90"
+          }`}
+          aria-label={isListening ? "Zuhören stoppen" : "Mit Inclusi sprechen"}
+          aria-pressed={isListening}
+          aria-describedby="voice-status"
+        >
+          {isListening ? (
+            <>
+              <span className="flex items-center gap-2">
+                <span className="inline-block w-3 h-3 bg-white rounded-full animate-pulse" aria-hidden="true"></span>
+                Zuhören stoppen
+              </span>
+            </>
+          ) : (
+            "Mit Inclusi sprechen"
+          )}
+        </button>
+
+        <p className="text-sm font-semibold text-amber-100 bg-amber-500/25 px-3 py-2 rounded-lg border border-amber-400/50 shrink-0">
+          Inclusi ist neu, versteht noch nicht alles – wir verbessern ihn dauernd verbessern.
+        </p>
+
+        {isSpeaking && (
+          <button
+            onClick={stopSpeaking}
+            className="px-4 py-2 rounded-full font-semibold bg-white/20 hover:bg-white/30 text-white border border-white/40 transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            aria-label="Sprachausgabe stoppen"
+          >
+            Sprachausgabe stoppen
+          </button>
+        )}
+
+        <div 
+          id="voice-status"
+          className="text-sm text-white/70 flex items-center gap-2"
+          aria-live="polite"
+        >
+          {isListening && (
+            <span className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 bg-red-400 rounded-full animate-pulse" aria-hidden="true"></span>
+              Höre zu...
+            </span>
+          )}
+          {isSpeaking && (
+            <span className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse" aria-hidden="true"></span>
+              Spreche...
+            </span>
+          )}
+        </div>
+      </div>
 
       {lastUserText && (
-        <div className="text-sm">
-          <div className="font-semibold">Du hast gesagt:</div>
-          <div>{lastUserText}</div>
+        <div className="text-sm bg-white/5 p-3 rounded border border-white/10">
+          <div className="font-semibold mb-1">Du hast gesagt:</div>
+          <div className="text-white/90" aria-live="polite">{lastUserText}</div>
         </div>
       )}
 
       {lastReply && (
-        <div className="text-sm">
-          <div className="font-semibold">Assistent:</div>
-          <div>{lastReply}</div>
+        <div className="text-sm bg-white/5 p-3 rounded border border-white/10">
+          <div className="font-semibold mb-1">Inclusi:</div>
+          <div className="text-white/90" aria-live="polite">{lastReply}</div>
         </div>
       )}
-    </div>
+    </section>
   );
 }

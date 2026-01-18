@@ -86,6 +86,32 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ VIP registration gespeichert via Supabase:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addVIPRegistrationToSheet }) => {
+            addVIPRegistrationToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              name: data.name,
+              email: data.email,
+              phone: data.phone,
+              event_date: data.event_date,
+              event_location: data.event_location,
+              event_type: data.event_type,
+              message: data.message,
+              company: data.company,
+              number_of_guests: data.number_of_guests,
+              special_requirements: data.special_requirements,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              ip_address: data.ip_address,
+              status: data.status,
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         }
       }
     } catch (supabaseError) {
@@ -119,6 +145,32 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ VIP registration gespeichert via direkter DB:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addVIPRegistrationToSheet }) => {
+            addVIPRegistrationToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              name: data.name,
+              email: data.email,
+              phone: data.phone,
+              event_date: data.event_date,
+              event_location: data.event_location,
+              event_type: data.event_type,
+              message: data.message,
+              company: data.company,
+              number_of_guests: data.number_of_guests,
+              special_requirements: data.special_requirements,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              ip_address: data.ip_address,
+              status: data.status || 'new',
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         } else {
           console.error('❌ Fehler beim Speichern:', error);
         }
@@ -147,7 +199,7 @@ export async function POST(request: NextRequest) {
         
         // E-Mails einzeln senden für besseres Error-Handling
         console.log('📧 Starte Versand der Bestätigungs-E-Mail...');
-        const confirmationResult = await sendVIPConfirmation(body.email, body.name, body.event_date);
+        const confirmationResult = await sendVIPConfirmation(body.email, body.name, body.event_date, body.event_location);
         
         if (confirmationResult?.error) {
           console.error('❌ Bestätigungs-E-Mail Fehler:', confirmationResult.error);
@@ -169,7 +221,15 @@ export async function POST(request: NextRequest) {
           phone: body.phone,
           eventDate: body.event_date,
           eventLocation: body.event_location,
+          eventType: body.event_type,
           message: body.message,
+          company: body.company,
+          numberOfGuests: body.number_of_guests,
+          specialRequirements: body.special_requirements,
+          sourceUrl: sourceUrl,
+          utmSource: utmSource || undefined,
+          utmMedium: utmMedium || undefined,
+          utmCampaign: utmCampaign || undefined,
         });
         
         if (notificationResult?.error) {

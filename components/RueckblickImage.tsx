@@ -23,7 +23,7 @@ export function RueckblickImage({ src, alt, title, description, onClick }: Rueck
           fill
           className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          unoptimized
+          loading="lazy"
         />
       </div>
       
@@ -41,5 +41,4 @@ export function RueckblickImage({ src, alt, title, description, onClick }: Rueck
     </div>
   );
 }
-
 

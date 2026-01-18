@@ -6,7 +6,6 @@ import { useState, useRef, useEffect } from "react";
 
 const navLinks = [
   { href: "/events", label: "Events" },
-  { href: "/rueckblick", label: "Rückblick" },
   { href: "/djs", label: "DJ's" },
   { href: "/dance-crew", label: "Dance Crew" },
   { href: "/medien", label: "Medien" },
@@ -14,8 +13,9 @@ const navLinks = [
 
 const ueberUnsSubmenu = [
   { href: "/ueber-uns", label: "Über uns" },
-  { href: "/vision", label: "Unsere Vision" },
+  { href: "/rueckblick", label: "Rückblick" },
   { href: "/ki-innovator", label: "KI-First Social Innovator" },
+  { href: "/faq", label: "Fragen & Antworten" },
 ];
 
 export function Header() {
@@ -40,6 +40,23 @@ export function Header() {
     };
   }, [ueberUnsOpen]);
 
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_AGENT_DEBUG !== "1") return;
+    fetch("http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        location: "Header.tsx:mount",
+        message: "Header mounted",
+        data: {},
+        timestamp: Date.now(),
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "H4",
+      }),
+    }).catch(() => {});
+  }, []);
+
   return (
     <header className="bg-brand-dark sticky top-0 z-50 border-b border-white/10">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
@@ -56,18 +73,18 @@ export function Header() {
         <nav className="hidden items-center gap-6 text-sm font-semibold text-white lg:flex">
           <Link
             href="/anmeldung"
-            className="rounded-full border border-brand-pink px-4 py-2 text-sm font-bold text-brand-pink hover:bg-brand-pink hover:text-brand-dark transition-colors"
+            className="rounded-full border border-brand-pink px-4 py-2 text-sm font-bold text-brand-pink hover:bg-brand-pink hover:text-brand-dark transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >
             Newsletter
           </Link>
           <Link
             href="/anmeldung/vip"
-            className="rounded-full border border-brand-pink px-4 py-2 text-sm font-bold text-brand-pink hover:bg-brand-pink hover:text-brand-dark transition-colors"
+            className="rounded-full border border-brand-pink px-4 py-2 text-sm font-bold text-brand-pink hover:bg-brand-pink hover:text-brand-dark transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >
             VIP Anmeldung
           </Link>
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-brand-pink">
+            <Link key={link.href} href={link.href} className="hover:text-brand-pink transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded">
               {link.label}
             </Link>
           ))}
@@ -75,14 +92,17 @@ export function Header() {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setUeberUnsOpen(!ueberUnsOpen)}
-              className="hover:text-brand-pink flex items-center gap-1"
+              className="hover:text-brand-pink flex items-center gap-1 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded"
+              aria-expanded={ueberUnsOpen}
+              aria-haspopup="true"
             >
               Über uns
               <svg
-                className={`w-4 h-4 transition-transform ${ueberUnsOpen ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-200 ease-in-out ${ueberUnsOpen ? "rotate-180" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -93,7 +113,7 @@ export function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="block px-4 py-2 text-sm hover:bg-white/10 hover:text-brand-pink transition-colors"
+                    className="block px-4 py-2 text-sm hover:bg-white/10 hover:text-brand-pink transition-colors duration-200 ease-in-out rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-inset"
                     onClick={() => setUeberUnsOpen(false)}
                   >
                     {item.label}
@@ -104,14 +124,15 @@ export function Header() {
           </div>
           <Link
             href="/spenden"
-            className="rounded-full bg-brand-pink px-4 py-2 text-sm font-bold text-brand-dark"
+            className="rounded-full bg-brand-pink px-4 py-2 text-sm font-bold text-brand-dark hover:bg-brand-pink/90 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >
             Spenden
           </Link>
         </nav>
         <button
-          className="lg:hidden"
+          className="lg:hidden p-2 -m-2 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark transition-colors duration-200"
           aria-label="Menü öffnen"
+          aria-expanded={open}
           onClick={() => setOpen((prev) => !prev)}
         >
           <div className="space-y-1">

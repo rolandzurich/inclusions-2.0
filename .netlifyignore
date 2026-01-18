@@ -5,10 +5,12 @@ node_modules/
 .next/
 out/
 
-# Environment files
+# Environment files (niemals Keys committen – nur in Netlify setzen)
 .env
 .env.local
 .env.*.local
+.env*.backup
+.env.local.backup
 
 # IDE
 .vscode/

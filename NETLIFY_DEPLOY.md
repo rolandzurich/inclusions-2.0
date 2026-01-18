@@ -1,94 +1,124 @@
-# Netlify Deployment Anleitung
+# Deployment: GitHub + Netlify
 
-## Vorbereitung
+## ⚠️ WICHTIG: Gemini API Key – niemals auf GitHub
 
-1. **Dependencies installieren:**
-   ```bash
-   npm install
-   ```
+**Der `GEMINI_API_KEY` darf NIEMALS ins Git-Repository committen.**
 
-2. **Umgebungsvariablen konfigurieren:**
-   - Erstelle eine `.env` Datei basierend auf `.env.example`
-   - Oder konfiguriere die Umgebungsvariablen direkt in Netlify:
-     - `GEMINI_API_KEY`: Dein Google Gemini API Key
+- Wenn der Key öffentlich wird, blockiert Google ihn → **Voice Agent funktioniert nicht mehr**.
+- `.env`, `.env.local`, `.env.local.backup` und alle `.env*.backup` sind in `.gitignore` und `.netlifyignore`.
+- **Nur in Netlify** unter „Site settings → Environment variables“ eintragen – nie in einer Datei, die gepusht wird.
 
-## Deployment auf Netlify
+---
 
-### Option 1: Via Netlify CLI (Empfohlen)
+## 0. Lokale Entwicklung
 
-1. **Netlify CLI installieren:**
-   ```bash
-   npm install -g netlify-cli
-   ```
+- `.env.example` als Vorlage: nach `.env.local` kopieren und Werte eintragen.
+- **`.env.local` nie committen** – enthält deinen echten `GEMINI_API_KEY` und andere Secrets.
 
-2. **Login:**
-   ```bash
-   netlify login
-   ```
+---
 
-3. **Deploy:**
-   ```bash
-   netlify deploy --prod
-   ```
-
-### Option 2: Via Git (Empfohlen für kontinuierliche Deployments)
-
-1. **Repository zu GitHub/GitLab/Bitbucket pushen**
-
-2. **In Netlify Dashboard:**
-   - Neue Site erstellen
-   - Git Repository verbinden
-   - Build-Einstellungen:
-     - Build command: `npm run build`
-     - Publish directory: `.next`
-   - Umgebungsvariablen hinzufügen:
-     - `GEMINI_API_KEY`: Dein API Key
-     - `RESEND_API_KEY`: Dein Resend API Key (falls verwendet)
-     - Weitere benötigte Variablen
-
-3. **Deploy starten** - Netlify baut automatisch bei jedem Push
-
-4. **Preview-Deployments für Pull Requests aktivieren:**
-   - Site settings → Build & deploy → Deploy contexts
-   - "Deploy previews" aktivieren
-   - Bei jedem Pull Request erstellt Netlify automatisch eine Preview-URL
-   - Die Preview-URL erscheint als Kommentar im GitHub Pull Request
-
-### Option 3: Manueller Upload (Drag & Drop)
-
-**WICHTIG:** Für manuellen Upload müssen Sie zuerst lokal bauen:
+## 1. Vor dem ersten Push: Prüfen, dass keine Keys im Repo sind
 
 ```bash
-npm install
-npm run build
+# Prüfen, ob noch env-Dateien mit Keys getrackt werden
+git status
+git ls-files '*.env*' '.env*'
+
+# Sollte leer sein bzw. keine .env, .env.local, .env.local.backup listen.
+# Falls .env.local.backup erscheint: git rm --cached .env.local.backup
 ```
 
-Dann können Sie das gesamte Projekt-Verzeichnis (ohne `node_modules` und `.next`) als ZIP hochladen. Netlify wird dann automatisch `npm install` und `npm run build` ausführen.
+- **Falls `.env.local.backup` oder `.env` je nach GitHub gepusht wurden:**  
+  Key in der [Google AI Console](https://aistudio.google.com/apikey) **regenerieren** und den neuen Key nur in Netlify eintragen.
 
-**Dateien die hochgeladen werden müssen:**
-- Alle Source-Dateien (`app/`, `components/`, `lib/`, `public/`, etc.)
-- `package.json` und `package-lock.json`
-- `netlify.toml`
-- `next.config.js`
-- `tsconfig.json`
-- `tailwind.config.js`
-- `postcss.config.js`
+---
 
-**NICHT hochladen:**
-- `node_modules/`
-- `.next/`
-- `.env` (Umgebungsvariablen in Netlify Dashboard setzen)
-- `out/` (wird nicht benötigt)
+## 2. GitHub: Repository anlegen und pushen
 
-## Wichtige Hinweise
+1. **Neues Repo auf GitHub** (z.B. `inclusions-2.0`) anlegen, **ohne** README/ .gitignore (du hast sie schon).
 
-- Die API-Routes (`/api/booking` und `/api/chat-gemini`) funktionieren nur mit dem `@netlify/plugin-nextjs` Plugin
-- Stelle sicher, dass `GEMINI_API_KEY` in den Netlify Umgebungsvariablen gesetzt ist
-- Nach dem ersten Deploy kann es 1-2 Minuten dauern, bis alles funktioniert
+2. **Remote hinzufügen und pushen:**
+   ```bash
+   git remote add origin https://github.com/DEIN-USER/inclusions-2.0.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. **Nie pushen:** `.env`, `.env.local`, `.env.local.backup` – diese bleiben lokal.
+
+---
+
+## 3. Netlify: Site aus GitHub verbinden
+
+1. **[Netlify](https://app.netlify.com)** → **Add new site** → **Import an existing project**.
+2. **GitHub** wählen, Repo `inclusions-2.0` auswählen.
+3. **Build-Einstellungen** (werden i.d.R. aus `netlify.toml` gelesen):
+   - Build command: `npm run build`
+   - Publish directory: `.next` (wird durch `@netlify/plugin-nextjs` korrekt genutzt)
+   - `netlify.toml` und `@netlify/plugin-nextjs` beibehalten.
+
+4. **Umgebungsvariablen (vor dem ersten Deploy setzen):**
+
+   | Variable | Beschreibung | Geheim? |
+   |----------|--------------|---------|
+   | `GEMINI_API_KEY` | Google Gemini API Key (Voice Agent) | **Ja** – nur in Netlify |
+   | `RESEND_API_KEY` | Resend API Key (E-Mail) | Ja |
+   | `RESEND_FROM_EMAIL` | Absender (z.B. `noreply@inclusions.zone`) | Nein |
+   | `RESEND_ADMIN_EMAIL` | Admin-E-Mail für Benachrichtigungen | Nein |
+   | `NEXT_PUBLIC_SITE_URL` | Produktions-URL, z.B. `https://inclusions.zone` | Nein |
+
+   Optional, falls genutzt:
+
+   - `NEXT_PUBLIC_UMAMI_URL`, `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+   - `GOOGLE_SHEETS_CREDENTIALS`, `GOOGLE_SHEET_*` (falls Google Sheets)
+   - `NEXT_PUBLIC_AGENT_DEBUG` = `1` nur zum Debuggen, in Produktion weglassen.
+
+5. **Deploy starten** – Netlify baut bei jedem Push auf `main` automatisch.
+
+---
+
+## 4. Nach dem Deploy
+
+- **Voice Agent:** Funktioniert nur, wenn `GEMINI_API_KEY` in Netlify gesetzt ist (nicht in einer Datei im Repo).
+- **API-Routen** (`/api/chat-gemini`, `/api/contact`, `/api/newsletter`, `/api/vip`, etc.) laufen über `@netlify/plugin-nextjs`.
+- Es kann 1–2 Minuten dauern, bis nach dem ersten Deploy alles erreichbar ist.
+
+---
+
+## 5. Kontinuierliche Deployments
+
+- Jeder **Push auf `main`** löst einen neuen Production-Deploy aus.
+- **Deploy Previews:** In Netlify unter „Site settings → Build & deploy → Deploy contexts“ aktivieren → bei Pull Requests entsteht eine Preview-URL.
+
+---
+
+## 6. Alternative: Netlify CLI (ohne GitHub)
+
+Falls du nur manuell deployen willst:
+
+```bash
+npm install -g netlify-cli
+netlify login
+netlify deploy --prod
+```
+
+Auch hier: **`GEMINI_API_KEY` und alle Secrets nur in Netlify unter Environment variables setzen**, nie in Projektdateien, die hochgeladen oder committed werden.
+
+---
 
 ## Troubleshooting
 
-- **API-Routes funktionieren nicht:** Überprüfe, ob `@netlify/plugin-nextjs` in `package.json` installiert ist
-- **Build-Fehler:** Überprüfe die Build-Logs im Netlify Dashboard
-- **Umgebungsvariablen:** Stelle sicher, dass alle benötigten Variablen im Netlify Dashboard gesetzt sind
+| Problem | Lösung |
+|--------|--------|
+| Voice Agent / „GEMINI_API_KEY ist nicht konfiguriert“ | Key in Netlify unter Environment variables setzen, Redeploy. Key darf nicht im Repo stehen. |
+| „API key not valid“ / Key gesperrt | Key war vermutlich öffentlich. Neuen Key in Google AI Studio erzeugen und nur in Netlify eintragen. |
+| API-Routen 404 | `@netlify/plugin-nextjs` in `package.json` prüfen; Build-Command `npm run build` und `netlify.toml` verwenden. |
+| Build schlägt fehl | Build-Logs in Netlify prüfen; `npm run build` lokal testen. |
 
+---
+
+## Kurz-Checkliste vor jedem Push
+
+- [ ] Keine `.env`, `.env.local`, `.env.local.backup` (oder andere mit Keys) im Commit.
+- [ ] `GEMINI_API_KEY` nur in Netlify hinterlegt, nirgends im Code oder in Dateien im Repo.

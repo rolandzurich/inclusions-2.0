@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getUpcomingEvents, getPastEvents, formatDate } from "@/lib/event-utils";
 import { getLineupItems, getDJById, getDJPairById, getLineupPairDisplayName } from "@/lib/dj-utils";
+import { getEventSchema, getBreadcrumbSchema, getBaseUrl } from "@/lib/geo-schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,9 +26,31 @@ export default function EventsPage() {
   const upcomingEvents = getUpcomingEvents();
   const pastEvents = getPastEvents();
   const nextEvent = upcomingEvents[0];
+  const baseUrl = getBaseUrl();
+
+  const jsonLdEvents = upcomingEvents.slice(0, 3).map((e) =>
+    getEventSchema({
+      id: e.id,
+      name: e.name,
+      description: e.description || `Inclusions Event im Supermarket Zürich. ${e.name}.`,
+      startDate: e.id === "inclusions-2nd-edition" ? "2026-04-25T13:00:00+02:00" : `${e.date}T13:00:00+02:00`,
+      endDate: e.id === "inclusions-2nd-edition" ? "2026-04-25T21:00:00+02:00" : undefined,
+      location: e.location,
+      offers: e.id === "inclusions-2nd-edition" ? { url: "https://supermarket.li/events/inclusions/" } : undefined,
+    })
+  );
+
+  const jsonLdBreadcrumb = getBreadcrumbSchema([
+    { name: "Inclusions", url: "/" },
+    { name: "Events", url: "/events" },
+  ]);
 
   return (
     <main className="min-h-screen max-w-6xl px-4 py-12 mx-auto space-y-10 text-white">
+      {jsonLdEvents.map((s, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
+      ))}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }} />
       <section>
         <h1 className="text-4xl font-bold">Events &amp; Erlebnisse</h1>
         <p className="mt-3 text-lg text-white/70">
@@ -50,13 +73,20 @@ export default function EventsPage() {
               )}
 
               {/* Lineup */}
-              {nextEvent.lineup && nextEvent.lineup.length > 0 && (
+              {nextEvent && (
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold mb-3">Lineup</h3>
                   <div className="space-y-2">
-                    {getLineupItems(nextEvent.lineup).map((item) => (
+                    {[
+                      "Zagara",
+                      "Coco.bewegt",
+                      "Samy Jackson",
+                      "Hoibaer",
+                      "_miniArt°°°",
+                      "Ashan (live)"
+                    ].map((djName) => (
                       <div
-                        key={item.data.id}
+                        key={djName}
                         className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
                       >
                         <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -75,14 +105,7 @@ export default function EventsPage() {
                           </svg>
                         </div>
                         <div>
-                          <p className="font-semibold">
-                            {item.type === "pair" 
-                              ? (getLineupPairDisplayName(item.data.id) || item.data.name)
-                              : `${item.data.name} & Inclusions DJ`}
-                          </p>
-                          {item.type === "pair" && (
-                            <p className="text-xs text-white/60">DJ Pair</p>
-                          )}
+                          <p className="font-semibold">{djName}</p>
                         </div>
                       </div>
                     ))}
@@ -95,7 +118,7 @@ export default function EventsPage() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Ticket kaufen - Party People */}
                   <a
-                    href="https://supermarket.li"
+                    href="https://supermarket.li/events/inclusions/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
@@ -137,14 +160,14 @@ export default function EventsPage() {
                 </div>
               </div>
             </div>
-            <div className="w-full mt-6 md:mt-0 aspect-square">
-              <iframe
-                src="https://drive.google.com/file/d/1WyW2nXsGczJIpQ5_K9xScMPl3nxLAuys/preview"
-                className="w-full h-full min-h-[260px] rounded-2xl"
-                allow="autoplay"
-                allowFullScreen
-                title="Inclusions 2. Edition - Promo-Video"
+            <div className="w-full mt-6 md:mt-0 aspect-[3/4] relative rounded-2xl overflow-hidden">
+              <Image
+                src="/images/dance-crew-background.jpg"
+                alt="Inclusions Dance Crew - Menschen mit und ohne Beeinträchtigung tanzen gemeinsam"
+                fill
+                className="object-cover"
                 loading="lazy"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
           </div>

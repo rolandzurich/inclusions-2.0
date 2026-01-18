@@ -2,15 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---- Neuro-inclusive: Basis ---- */
 body {
   @apply bg-brand-gray text-white;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+p {
+  line-height: 1.65;
+  letter-spacing: 0.015em;
 }
 
 a {
   @apply text-brand-pink;
 }
 
-/* Header Image Animation */
+/* Focus: nur bei Tastatur (focus-visible), weich und sichtbar; Mausklick ohne Outline */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid rgba(255, 4, 211, 0.55);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+/* Wo focus-visible:ring gesetzt ist: nur Ring, keine doppelte Outline */
+[class*="focus-visible:ring"]:focus-visible {
+  outline: none;
+}
+
+/* Reduzierte Bewegung: Animationen abschwächen/deaktivieren */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-pulse {
+    animation: none;
+    opacity: 0.9;
+  }
+}
+
+/* ---- Animationen: weich, 200–300ms wo sinnvoll ---- */
 @keyframes float {
   0%, 100% {
     transform: translateY(0px) scale(1.1);
@@ -23,7 +60,7 @@ a {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -36,13 +73,13 @@ a {
 }
 
 .animate-fade-in {
-  animation: fade-in 1s ease-out;
+  animation: fade-in 0.5s ease-in-out;
 }
 
 @keyframes slide-down {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) translateY(-12px);
   }
   to {
     opacity: 1;
@@ -51,10 +88,22 @@ a {
 }
 
 .animate-slide-down {
-  animation: slide-down 0.3s ease-out;
+  animation: slide-down 0.25s ease-in-out;
 }
 
 h1, h2, h3, h4, h5, h6 {
   @apply font-bangers;
+}
+
+/* Text-Lesbarkeit: max. Zeilenlänge ~65 Zeichen (nur anwenden wo gewünscht) */
+.max-w-read {
+  max-width: 65ch;
+}
+
+/* Weiche Transition-Utility für Hover/Focus (200–300ms) */
+.transition-soft {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: 250ms;
+  transition-timing-function: ease-in-out;
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DJsSchema } from "./DJsSchema";
 
 export const metadata: Metadata = {
   title: "Resident DJs & DJ Pairs - Inclusions Booking",
@@ -22,6 +23,11 @@ export default function DJsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <DJsSchema />
+      {children}
+    </>
+  );
 }
 

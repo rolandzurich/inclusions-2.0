@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FormNotification } from "@/components/FormNotification";
+import { VIPSchema } from "./VIPSchema";
 
 interface VIPData {
   vorname: string;
@@ -342,6 +343,7 @@ export default function VIPAnmeldungPage() {
 
   return (
     <main className="min-h-screen max-w-3xl px-4 py-12 mx-auto space-y-10 text-white">
+      <VIPSchema />
       {notification && (
         <FormNotification
           type={notification.type}
@@ -359,11 +361,13 @@ export default function VIPAnmeldungPage() {
           VIP-Anmeldung
         </div>
         <h1 className="text-4xl font-bold">VIP-Anmeldung für Inclusions 2</h1>
-        <p className="mt-3 text-lg text-white/70">
-          Du hast einen IV-Ausweis, eine Beeinträchtigung oder Behinderung? Dann melde dich hier als VIP-Gast an! 
-          Die Anmeldung ist wichtig, damit wir sicherstellen können, dass du gratis reinkommst und unser Helfer-Team 
-          dich unterstützen kann, wenn du es brauchst.
-        </p>
+        <ul className="mt-4 space-y-2 text-white/80 list-disc pl-5 marker:text-white">
+          <li>Gratis Eintritt mit IV-Ausweis, Beeinträchtigung oder Behinderung</li>
+          <li>Helfer Team vor Ort</li>
+          <li>Barrierefreier Club</li>
+          <li>Vergünstigtes Essen und Trinken</li>
+          <li>Auf Wunsch mit Tixi-Taxi kommen</li>
+        </ul>
         
         <div className="mt-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
           <p className="text-sm text-white/90 mb-2">
@@ -373,7 +377,7 @@ export default function VIPAnmeldungPage() {
             <li><strong>Anmeldung im Vorfeld erforderlich</strong></li>
             <li><strong>Du musst mindestens 20 Jahre alt sein. Wenn du 20 Jahre alt bist, darst du gerne kommen.</strong></li>
             <li>Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</li>
-            <li>Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein – Freunde, Familie und Betreuer laden wir ein, ein Ticket zu kaufen, um den <span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen. <a href="https://supermarket.li" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></li>
+            <li>Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein – Freunde, Familie und Betreuer laden wir ein, ein Ticket zu kaufen, um den<br /><span className="pl-5"><span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen.</span> <a href="https://supermarket.li" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></li>
           </ul>
         </div>
       </section>
@@ -390,7 +394,7 @@ export default function VIPAnmeldungPage() {
                 value="selbst"
                 checked={formData.anmeldungDurch === "selbst"}
                 onChange={handleRadioChange}
-                className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
               />
               <span className="ml-3">Ich melde mich selbst an</span>
             </label>
@@ -401,7 +405,7 @@ export default function VIPAnmeldungPage() {
                 value="betreuer"
                 checked={formData.anmeldungDurch === "betreuer"}
                 onChange={handleRadioChange}
-                className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
               />
               <span className="ml-3">Ich melde als Betreuer:in an</span>
             </label>
@@ -429,12 +433,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.betreuerVorname}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.betreuerVorname ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.betreuerVorname ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="Vorname"
                   />
                   {errors.betreuerVorname && (
-                    <p className="mt-1 text-sm text-red-400">{errors.betreuerVorname}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.betreuerVorname}</p>
                   )}
                 </div>
 
@@ -449,12 +453,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.betreuerNachname}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.betreuerNachname ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.betreuerNachname ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="Nachname"
                   />
                   {errors.betreuerNachname && (
-                    <p className="mt-1 text-sm text-red-400">{errors.betreuerNachname}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.betreuerNachname}</p>
                   )}
                 </div>
               </div>
@@ -471,12 +475,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.betreuerEmail}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.betreuerEmail ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.betreuerEmail ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="email@beispiel.ch"
                   />
                   {errors.betreuerEmail && (
-                    <p className="mt-1 text-sm text-red-400">{errors.betreuerEmail}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.betreuerEmail}</p>
                   )}
                 </div>
 
@@ -491,12 +495,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.betreuerTelefon}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.betreuerTelefon ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.betreuerTelefon ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="+41 XX XXX XX XX"
                   />
                   {errors.betreuerTelefon && (
-                    <p className="mt-1 text-sm text-red-400">{errors.betreuerTelefon}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.betreuerTelefon}</p>
                   )}
                 </div>
               </div>
@@ -525,7 +529,7 @@ export default function VIPAnmeldungPage() {
                   value="ja"
                   checked={formData.brauchtKontaktperson === "ja"}
                   onChange={handleRadioChange}
-                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                 />
                 <span className="ml-3">Ja</span>
               </label>
@@ -536,7 +540,7 @@ export default function VIPAnmeldungPage() {
                   value="nein"
                   checked={formData.brauchtKontaktperson === "nein"}
                   onChange={handleRadioChange}
-                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                 />
                 <span className="ml-3">Nein</span>
               </label>
@@ -557,12 +561,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.kontaktpersonName}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.kontaktpersonName ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.kontaktpersonName ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="Name der Kontaktperson"
                   />
                   {errors.kontaktpersonName && (
-                    <p className="mt-1 text-sm text-red-400">{errors.kontaktpersonName}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.kontaktpersonName}</p>
                   )}
                 </div>
 
@@ -577,12 +581,12 @@ export default function VIPAnmeldungPage() {
                     value={formData.kontaktpersonTelefon}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors.kontaktpersonTelefon ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors.kontaktpersonTelefon ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="+41 XX XXX XX XX"
                   />
                   {errors.kontaktpersonTelefon && (
-                    <p className="mt-1 text-sm text-red-400">{errors.kontaktpersonTelefon}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors.kontaktpersonTelefon}</p>
                   )}
                 </div>
               </div>
@@ -604,7 +608,8 @@ export default function VIPAnmeldungPage() {
                 <button
                   type="button"
                   onClick={() => removeVIP(vipIndex)}
-                  className="px-3 py-1 text-sm text-red-400 hover:text-red-300 border border-red-400/30 rounded-lg hover:bg-red-400/10 transition-colors"
+                  className="px-3 py-1 text-sm text-amber-300 hover:text-amber-200 border border-amber-500/30 rounded-lg hover:bg-amber-500/10 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/50 focus-visible:ring-inset"
+                  aria-label="VIP-Eintrag entfernen"
                 >
                   Entfernen
                 </button>
@@ -624,12 +629,12 @@ export default function VIPAnmeldungPage() {
                     value={vip.vorname}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors[`vip_${vipIndex}_vorname`] ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors[`vip_${vipIndex}_vorname`] ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="Vorname"
                   />
                   {errors[`vip_${vipIndex}_vorname`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_vorname`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_vorname`]}</p>
                   )}
                 </div>
 
@@ -644,12 +649,12 @@ export default function VIPAnmeldungPage() {
                     value={vip.nachname}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors[`vip_${vipIndex}_nachname`] ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors[`vip_${vipIndex}_nachname`] ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="Nachname"
                   />
                   {errors[`vip_${vipIndex}_nachname`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_nachname`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_nachname`]}</p>
                   )}
                 </div>
               </div>
@@ -665,12 +670,12 @@ export default function VIPAnmeldungPage() {
                   value={vip.adresse}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                    errors[`vip_${vipIndex}_adresse`] ? "border-red-500" : "border-white/20"
-                  } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                    errors[`vip_${vipIndex}_adresse`] ? "border-amber-500/60" : "border-white/20"
+                  } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                   placeholder="Strasse, PLZ Ort"
                 />
                 {errors[`vip_${vipIndex}_adresse`] && (
-                  <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_adresse`]}</p>
+                  <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_adresse`]}</p>
                 )}
               </div>
 
@@ -686,12 +691,12 @@ export default function VIPAnmeldungPage() {
                     value={vip.email}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors[`vip_${vipIndex}_email`] ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors[`vip_${vipIndex}_email`] ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="email@beispiel.ch"
                   />
                   {errors[`vip_${vipIndex}_email`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_email`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_email`]}</p>
                   )}
                 </div>
 
@@ -706,12 +711,12 @@ export default function VIPAnmeldungPage() {
                     value={vip.telefon}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors[`vip_${vipIndex}_telefon`] ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors[`vip_${vipIndex}_telefon`] ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="+41 XX XXX XX XX"
                   />
                   {errors[`vip_${vipIndex}_telefon`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_telefon`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_telefon`]}</p>
                   )}
                 </div>
               </div>
@@ -729,12 +734,12 @@ export default function VIPAnmeldungPage() {
                     value={vip.alter}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                      errors[`vip_${vipIndex}_alter`] ? "border-red-500" : "border-white/20"
-                    } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                      errors[`vip_${vipIndex}_alter`] ? "border-amber-500/60" : "border-white/20"
+                    } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     placeholder="20"
                   />
                   {errors[`vip_${vipIndex}_alter`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_alter`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_alter`]}</p>
                   )}
                 </div>
 
@@ -750,7 +755,7 @@ export default function VIPAnmeldungPage() {
                         value="ja"
                         checked={vip.ivAusweis === "ja"}
                         onChange={handleRadioChange}
-                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                       />
                       <span className="ml-3">Ja</span>
                     </label>
@@ -761,13 +766,13 @@ export default function VIPAnmeldungPage() {
                         value="nein"
                         checked={vip.ivAusweis === "nein"}
                         onChange={handleRadioChange}
-                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                       />
                       <span className="ml-3">Nein</span>
                     </label>
                   </div>
                   {errors[`vip_${vipIndex}_ivAusweis`] && (
-                    <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_ivAusweis`]}</p>
+                    <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_ivAusweis`]}</p>
                   )}
                 </div>
               </div>
@@ -784,7 +789,7 @@ export default function VIPAnmeldungPage() {
                       value="ja"
                       checked={vip.beeintraechtigung === "ja"}
                       onChange={handleRadioChange}
-                      className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                      className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                     />
                     <span className="ml-3">Ja</span>
                   </label>
@@ -795,13 +800,13 @@ export default function VIPAnmeldungPage() {
                       value="nein"
                       checked={vip.beeintraechtigung === "nein"}
                       onChange={handleRadioChange}
-                      className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                      className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                     />
                     <span className="ml-3">Nein</span>
                   </label>
                 </div>
                 {errors[`vip_${vipIndex}_beeintraechtigung`] && (
-                  <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_beeintraechtigung`]}</p>
+                  <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_beeintraechtigung`]}</p>
                 )}
               </div>
 
@@ -819,8 +824,8 @@ export default function VIPAnmeldungPage() {
                       value={vip.ankunftszeit}
                       onChange={handleInputChange}
                       className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                        errors[`vip_${vipIndex}_ankunftszeit`] ? "border-red-500" : "border-white/20"
-                      } text-white focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                        errors[`vip_${vipIndex}_ankunftszeit`] ? "border-amber-500/60" : "border-white/20"
+                      } text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                     >
                       <option value="">-- Bitte wählen --</option>
                       <option value="13-17">13:00 - 17:00 Uhr</option>
@@ -828,7 +833,7 @@ export default function VIPAnmeldungPage() {
                       <option value="ganze-zeit">Ganze Zeit (13:00 - 21:00 Uhr)</option>
                     </select>
                     {errors[`vip_${vipIndex}_ankunftszeit`] && (
-                      <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_ankunftszeit`]}</p>
+                      <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_ankunftszeit`]}</p>
                     )}
                   </div>
 
@@ -844,7 +849,7 @@ export default function VIPAnmeldungPage() {
                           value="ja"
                           checked={vip.tixiTaxi === "ja"}
                           onChange={handleRadioChange}
-                          className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                          className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                         />
                         <span className="ml-3">Ja</span>
                       </label>
@@ -855,7 +860,7 @@ export default function VIPAnmeldungPage() {
                           value="nein"
                           checked={vip.tixiTaxi === "nein"}
                           onChange={handleRadioChange}
-                          className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                          className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                         />
                         <span className="ml-3">Nein</span>
                       </label>
@@ -873,12 +878,12 @@ export default function VIPAnmeldungPage() {
                           value={vip.tixiAdresse}
                           onChange={handleInputChange}
                           className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                            errors[`vip_${vipIndex}_tixiAdresse`] ? "border-red-500" : "border-white/20"
-                          } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                            errors[`vip_${vipIndex}_tixiAdresse`] ? "border-amber-500/60" : "border-white/20"
+                          } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                           placeholder="Strasse, PLZ Ort"
                         />
                         {errors[`vip_${vipIndex}_tixiAdresse`] && (
-                          <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_tixiAdresse`]}</p>
+                          <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_tixiAdresse`]}</p>
                         )}
                       </div>
                     )}
@@ -906,7 +911,7 @@ export default function VIPAnmeldungPage() {
                         value="ja"
                         checked={vip.brauchtBetreuer === "ja"}
                         onChange={handleRadioChange}
-                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                       />
                       <span className="ml-3">Ja</span>
                     </label>
@@ -917,7 +922,7 @@ export default function VIPAnmeldungPage() {
                         value="nein"
                         checked={vip.brauchtBetreuer === "nein"}
                         onChange={handleRadioChange}
-                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                        className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                       />
                       <span className="ml-3">Nein</span>
                     </label>
@@ -938,12 +943,12 @@ export default function VIPAnmeldungPage() {
                           value={vip.betreuerName}
                           onChange={handleInputChange}
                           className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                            errors[`vip_${vipIndex}_betreuerName`] ? "border-red-500" : "border-white/20"
-                          } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                            errors[`vip_${vipIndex}_betreuerName`] ? "border-amber-500/60" : "border-white/20"
+                          } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                           placeholder="Name des/der Betreuer:in"
                         />
                         {errors[`vip_${vipIndex}_betreuerName`] && (
-                          <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_betreuerName`]}</p>
+                          <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_betreuerName`]}</p>
                         )}
                       </div>
 
@@ -958,12 +963,12 @@ export default function VIPAnmeldungPage() {
                           value={vip.betreuerTelefon}
                           onChange={handleInputChange}
                           className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                            errors[`vip_${vipIndex}_betreuerTelefon`] ? "border-red-500" : "border-white/20"
-                          } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                            errors[`vip_${vipIndex}_betreuerTelefon`] ? "border-amber-500/60" : "border-white/20"
+                          } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink`}
                           placeholder="+41 XX XXX XX XX"
                         />
                         {errors[`vip_${vipIndex}_betreuerTelefon`] && (
-                          <p className="mt-1 text-sm text-red-400">{errors[`vip_${vipIndex}_betreuerTelefon`]}</p>
+                          <p className="mt-1 text-sm text-amber-200">{errors[`vip_${vipIndex}_betreuerTelefon`]}</p>
                         )}
                       </div>
                     </div>
@@ -983,7 +988,7 @@ export default function VIPAnmeldungPage() {
                   value={vip.besondereBeduerfnisse}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink"
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                   placeholder="Z.B. spezielle Bedürfnisse, Allergien, wichtige Hinweise..."
                 />
               </div>
@@ -996,7 +1001,7 @@ export default function VIPAnmeldungPage() {
           <button
             type="button"
             onClick={addVIP}
-            className="w-full rounded-full bg-white/10 border border-white/20 px-8 py-4 text-lg font-semibold text-white hover:bg-white/20 transition-colors"
+            className="w-full rounded-full bg-white/10 border border-white/20 px-8 py-4 text-lg font-semibold text-white hover:bg-white/20 transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-gray"
           >
             + Weitere/n VIP hinzufügen
           </button>
@@ -1007,9 +1012,9 @@ export default function VIPAnmeldungPage() {
         <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/20 p-4">
           <p className="text-sm text-white/90">
             <strong className="text-white">Wichtig:</strong> Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein. Freunde, Familie 
-            und Betreuer laden wir ein, ein Ticket zu kaufen, um den <span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen. 
+            und Betreuer laden wir ein, ein Ticket zu kaufen, um den<br /><span className="pl-5"><span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen.</span> 
             Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist. 
-            <a href="https://supermarket.li" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline ml-1">Link zum Ticketkauf</a>
+            <a href="https://supermarket.li/events/inclusions/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline ml-1">Link zum Ticketkauf</a>
           </p>
         </div>
 
@@ -1028,7 +1033,7 @@ export default function VIPAnmeldungPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-gray"
         >
           {isSubmitting ? 'Wird gesendet...' : 'VIP-Anmeldung absenden'}
         </button>

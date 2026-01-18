@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Rechtliches - Datenschutz & Impressum | Inclusions",
+  description: "Datenschutz, Impressum und rechtliche Hinweise des Vereins Inclusions, Zürich. Inklusives Event und Bewegung für Menschen mit und ohne Beeinträchtigung.",
+  robots: { index: true, follow: true },
+};
+
 export default function LegalPage() {
   return (
     <main className="min-h-screen max-w-6xl px-4 py-12 mx-auto space-y-8 text-white">

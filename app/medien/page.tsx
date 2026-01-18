@@ -1,5 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Medien - Inclusions Presse, Fotos & Videos",
+  description: "Medien zu Inclusions: Fotos, Videos und Presseinformationen zum inklusiven Event. Musik, Tanz und gelebte Inklusion im Supermarket Zürich. Für Redaktionen und Interessierte.",
+  openGraph: {
+    title: "Medien - Inclusions Presse & Fotos",
+    description: "Fotos, Videos und Presseinformationen zum inklusiven Event Inclusions im Supermarket Zürich.",
+    images: [{ url: "/images/rueckblick-3.jpg", width: 1200, height: 630, alt: "Inclusions Event - Menschen feiern gemeinsam" }],
+  },
+};
 
 export default function MedienPage() {
   return (
@@ -228,7 +239,9 @@ export default function MedienPage() {
             <p className="mt-4 text-2xl font-bold text-brand-pink">Inclusions 2</p>
             <p className="mt-2 text-lg">25. April 2026, 13:00 - 21:00 · Supermarket Zürich</p>
             <Link
-              href="/events"
+              href="https://supermarket.li/events/inclusions/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-6 inline-flex rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black"
             >
               Mehr Infos

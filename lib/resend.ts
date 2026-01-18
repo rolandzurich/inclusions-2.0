@@ -43,9 +43,23 @@ export async function sendContactConfirmation(to: string, name: string) {
 export async function sendBookingConfirmation(to: string, name: string, bookingItem?: string, eventDate?: string, eventLocation?: string) {
   if (!resend) return { error: 'Resend nicht konfiguriert' };
 
+  // Vorname extrahieren (erster Teil des Namens)
+  const firstName = name.split(' ')[0];
+  
+  // Booking-Info zusammenstellen
+  const bookingInfo = bookingItem ? ` für ${bookingItem}` : '';
+  const eventInfo = eventDate && eventLocation 
+    ? ` am ${eventDate} in ${eventLocation}`
+    : eventDate 
+      ? ` am ${eventDate}`
+      : eventLocation
+        ? ` in ${eventLocation}`
+        : '';
+
   return await resend.emails.send({
     from: fromEmail,
     to,
+    reply_to: adminEmail,
     subject: 'Vielen Dank für deine Buchungsanfrage - Inclusions',
     html: `
       <!DOCTYPE html>
@@ -54,17 +68,18 @@ export async function sendBookingConfirmation(to: string, name: string, bookingI
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #ff00ff;">Vielen Dank, ${name}!</h1>
-          <p>Wir haben deine Buchungsanfrage erhalten${bookingItem ? ` für ${bookingItem}` : ''}.</p>
-          ${eventDate ? `<p><strong>Event-Datum:</strong> ${eventDate}</p>` : ''}
-          ${eventLocation ? `<p><strong>Event-Ort:</strong> ${eventLocation}</p>` : ''}
-          <p>Wir prüfen deine Anfrage und melden uns bald bei dir mit weiteren Details.</p>
-          <p>Bis dahin,<br>Das Inclusions Team</p>
+        <body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px;">
+          <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe / Lieber ${firstName}</h1>
+          <p style="font-size: 18px; margin-bottom: 15px;">vielen Dank für deine Buchungsanfrage${bookingInfo}${eventInfo}.</p>
+          <p style="margin-bottom: 15px;">Wir haben deine Anfrage erhalten und werden sie schnellstmöglich prüfen.</p>
+          <p style="margin-bottom: 15px;">Falls es vorab noch Unklarheiten gibt, melden wir uns bei dir.</p>
+          <p style="margin-bottom: 15px;">Wir melden uns bald bei dir mit weiteren Details zu deiner Buchung.</p>
+          <p style="margin-top: 30px;">Bis bald – wir freuen uns auf deine Anfrage.</p>
+          <p style="margin-top: 20px;">Herzlich<br>Dein Inclusions Team</p>
         </body>
       </html>
     `,
-    text: `Vielen Dank, ${name}!\n\nWir haben deine Buchungsanfrage erhalten${bookingItem ? ` für ${bookingItem}` : ''}.\n${eventDate ? `Event-Datum: ${eventDate}\n` : ''}${eventLocation ? `Event-Ort: ${eventLocation}\n` : ''}\nWir prüfen deine Anfrage und melden uns bald bei dir mit weiteren Details.\n\nBis dahin,\nDas Inclusions Team`,
+    text: `Liebe / Lieber ${firstName}\n\nvielen Dank für deine Buchungsanfrage${bookingInfo}${eventInfo}.\n\nWir haben deine Anfrage erhalten und werden sie schnellstmöglich prüfen.\n\nFalls es vorab noch Unklarheiten gibt, melden wir uns bei dir.\nWir melden uns bald bei dir mit weiteren Details zu deiner Buchung.\n\nBis bald – wir freuen uns auf deine Anfrage.\n\nHerzlich\nDein Inclusions Team`,
   });
 }
 
@@ -75,8 +90,19 @@ export async function sendContactNotification(data: {
   message?: string;
   bookingType?: string;
   bookingItem?: string;
+  eventDate?: string;
+  eventLocation?: string;
+  eventType?: string;
+  sourceUrl?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }) {
   if (!resend) return { error: 'Resend nicht konfiguriert' };
+
+  // Bestimme Formular-Typ für Betreff
+  const formType = data.bookingType || data.bookingItem ? 'Buchungsanfrage' : 'Kontaktanfrage';
+  const emailSubject = `📧 ${formType}${data.bookingItem ? `: ${data.bookingItem}` : ''}${data.eventDate ? ` - ${data.eventDate}` : ''} - Inclusions`;
 
   const emailHtml = `
     <!DOCTYPE html>
@@ -86,19 +112,47 @@ export async function sendContactNotification(data: {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #ff00ff;">Neue Kontaktanfrage</h2>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>E-Mail:</strong> ${data.email}</p>
-        ${data.phone ? `<p><strong>Telefon:</strong> ${data.phone}</p>` : ''}
-        ${data.bookingType ? `<p><strong>Booking-Typ:</strong> ${data.bookingType}</p>` : ''}
-        ${data.bookingItem ? `<p><strong>Gebuchtes Item:</strong> ${data.bookingItem}</p>` : ''}
-        ${data.message ? `<p><strong>Nachricht:</strong><br>${data.message.replace(/\n/g, '<br>')}</p>` : ''}
+        <h2 style="color: #ff00ff;">Neue ${formType}</h2>
+        
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #333;">Kontaktinformationen</h3>
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>E-Mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+          ${data.phone ? `<p><strong>Telefon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>` : ''}
+        </div>
+
+        ${data.bookingType || data.bookingItem || data.eventDate || data.eventLocation ? `
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #333;">Buchungsdetails</h3>
+          ${data.bookingType ? `<p><strong>Buchungstyp:</strong> ${data.bookingType}</p>` : ''}
+          ${data.bookingItem ? `<p><strong>Gebuchtes Item:</strong> ${data.bookingItem}</p>` : ''}
+          ${data.eventDate ? `<p><strong>Event-Datum:</strong> ${data.eventDate}</p>` : ''}
+          ${data.eventLocation ? `<p><strong>Event-Ort:</strong> ${data.eventLocation}</p>` : ''}
+          ${data.eventType ? `<p><strong>Event-Typ:</strong> ${data.eventType}</p>` : ''}
+        </div>
+        ` : ''}
+
+        ${data.message ? `
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #333;">Nachricht</h3>
+          <p style="white-space: pre-wrap;">${data.message.replace(/\n/g, '<br>')}</p>
+        </div>
+        ` : ''}
+
+        ${data.sourceUrl || data.utmSource || data.utmMedium || data.utmCampaign ? `
+        <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+          <h4 style="margin-top: 0; color: #666;">Tracking-Informationen</h4>
+          ${data.sourceUrl ? `<p><strong>Quelle:</strong> <a href="${data.sourceUrl}">${data.sourceUrl}</a></p>` : ''}
+          ${data.utmSource ? `<p><strong>UTM Source:</strong> ${data.utmSource}</p>` : ''}
+          ${data.utmMedium ? `<p><strong>UTM Medium:</strong> ${data.utmMedium}</p>` : ''}
+          ${data.utmCampaign ? `<p><strong>UTM Campaign:</strong> ${data.utmCampaign}</p>` : ''}
+        </div>
+        ` : ''}
       </body>
     </html>
   `;
   
-  const emailText = `Neue Kontaktanfrage\n\nName: ${data.name}\nE-Mail: ${data.email}\n${data.phone ? `Telefon: ${data.phone}\n` : ''}${data.message ? `Nachricht: ${data.message}\n` : ''}`;
-  const emailSubject = `Neue Kontaktanfrage: ${data.bookingItem || 'Allgemein'}`;
+  const emailText = `Neue ${formType}\n\nKontaktinformationen:\nName: ${data.name}\nE-Mail: ${data.email}\n${data.phone ? `Telefon: ${data.phone}\n` : ''}\n${data.bookingType || data.bookingItem || data.eventDate || data.eventLocation ? `Buchungsdetails:\n${data.bookingType ? `Buchungstyp: ${data.bookingType}\n` : ''}${data.bookingItem ? `Gebuchtes Item: ${data.bookingItem}\n` : ''}${data.eventDate ? `Event-Datum: ${data.eventDate}\n` : ''}${data.eventLocation ? `Event-Ort: ${data.eventLocation}\n` : ''}${data.eventType ? `Event-Typ: ${data.eventType}\n` : ''}\n` : ''}${data.message ? `Nachricht:\n${data.message}\n\n` : ''}${data.sourceUrl ? `Quelle: ${data.sourceUrl}\n` : ''}${data.utmSource ? `UTM Source: ${data.utmSource}\n` : ''}${data.utmMedium ? `UTM Medium: ${data.utmMedium}\n` : ''}${data.utmCampaign ? `UTM Campaign: ${data.utmCampaign}\n` : ''}`;
 
   // Sende E-Mails einzeln
   const results = [];
@@ -211,8 +265,14 @@ export async function sendNewsletterNotification(data: {
   lastName?: string;
   hasDisability?: boolean;
   interests?: string[];
+  sourceUrl?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }) {
   if (!resend) return { error: 'Resend nicht konfiguriert' };
+
+  const emailSubject = `📬 Newsletter-Anmeldung${data.firstName || data.lastName ? `: ${[data.firstName, data.lastName].filter(Boolean).join(' ')}` : ''} - Inclusions`;
 
   const emailHtml = `
     <!DOCTYPE html>
@@ -222,17 +282,37 @@ export async function sendNewsletterNotification(data: {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #ff00ff;">Neue Newsletter-Anmeldung</h2>
-        <p><strong>E-Mail:</strong> ${data.email}</p>
-        ${data.firstName ? `<p><strong>Vorname:</strong> ${data.firstName}</p>` : ''}
-        ${data.lastName ? `<p><strong>Nachname:</strong> ${data.lastName}</p>` : ''}
-        ${data.hasDisability !== undefined ? `<p><strong>Menschen mit Beeinträchtigung:</strong> ${data.hasDisability ? 'Ja' : 'Nein'}</p>` : ''}
-        ${data.interests && data.interests.length > 0 ? `<p><strong>Interessen:</strong> ${data.interests.join(', ')}</p>` : ''}
+        <h2 style="color: #ff00ff;">📬 Neue Newsletter-Anmeldung</h2>
+        
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #333;">Kontaktinformationen</h3>
+          <p><strong>E-Mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+          ${data.firstName ? `<p><strong>Vorname:</strong> ${data.firstName}</p>` : ''}
+          ${data.lastName ? `<p><strong>Nachname:</strong> ${data.lastName}</p>` : ''}
+          ${data.hasDisability !== undefined ? `<p><strong>Menschen mit Beeinträchtigung:</strong> ${data.hasDisability ? 'Ja' : 'Nein'}</p>` : ''}
+        </div>
+
+        ${data.interests && data.interests.length > 0 ? `
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0; color: #333;">Interessen</h3>
+          <p>${data.interests.join(', ')}</p>
+        </div>
+        ` : ''}
+
+        ${data.sourceUrl || data.utmSource || data.utmMedium || data.utmCampaign ? `
+        <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+          <h4 style="margin-top: 0; color: #666;">Tracking-Informationen</h4>
+          ${data.sourceUrl ? `<p><strong>Quelle:</strong> <a href="${data.sourceUrl}">${data.sourceUrl}</a></p>` : ''}
+          ${data.utmSource ? `<p><strong>UTM Source:</strong> ${data.utmSource}</p>` : ''}
+          ${data.utmMedium ? `<p><strong>UTM Medium:</strong> ${data.utmMedium}</p>` : ''}
+          ${data.utmCampaign ? `<p><strong>UTM Campaign:</strong> ${data.utmCampaign}</p>` : ''}
+        </div>
+        ` : ''}
       </body>
     </html>
   `;
   
-  const emailText = `Neue Newsletter-Anmeldung\n\nE-Mail: ${data.email}\n${data.firstName ? `Vorname: ${data.firstName}\n` : ''}${data.lastName ? `Nachname: ${data.lastName}\n` : ''}${data.hasDisability !== undefined ? `Menschen mit Beeinträchtigung: ${data.hasDisability ? 'Ja' : 'Nein'}\n` : ''}${data.interests && data.interests.length > 0 ? `Interessen: ${data.interests.join(', ')}\n` : ''}`;
+  const emailText = `📬 Neue Newsletter-Anmeldung\n\nKontaktinformationen:\nE-Mail: ${data.email}\n${data.firstName ? `Vorname: ${data.firstName}\n` : ''}${data.lastName ? `Nachname: ${data.lastName}\n` : ''}${data.hasDisability !== undefined ? `Menschen mit Beeinträchtigung: ${data.hasDisability ? 'Ja' : 'Nein'}\n` : ''}\n${data.interests && data.interests.length > 0 ? `Interessen: ${data.interests.join(', ')}\n\n` : ''}${data.sourceUrl ? `Quelle: ${data.sourceUrl}\n` : ''}${data.utmSource ? `UTM Source: ${data.utmSource}\n` : ''}${data.utmMedium ? `UTM Medium: ${data.utmMedium}\n` : ''}${data.utmCampaign ? `UTM Campaign: ${data.utmCampaign}\n` : ''}`;
 
   // Sende E-Mails einzeln
   const results = [];
@@ -243,7 +323,7 @@ export async function sendNewsletterNotification(data: {
       const result1 = await resend.emails.send({
         from: fromEmail,
         to: adminEmail,
-        subject: 'Neue Newsletter-Anmeldung - Inclusions',
+        subject: emailSubject,
         html: emailHtml,
         text: emailText,
       });
@@ -264,7 +344,7 @@ export async function sendNewsletterNotification(data: {
       const result2 = await resend.emails.send({
         from: fromEmail,
         to: 'roland.luthi@gmail.com',
-        subject: 'Neue Newsletter-Anmeldung - Inclusions',
+        subject: emailSubject,
         html: emailHtml,
         text: emailText,
       });
@@ -280,15 +360,25 @@ export async function sendNewsletterNotification(data: {
   return results.length > 0 ? { id: results[0].id, data: { results } } : { error: 'Keine E-Mails versendet' };
 }
 
-export async function sendVIPConfirmation(to: string, name: string, eventDate?: string) {
+export async function sendVIPConfirmation(to: string, name: string, eventDate?: string, eventLocation?: string) {
   if (!resend) {
     console.error('❌ Resend nicht konfiguriert in sendVIPConfirmation');
     return { error: 'Resend nicht konfiguriert' };
   }
 
   try {
-    // Einfache Sprache für Menschen mit Beeinträchtigung
-    const eventInfo = eventDate ? ` für den ${eventDate}` : '';
+    // Vorname extrahieren (erster Teil des Namens)
+    const firstName = name.split(' ')[0];
+    
+    // Event-Info zusammenstellen (Format: "am [Datum] bei Inclusions 2 im [Ort]")
+    let eventInfo = '';
+    if (eventDate && eventLocation) {
+      eventInfo = `am ${eventDate} bei Inclusions 2 im ${eventLocation}`;
+    } else if (eventDate) {
+      eventInfo = `am ${eventDate}`;
+    } else if (eventLocation) {
+      eventInfo = `bei Inclusions 2 im ${eventLocation}`;
+    }
     
     console.log(`📧 Sende VIP-Bestätigung an: ${to}`);
     const result = await resend.emails.send({
@@ -304,16 +394,16 @@ export async function sendVIPConfirmation(to: string, name: string, eventDate?: 
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
           </head>
           <body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px;">
-            <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe oder lieber ${name}!</h1>
-            <p style="font-size: 18px; margin-bottom: 15px;"><strong>Vielen Dank für Ihre Anmeldung.</strong></p>
-            <p style="margin-bottom: 15px;">Wir haben Ihre VIP-Anmeldung erhalten${eventInfo}.</p>
-            <p style="margin-bottom: 15px;">Wir melden uns bald bei Ihnen.</p>
-            <p style="margin-bottom: 15px;">Wir geben Ihnen dann alle wichtigen Informationen.</p>
-            <p style="margin-top: 30px;">Mit freundlichen Grüssen<br>Das Inclusions Team</p>
+            <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe / Lieber ${firstName}</h1>
+            <p style="font-size: 18px; margin-bottom: 15px;">vielen Dank für deine Anmeldung. Wir freuen uns sehr, dass du${eventInfo ? ` ${eventInfo} dabei bist` : ' dabei bist'}.</p>
+            <p style="margin-bottom: 15px;">Falls es vorab noch Unklarheiten gibt, melden wir uns bei dir.</p>
+            <p style="margin-bottom: 15px;">Kurz vor dem Event erhältst du von uns alle wichtigen Infos zu Anreise, Einlass und Ablauf der Party.</p>
+            <p style="margin-top: 30px;">Bis bald – wir freuen uns auf dich.</p>
+            <p style="margin-top: 20px;">Herzlich<br>Dein Inclusions Team</p>
           </body>
         </html>
       `,
-      text: `Liebe oder lieber ${name}!\n\nVielen Dank für Ihre Anmeldung.\n\nWir haben Ihre VIP-Anmeldung erhalten${eventInfo}.\n\nWir melden uns bald bei Ihnen.\n\nWir geben Ihnen dann alle wichtigen Informationen.\n\nMit freundlichen Grüssen\nDas Inclusions Team`,
+      text: `Liebe / Lieber ${firstName}\n\nvielen Dank für deine Anmeldung. Wir freuen uns sehr, dass du${eventInfo ? ` ${eventInfo} dabei bist` : ' dabei bist'}.\n\nFalls es vorab noch Unklarheiten gibt, melden wir uns bei dir.\nKurz vor dem Event erhältst du von uns alle wichtigen Infos zu Anreise, Einlass und Ablauf der Party.\n\nBis bald – wir freuen uns auf dich.\n\nHerzlich\nDein Inclusions Team`,
     });
 
     if (result.error) {
@@ -335,7 +425,15 @@ export async function sendVIPNotification(data: {
   phone?: string;
   eventDate?: string;
   eventLocation?: string;
+  eventType?: string;
   message?: string;
+  company?: string;
+  numberOfGuests?: number | string;
+  specialRequirements?: string;
+  sourceUrl?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
 }) {
   if (!resend) {
     console.error('❌ Resend nicht konfiguriert in sendVIPNotification');
@@ -344,6 +442,8 @@ export async function sendVIPNotification(data: {
 
   try {
     // E-Mail-Template für Benachrichtigung
+    const emailSubject = `🎫 VIP-Anmeldung${data.eventDate ? `: ${data.eventDate}` : ''}${data.name ? ` - ${data.name}` : ''} - Inclusions`;
+    
     const emailHtml = `
       <!DOCTYPE html>
       <html>
@@ -352,20 +452,48 @@ export async function sendVIPNotification(data: {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #ff00ff;">Neue VIP-Anmeldung</h2>
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>E-Mail:</strong> ${data.email}</p>
-          ${data.phone ? `<p><strong>Telefon:</strong> ${data.phone}</p>` : ''}
-          ${data.eventDate ? `<p><strong>Event-Datum:</strong> ${data.eventDate}</p>` : ''}
-          ${data.eventLocation ? `<p><strong>Event-Ort:</strong> ${data.eventLocation}</p>` : ''}
-          ${data.message ? `<p><strong>Nachricht:</strong><br>${data.message.replace(/\n/g, '<br>')}</p>` : ''}
+          <h2 style="color: #ff00ff;">🎫 Neue VIP-Anmeldung</h2>
+          
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #333;">Kontaktinformationen</h3>
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>E-Mail:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+            ${data.phone ? `<p><strong>Telefon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>` : ''}
+            ${data.company ? `<p><strong>Firma:</strong> ${data.company}</p>` : ''}
+          </div>
+
+          ${data.eventDate || data.eventLocation || data.eventType || data.numberOfGuests || data.specialRequirements ? `
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #333;">Event-Details</h3>
+            ${data.eventDate ? `<p><strong>Event-Datum:</strong> ${data.eventDate}</p>` : ''}
+            ${data.eventLocation ? `<p><strong>Event-Ort:</strong> ${data.eventLocation}</p>` : ''}
+            ${data.eventType ? `<p><strong>Event-Typ:</strong> ${data.eventType}</p>` : ''}
+            ${data.numberOfGuests ? `<p><strong>Anzahl Gäste:</strong> ${data.numberOfGuests}</p>` : ''}
+            ${data.specialRequirements ? `<p><strong>Besondere Anforderungen:</strong><br>${data.specialRequirements.replace(/\n/g, '<br>')}</p>` : ''}
+          </div>
+          ` : ''}
+
+          ${data.message ? `
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #333;">Nachricht</h3>
+            <p style="white-space: pre-wrap;">${data.message.replace(/\n/g, '<br>')}</p>
+          </div>
+          ` : ''}
+
+          ${data.sourceUrl || data.utmSource || data.utmMedium || data.utmCampaign ? `
+          <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 12px; color: #666;">
+            <h4 style="margin-top: 0; color: #666;">Tracking-Informationen</h4>
+            ${data.sourceUrl ? `<p><strong>Quelle:</strong> <a href="${data.sourceUrl}">${data.sourceUrl}</a></p>` : ''}
+            ${data.utmSource ? `<p><strong>UTM Source:</strong> ${data.utmSource}</p>` : ''}
+            ${data.utmMedium ? `<p><strong>UTM Medium:</strong> ${data.utmMedium}</p>` : ''}
+            ${data.utmCampaign ? `<p><strong>UTM Campaign:</strong> ${data.utmCampaign}</p>` : ''}
+          </div>
+          ` : ''}
         </body>
       </html>
     `;
     
-    const emailText = `Neue VIP-Anmeldung\n\nName: ${data.name}\nE-Mail: ${data.email}\n${data.phone ? `Telefon: ${data.phone}\n` : ''}${data.eventDate ? `Event-Datum: ${data.eventDate}\n` : ''}${data.message ? `Nachricht: ${data.message}\n` : ''}`;
-    
-    const emailSubject = `Neue VIP-Anmeldung${data.eventDate ? `: ${data.eventDate}` : ''}`;
+    const emailText = `🎫 Neue VIP-Anmeldung\n\nKontaktinformationen:\nName: ${data.name}\nE-Mail: ${data.email}\n${data.phone ? `Telefon: ${data.phone}\n` : ''}${data.company ? `Firma: ${data.company}\n` : ''}\n${data.eventDate || data.eventLocation || data.eventType || data.numberOfGuests || data.specialRequirements ? `Event-Details:\n${data.eventDate ? `Event-Datum: ${data.eventDate}\n` : ''}${data.eventLocation ? `Event-Ort: ${data.eventLocation}\n` : ''}${data.eventType ? `Event-Typ: ${data.eventType}\n` : ''}${data.numberOfGuests ? `Anzahl Gäste: ${data.numberOfGuests}\n` : ''}${data.specialRequirements ? `Besondere Anforderungen: ${data.specialRequirements}\n` : ''}\n` : ''}${data.message ? `Nachricht:\n${data.message}\n\n` : ''}${data.sourceUrl ? `Quelle: ${data.sourceUrl}\n` : ''}${data.utmSource ? `UTM Source: ${data.utmSource}\n` : ''}${data.utmMedium ? `UTM Medium: ${data.utmMedium}\n` : ''}${data.utmCampaign ? `UTM Campaign: ${data.utmCampaign}\n` : ''}`;
 
     // Sende E-Mails einzeln
     const results = [];

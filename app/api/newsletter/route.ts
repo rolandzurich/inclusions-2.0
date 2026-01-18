@@ -152,6 +152,27 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ Newsletter subscriber gespeichert via Supabase:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addNewsletterSubscriberToSheet }) => {
+            addNewsletterSubscriberToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              email: data.email,
+              first_name: data.first_name,
+              last_name: data.last_name,
+              has_disability: data.has_disability,
+              interests: data.interests,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              opt_in_confirmed_at: data.opt_in_confirmed_at,
+              status: data.status,
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         }
       }
     } catch (supabaseError) {
@@ -185,6 +206,27 @@ export async function POST(request: NextRequest) {
         if (!error && data) {
           saved = true;
           console.log('✅ Newsletter subscriber gespeichert via direkter DB:', data.id);
+          
+          // Google Sheets Export (async, nicht blockierend)
+          import('@/lib/google-sheets').then(({ addNewsletterSubscriberToSheet }) => {
+            addNewsletterSubscriberToSheet({
+              id: data.id,
+              created_at: data.created_at || new Date().toISOString(),
+              email: data.email,
+              first_name: data.first_name,
+              last_name: data.last_name,
+              has_disability: data.has_disability,
+              interests: data.interests,
+              source_url: data.source_url,
+              utm_source: data.utm_source,
+              utm_medium: data.utm_medium,
+              utm_campaign: data.utm_campaign,
+              opt_in_confirmed_at: data.opt_in_confirmed_at,
+              status: data.status || 'pending',
+            }).catch(err => 
+              console.error('Error exporting to Google Sheets:', err)
+            );
+          });
         } else {
           console.error('❌ Fehler beim Speichern:', error);
         }
@@ -208,6 +250,10 @@ export async function POST(request: NextRequest) {
           lastName: body.last_name || body.nachname,
           hasDisability: body.has_disability === 'ja' || body.beeintraechtigung === 'ja',
           interests: body.interests || body.interessiert || [],
+          sourceUrl: sourceUrl,
+          utmSource: utmSource || undefined,
+          utmMedium: utmMedium || undefined,
+          utmCampaign: utmCampaign || undefined,
         }).catch(err => console.error('Error sending notification email:', err)),
       ]);
     } catch (emailError) {

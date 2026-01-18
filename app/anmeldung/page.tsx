@@ -167,12 +167,12 @@ export default function AnmeldungPage() {
                 value={formData.vorname}
                 onChange={handleInputChange}
                 className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                  errors.vorname ? "border-red-500" : "border-white/20"
-                } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                  errors.vorname ? "border-amber-500/60" : "border-white/20"
+                } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink transition-colors duration-200`}
                 placeholder="Dein Vorname"
               />
               {errors.vorname && (
-                <p className="mt-1 text-sm text-red-400">{errors.vorname}</p>
+                <p className="mt-1 text-sm text-amber-200">{errors.vorname}</p>
               )}
             </div>
 
@@ -188,12 +188,12 @@ export default function AnmeldungPage() {
                 value={formData.nachname}
                 onChange={handleInputChange}
                 className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                  errors.nachname ? "border-red-500" : "border-white/20"
-                } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                  errors.nachname ? "border-amber-500/60" : "border-white/20"
+                } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink transition-colors duration-200`}
                 placeholder="Dein Nachname"
               />
               {errors.nachname && (
-                <p className="mt-1 text-sm text-red-400">{errors.nachname}</p>
+                <p className="mt-1 text-sm text-amber-200">{errors.nachname}</p>
               )}
             </div>
           </div>
@@ -209,13 +209,13 @@ export default function AnmeldungPage() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
-                errors.email ? "border-red-500" : "border-white/20"
-              } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-brand-pink`}
+                className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${
+                  errors.email ? "border-amber-500/60" : "border-white/20"
+                } text-white placeholder-white/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink transition-colors duration-200`}
               placeholder="deine.email@beispiel.ch"
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+              <p className="mt-1 text-sm text-amber-200">{errors.email}</p>
             )}
           </div>
 
@@ -232,7 +232,7 @@ export default function AnmeldungPage() {
                   value="ja"
                   checked={formData.beeintraechtigung === "ja"}
                   onChange={handleRadioChange}
-                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                 />
                 <span className="ml-3 text-white/90">Ja</span>
               </label>
@@ -243,13 +243,13 @@ export default function AnmeldungPage() {
                   value="nein"
                   checked={formData.beeintraechtigung === "nein"}
                   onChange={handleRadioChange}
-                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:ring-brand-pink focus:ring-2"
+                  className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                 />
                 <span className="ml-3 text-white/90">Nein</span>
               </label>
             </div>
             {errors.beeintraechtigung && (
-              <p className="mt-1 text-sm text-red-400">{errors.beeintraechtigung}</p>
+              <p className="mt-1 text-sm text-amber-200">{errors.beeintraechtigung}</p>
             )}
           </div>
 
@@ -272,7 +272,7 @@ export default function AnmeldungPage() {
                     value={option}
                     checked={formData.interessiert.includes(option)}
                     onChange={handleCheckboxChange}
-                    className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 rounded focus:ring-brand-pink focus:ring-2"
+                    className="w-5 h-5 text-brand-pink bg-white/10 border-white/20 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink"
                   />
                   <span className="ml-3 text-white/90">{option}</span>
                 </label>
@@ -285,7 +285,7 @@ export default function AnmeldungPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-full bg-brand-pink px-8 py-4 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors duration-200 ease-in-out shadow-lg disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-gray"
             >
               {isSubmitting ? "Wird gesendet..." : "Jetzt kostenlos anmelden"}
             </button>

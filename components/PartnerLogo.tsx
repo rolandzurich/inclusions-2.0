@@ -18,12 +18,12 @@ export function PartnerLogo({ src, alt }: PartnerLogoProps) {
         alt={alt}
         width={120}
         height={120}
-        className={`max-h-20 max-w-full h-auto w-auto object-contain transition-all ${
+        className={`max-h-20 max-w-full h-auto w-auto object-contain transition-all duration-200 ease-in-out ${
           isDarkLogo 
             ? 'brightness-[1.8] contrast-150 drop-shadow-lg' 
             : ''
         }`}
-        unoptimized
+        loading="lazy"
         style={{ objectFit: 'contain' }}
       />
     </div>
