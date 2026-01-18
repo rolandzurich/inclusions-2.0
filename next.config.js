@@ -9,9 +9,9 @@ const nextConfig = {
     return [{ source: "/next/:path*", destination: "/_next/:path*" }];
   },
   images: {
-    unoptimized: false,
-    formats: ["image/avif", "image/webp"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    // Auf Netlify: unoptimized, damit Bilder zuverlässig aus /images/ geladen werden
+    // (/_next/image kann auf Netlify serverless fehlschlagen)
+    unoptimized: true,
   },
 };
 
