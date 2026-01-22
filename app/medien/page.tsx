@@ -1,14 +1,14 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { SocialLinks } from "@/components/SocialLinks";
 
 export const metadata: Metadata = {
-  title: "Medien - Inclusions Presse, Fotos & Videos",
-  description: "Medien zu Inclusions: Fotos, Videos und Presseinformationen zum inklusiven Event. Musik, Tanz und gelebte Inklusion im Supermarket Zürich. Für Redaktionen und Interessierte.",
+  title: "Medien - INCLUSIONS Presse, Fotos & Videos",
+  description: "Medien zu INCLUSIONS: Fotos, Videos und Presseinformationen zum inklusiven Event. Musik, Tanz und gelebte Inklusion im Supermarket Zürich. Für Redaktionen und Interessierte.",
   openGraph: {
-    title: "Medien - Inclusions Presse & Fotos",
-    description: "Fotos, Videos und Presseinformationen zum inklusiven Event Inclusions im Supermarket Zürich.",
-    images: [{ url: "/images/rueckblick-3.jpg", width: 1200, height: 630, alt: "Inclusions Event - Menschen feiern gemeinsam" }],
+    title: "Medien - INCLUSIONS Presse & Fotos",
+    description: "Fotos, Videos und Presseinformationen zum inklusiven Event INCLUSIONS im Supermarket Zürich.",
+    images: [{ url: "/images/rueckblick-3.jpg", width: 1200, height: 630, alt: "INCLUSIONS Event - Menschen feiern gemeinsam" }],
   },
 };
 
@@ -21,7 +21,7 @@ export default function MedienPage() {
           <div className="absolute inset-0 animate-float">
             <Image
               src="/images/rueckblick-3.jpg"
-              alt="Inclusions Event - Menschen feiern gemeinsam"
+              alt="INCLUSIONS Event - Menschen feiern gemeinsam"
               fill
               className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
               quality={95}
@@ -58,7 +58,7 @@ export default function MedienPage() {
 
       {/* Was macht Inclusions besonders */}
       <section className="space-y-6">
-        <h2 className="text-3xl font-semibold">Was macht Inclusions besonders?</h2>
+        <h2 className="text-3xl font-semibold">Was macht INCLUSIONS besonders?</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <article className="rounded-2xl bg-white/5 p-6 space-y-4">
             <div className="flex items-start gap-3">
@@ -70,7 +70,7 @@ export default function MedienPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Inklusive Acts</h3>
                 <p className="text-white/80">
-                  Menschen mit Beeinträchtigung sind nicht nur unsere VIP-Gäste sondern auch aktiv beteiligt – als DJs, Tänzerinnen, Künstlerinnen, 
+                  Menschen mit Beeinträchtigung sind nicht nur unsere VIP-Gäste sondern auch aktiv beteiligt – als DJ's, Tänzerinnen, Künstlerinnen, 
                   Designer*innen. Sie stehen im Mittelpunkt, nicht am Rand.
                 </p>
               </div>
@@ -102,10 +102,17 @@ export default function MedienPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Prominente und wertvolle Unterstützung</h3>
-                <p className="text-white/80">
-                  Sandro Bohnenblust (Supermarket), Alex Flach (PR), Islam Alijaj, Samy Jackson, Colette Murer, Joza Zeier (Watchman) Christian Guggenbühl (Hitschfilm) Alex Oberholzer, Alex Bücheli (BCK Zürich), insieme Zürich, Tixi Taxi  und viele mehr.
-                </p>
+                <h3 className="text-xl font-semibold mb-2">Partner & Botschafter</h3>
+                <ul className="text-white/80 space-y-1 list-disc list-inside">
+                  <li>Denise Biellmann</li>
+                  <li>insieme Zürich</li>
+                  <li>Sandro Bohnenblust (Supermarket)</li>
+                  <li>Islam Alijaj</li>
+                  <li>Alex Bücheli (BCK Zürich)</li>
+                  <li>Tixi Taxi</li>
+                  <li>Alex Flach (PR)</li>
+                  <li>Christian Guggenbühl (Hitschfilm)</li>
+                </ul>
               </div>
             </div>
           </article>
@@ -118,11 +125,14 @@ export default function MedienPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Moderation</h3>
-                <p className="text-white/80">
-                  Andrej Voina, „The Voice of Street Parade", moderiert die Veranstaltung und 
-                  bringt seine Erfahrung und Leidenschaft mit.
-                </p>
+                <h3 className="text-xl font-semibold mb-2">Aktive Mitarbeit</h3>
+                <ul className="text-white/80 space-y-2 list-none">
+                  <li><strong>Andrej Voina (AVTL Content):</strong> Kommunikation, Medien, Social Media</li>
+                  <li><strong>DJ&apos;s:</strong> Zagara, Coco.bewegt, Samy Jackson, Hoibaer, Ashan</li>
+                  <li><strong>Colette M:</strong> Dance Crew Leitung</li>
+                  <li><strong>Joza Zeier:</strong> Sicherheit</li>
+                  <li><strong>Markus Hafner:</strong> Care Team</li>
+                </ul>
               </div>
             </div>
           </article>
@@ -136,7 +146,7 @@ export default function MedienPage() {
           <p className="text-lg text-white/80 max-w-3xl mx-auto">
             Wir stehen am Anfang und freuen uns, auch dich als Botschafter zu gewinnen! 
             Jede Erwähnung, Video, Artikel, Interview oder Social Media Beitrag hilft, 
-            die Inclusions-Botschaft zu verbreiten.
+            die INCLUSIONS-Botschaft zu verbreiten.
           </p>
           <div className="rounded-2xl bg-brand-pink/10 border border-brand-pink/30 p-6 max-w-2xl mx-auto">
             <p className="text-white/90 text-lg leading-relaxed">
@@ -144,6 +154,7 @@ export default function MedienPage() {
               Leser/Hörer/Zuschauer berühren.
             </p>
           </div>
+          <SocialLinks />
         </div>
       </section>
 
@@ -152,46 +163,76 @@ export default function MedienPage() {
         <div>
           <h2 className="text-3xl font-semibold mb-2">Medienunterlagen</h2>
           <p className="text-lg text-white/80 max-w-3xl">
-            Wir arbeiten an diesem Projekt ehrenamtlich, mit viel Herzblut. Sobald wir Keyvisuals, 
-            Zitate, Hintergrundinfos, Logo & Vorlagen bereit haben, stellen wir diese gerne zur Verfügung.
+            Hier findest du unsere Key Visuals, Logos sowie eine Übersicht der bisherigen Presseberichterstattung über INCLUSIONS.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl bg-white/5 p-6 border border-white/10">
-            <div className="w-12 h-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-4">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Key Visuals & Logos */}
+          <a
+            href="https://drive.google.com/drive/folders/1me5SJpgN_8iuqgu8Os2KRwKdh7bMBxh0?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-2xl bg-white/5 p-6 border border-white/10 hover:border-brand-pink/40 hover:bg-white/[0.07] transition-colors group block"
+          >
+            <div className="w-12 h-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-4 group-hover:bg-brand-pink/30 transition-colors">
               <svg className="w-6 h-6 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Keyvisuals & Logos</h3>
-            <p className="text-sm text-white/70">
+            <h3 className="text-lg font-semibold mb-2 group-hover:text-brand-pink transition-colors">Key Visuals & Logos</h3>
+            <p className="text-sm text-white/70 mb-3">
               Hochauflösende Logos, Keyvisuals und Bildmaterial für deine Berichterstattung.
             </p>
-          </div>
+            <span className="text-brand-pink text-sm font-medium inline-flex items-center gap-1">
+              Ordner öffnen
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            </span>
+          </a>
 
+          {/* Presseveröffentlichungen */}
           <div className="rounded-2xl bg-white/5 p-6 border border-white/10">
             <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
               <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Pressetexte & Zitate</h3>
-            <p className="text-sm text-white/70">
-              Hintergrundinformationen, Pressetexte und Zitate der Initianten für deine Artikel.
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white/5 p-6 border border-white/10">
-            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Vorlagen & Downloads</h3>
-            <p className="text-sm text-white/70">
-              Social Media Vorlagen, Pressemappen und weiteres Material zum Download.
-            </p>
+            <h3 className="text-lg font-semibold mb-4">Presseveröffentlichungen</h3>
+            <ul className="space-y-4">
+              <li>
+                <a
+                  href="https://photos.google.com/photo/AF1QipOtb8eJh0yOkBpahEEMw1h4BWxl9JfCmEykyPZD"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/90 hover:text-brand-pink transition-colors block group"
+                >
+                  <span className="font-medium">20 Minuten (Print)</span>
+                  <span className="block text-sm text-white/70 group-hover:text-white/90">Berichterstattung in der Printausgabe der grössten Schweizer Tageszeitung.</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://ubwg.ch/event/inclusions-charity-rave-supermarket-zuerich-27-09-2025/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/90 hover:text-brand-pink transition-colors block group"
+                >
+                  <span className="font-medium">UBWG – Unsere Beweggründe</span>
+                  <span className="block text-sm text-white/70 group-hover:text-white/90">Porträt von INCLUSIONS mit Initianten, Line-up und allen Infos zum Charity Rave im Supermarket.</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://tsri.ch/a/party-fuer-alle-so-barrierefrei-ist-das-zuercher-nachtleben"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/90 hover:text-brand-pink transition-colors block group"
+                >
+                  <span className="font-medium">Tsüri.ch</span>
+                  <span className="block text-sm text-white/70 group-hover:text-white/90">«Party für alle? So barrierefrei ist das Zürcher Nachtleben» – Reportage über Barrierefreiheit in Zürcher Clubs und die Pionierrolle von INCLUSIONS.</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
@@ -203,58 +244,26 @@ export default function MedienPage() {
           Hast du Fragen, möchtest du ein Interview führen oder brauchst du spezifische Medienunterlagen? 
           Melde dich bei uns!
         </p>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-2">
-            <p className="font-semibold text-white">Reto Willi, Co-Founder</p>
-            <a 
-              href="mailto:reto@inclusions.zone" 
-              className="text-brand-pink hover:text-brand-pink/80 transition-colors inline-flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              reto@inclusions.zone
-            </a>
-          </div>
-          <div className="space-y-2">
-            <p className="font-semibold text-white">Roland Lüthi, Co-Founder</p>
-            <a 
-              href="mailto:roland@inclusions.zone" 
-              className="text-brand-pink hover:text-brand-pink/80 transition-colors inline-flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              roland@inclusions.zone
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Nächster Event */}
-      <section className="rounded-3xl bg-white/10 p-8 text-white shadow-lg">
-        <div className="grid gap-6 md:grid-cols-2 items-center">
-          <div>
-            <h2 className="text-3xl font-semibold">Nächster Event</h2>
-            <p className="mt-4 text-2xl font-bold text-brand-pink">Inclusions 2</p>
-            <p className="mt-2 text-lg">25. April 2026, 13:00 - 21:00 · Supermarket Zürich</p>
-            <Link
-              href="https://supermarket.li/events/inclusions/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black"
-            >
-              Mehr Infos
-            </Link>
-          </div>
-          <div className="w-full mt-6 md:mt-0 aspect-square">
-            <iframe
-              src="https://drive.google.com/file/d/1WyW2nXsGczJIpQ5_K9xScMPl3nxLAuys/preview"
-              className="w-full h-full min-h-[260px] rounded-2xl"
-              allow="autoplay"
-              allowFullScreen
-            />
-          </div>
+        <div className="space-y-2">
+          <p className="font-semibold text-white">Andrej Voina, Medienkontakt</p>
+          <a 
+            href="mailto:info@avtlcontent.com" 
+            className="text-brand-pink hover:text-brand-pink/80 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            info@avtlcontent.com
+          </a>
+          <a 
+            href="tel:+41763250007" 
+            className="text-brand-pink hover:text-brand-pink/80 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            +41 76 325 00 07
+          </a>
         </div>
       </section>
     </main>

@@ -117,7 +117,7 @@ export default function AboutPage() {
         <div className="space-y-4 pt-6 border-t border-white/10">
           <h3 className="text-2xl font-semibold">Unsere Vision ist klar</h3>
           <p className="text-white/80 leading-relaxed">
-            Wir wollen eine inklusive Bewegung starten, die Menschen inspiriert und zusammenführt. Mit elektronischer Musik als Herzstück wird Inclusions ein Raum, in dem Kreativität, Gemeinschaft und Vielfalt gelebt werden. Dabei integrieren wir Menschen mit Beeinträchtigung in jede Facette dieses Events – sei es als Co – DJs, Tänzer, Filmemacher, beim Catering oder Designer. Jeder Beitrag zählt, und jeder Moment erzählt eine Geschichte der Stärke und des Miteinanders.
+            Wir wollen eine inklusive Bewegung starten, die Menschen inspiriert und zusammenführt. Mit elektronischer Musik als Herzstück wird INCLUSIONS ein Raum, in dem Kreativität, Gemeinschaft und Vielfalt gelebt werden. Dabei integrieren wir Menschen mit Beeinträchtigung in jede Facette dieses Events – sei es als Co – DJ's, Tänzer, Filmemacher, beim Catering oder Designer. Jeder Beitrag zählt, und jeder Moment erzählt eine Geschichte der Stärke und des Miteinanders.
           </p>
         </div>
 

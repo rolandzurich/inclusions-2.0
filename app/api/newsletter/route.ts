@@ -235,10 +235,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Opt-In E-Mail senden (immer, auch wenn Speichern fehlgeschlagen ist)
+    // Opt-In und Notification senden – AWAIT nötig: Auf Netlify (Serverless) wird die
+    // Funktion beendet, sobald die Response gesendet ist. Ohne await laufen die Promises nie zu Ende.
     try {
       const { sendNewsletterOptIn, sendNewsletterNotification } = await import('@/lib/resend');
-      Promise.all([
+      await Promise.all([
         sendNewsletterOptIn(
           body.email,
           body.first_name || body.vorname || 'Liebe/r',

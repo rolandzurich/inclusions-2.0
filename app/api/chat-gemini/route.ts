@@ -26,7 +26,7 @@ function createWebsiteContext(): string {
     upcomingEvents.forEach(event => {
       context += `- ${event.name}: ${formatDate(event.date)} in ${event.location}. ${event.description}\n`;
       if (event.lineup && event.lineup.length > 0) {
-        context += `  Lineup: ${event.lineup.join(", ")}\n`;
+        context += `  Line-up: ${event.lineup.join(", ")}\n`;
       }
     });
   }
@@ -69,18 +69,18 @@ function createWebsiteContext(): string {
 
   // Allgemeine Infos
   context += "\n\nALLGEMEINE INFORMATIONEN:\n";
-  context += "- Inclusions ist ein inklusives Event-Format\n";
+  context += "- INCLUSIONS ist ein inklusives Event-Format\n";
   context += "- Menschen mit und ohne Beeinträchtigung feiern gemeinsam\n";
-  context += "- Es gibt DJs, Dance Crew und Events\n";
+  context += "- Es gibt DJ's, Dance Crew und Events\n";
   context += "- Events finden meist im Supermarket Zürich statt\n";
-  context += "- DJs können einzeln oder als Pairs gebucht werden\n";
+  context += "- DJ's können einzeln oder als Pairs gebucht werden\n";
 
   // Anmeldung, Tickets, VIP – wichtig für „Wie kann ich mich anmelden?“ etc.
   context += "\n\nANMELDUNG, TICKETS und WIE DABEI SEIN (für Fragen wie: Wie kann ich mich anmelden? Wie melde ich mich an? Wie komme ich zur Party?):\n";
   context += "- Es gibt zwei Wege:\n";
-  context += "  1) VIP (gratis): Wer IV-Ausweis, Beeinträchtigung oder Behinderung hat: Gratis Eintritt. Anmeldung vorher auf der Webseite unter VIP-Anmeldung nötig (Seite: anmeldung/vip). Mindestens 20 Jahre. Anmeldung im Vorfeld ist Pflicht. Betreuer nur gratis bei 1-zu-1 Betreuung. Freunde und Familie kaufen ein Ticket. TIXI-Taxi kann bei der VIP-Anmeldung angefragt werden. VIP-Vorteile: barrierefreier Club, Helfer-Team, vergünstigtes Essen und Trinken.\n";
+  context += "  1) VIP (gratis): Wer IV-Ausweis, Beeinträchtigung oder Behinderung hat: Gratis Eintritt. Anmeldung vorher auf der Webseite unter VIP-Anmeldung nötig (Seite: anmeldung/vip). Mindestens 20 Jahre. Anmeldung im Vorfeld ist Pflicht. Betreuer:in nur gratis bei 1-zu-1 Betreuung. Freunde und Familie kaufen ein Ticket. TIXI-Taxi kann bei der VIP-Anmeldung angefragt werden. VIP-Vorteile: barrierefreier Club, Helfer-Team, vergünstigtes Essen und Trinken.\n";
   context += "  2) Party People / Gäste: Ticket kaufen bei Supermarket (supermarket.li/events/inclusions/).\n";
-  context += "- DJs buchen: Auf der Webseite unter DJs oder Booking (djs, booking).\n";
+  context += "- DJ's buchen: Auf der Webseite unter DJ's oder Booking (djs, booking).\n";
   context += "- Dance Crew buchen: Auf der Webseite unter Dance Crew (dance-crew).\n";
   context += "- Spenden: Auf der Webseite unter Spenden (spenden). TWINT möglich.\n";
   context += "- Newsletter: Auf der Webseite unter Newsletter anmelden.\n";

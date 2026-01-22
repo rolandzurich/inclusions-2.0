@@ -261,7 +261,7 @@ export default function VIPAnmeldungPage() {
             phone: vip.telefon,
             event_date: '2026-04-25', // Inclusions 2 Event
             event_location: 'Supermarket, Zürich',
-            message: `VIP-Anmeldung${formData.anmeldungDurch === 'betreuer' ? ' (durch Betreuer)' : ''}\n\n` +
+            message: `VIP-Anmeldung${formData.anmeldungDurch === 'betreuer' ? ' (durch Betreuer:in)' : ''}\n\n` +
               `Alter: ${vip.alter}\n` +
               `IV-Ausweis: ${vip.ivAusweis}\n` +
               `Beeinträchtigung: ${vip.beeintraechtigung}\n` +
@@ -376,8 +376,8 @@ export default function VIPAnmeldungPage() {
           <ul className="text-sm text-white/80 space-y-1 list-disc list-inside">
             <li><strong>Anmeldung im Vorfeld erforderlich</strong></li>
             <li><strong>Du musst mindestens 20 Jahre alt sein. Wenn du 20 Jahre alt bist, darst du gerne kommen.</strong></li>
-            <li>Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</li>
-            <li>Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein – Freunde, Familie und Betreuer laden wir ein, ein Ticket zu kaufen, um den<br /><span className="pl-5"><span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen.</span> <a href="https://supermarket.li" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></li>
+            <li>Betreuer:in kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</li>
+            <li>Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein – Freunde, Familie und Betreuer:in laden wir ein, ein Ticket zu kaufen, um den <span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen. <a href="https://supermarket.li/events/inclusions/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></li>
           </ul>
         </div>
       </section>
@@ -1012,8 +1012,8 @@ export default function VIPAnmeldungPage() {
         <div className="rounded-xl bg-yellow-500/10 border border-yellow-500/20 p-4">
           <p className="text-sm text-white/90">
             <strong className="text-white">Wichtig:</strong> Nur <span className="whitespace-nowrap">VIPs</span> kommen gratis rein. Freunde, Familie 
-            und Betreuer laden wir ein, ein Ticket zu kaufen, um den<br /><span className="pl-5"><span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen.</span> 
-            Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist. 
+            und Betreuer:in laden wir ein, ein Ticket zu kaufen, um den <span className="whitespace-nowrap">VIP's</span> den gratis Eintritt zu ermöglichen. 
+            Betreuer:in kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist. 
             <a href="https://supermarket.li/events/inclusions/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline ml-1">Link zum Ticketkauf</a>
           </p>
         </div>

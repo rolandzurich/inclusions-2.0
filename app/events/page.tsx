@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Events & Erlebnisse - Inclusions",
-  description: "Kommende Inclusions Events und Rückblicke auf vergangene Veranstaltungen. Inklusives Event am 25. April 2026 im Supermarket Zürich. DJ-Lineup, Dance Crew und mehr.",
+  description: "Kommende INCLUSIONS Events und Rückblicke auf vergangene Veranstaltungen. Inklusives Event am 25. April 2026 im Supermarket Zürich. DJ-Line-up, Dance Crew und mehr.",
   openGraph: {
     title: "Events & Erlebnisse - Inclusions",
     description: "Kommende Inclusions Events und Rückblicke auf vergangene Veranstaltungen. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
@@ -41,7 +41,7 @@ export default function EventsPage() {
   );
 
   const jsonLdBreadcrumb = getBreadcrumbSchema([
-    { name: "Inclusions", url: "/" },
+    { name: "INCLUSIONS", url: "/" },
     { name: "Events", url: "/events" },
   ]);
 
@@ -72,10 +72,10 @@ export default function EventsPage() {
                 <p className="mt-4 text-white/70">{nextEvent.description}</p>
               )}
 
-              {/* Lineup */}
+              {/* Line-up */}
               {nextEvent && (
                 <div className="mt-6">
-                  <h3 className="text-xl font-semibold mb-3">Lineup</h3>
+                  <h3 className="text-xl font-semibold mb-3">Line-up</h3>
                   <div className="space-y-2">
                     {[
                       "Zagara",
@@ -193,7 +193,7 @@ export default function EventsPage() {
                 )}
                 {event.lineup && event.lineup.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Lineup:</p>
+                    <p className="text-sm font-medium mb-2">Line-up:</p>
                     <div className="flex flex-wrap gap-2">
                       {getLineupItems(event.lineup).map((item) => (
                         <span
@@ -248,7 +248,7 @@ export default function EventsPage() {
                 )}
                 {event.lineup && event.lineup.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Lineup:</p>
+                    <p className="text-sm font-medium mb-2">Line-up:</p>
                     <div className="flex flex-wrap gap-2">
                       {getLineupItems(event.lineup).map((item) => (
                         <span

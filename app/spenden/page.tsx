@@ -4,17 +4,17 @@ import { TwintButton } from "@/components/TwintButton";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Spenden - Inclusions Bewegung unterstützen",
-  description: "Unterstütze die Inclusions-Bewegung mit deiner Spende. Musik verbindet, Inklusion verändert. Mit deiner Unterstützung schaffen wir unvergessliche Momente für Menschen mit und ohne Beeinträchtigung. Twint oder Banküberweisung möglich.",
+  title: "Spenden - INCLUSIONS Bewegung unterstützen",
+  description: "Unterstütze die INCLUSIONS-Bewegung mit deiner Spende. Musik verbindet, Inklusion verändert. Mit deiner Unterstützung schaffen wir unvergessliche Momente für Menschen mit und ohne Beeinträchtigung. Twint oder Banküberweisung möglich.",
   openGraph: {
-    title: "Spenden - Inclusions Bewegung unterstützen",
-    description: "Unterstütze die Inclusions-Bewegung mit deiner Spende. Musik verbindet, Inklusion verändert.",
+    title: "Spenden - INCLUSIONS Bewegung unterstützen",
+    description: "Unterstütze die INCLUSIONS-Bewegung mit deiner Spende. Musik verbindet, Inklusion verändert.",
     images: [
       {
         url: "/images/spenden-hero.jpg",
         width: 1200,
         height: 630,
-        alt: "Inclusions Event - Menschen feiern gemeinsam am DJ-Pult",
+        alt: "INCLUSIONS Event - Menschen feiern gemeinsam am DJ-Pult",
       },
     ],
   },
@@ -30,7 +30,7 @@ export default function SpendenPage() {
           <div className="absolute inset-0 animate-float">
             <Image
               src="/images/spenden-hero.jpg"
-              alt="Inclusions Event im Supermarket Zürich - Menschen mit und ohne Beeinträchtigung feiern gemeinsam am DJ-Pult"
+              alt="INCLUSIONS Event im Supermarket Zürich - Menschen mit und ohne Beeinträchtigung feiern gemeinsam am DJ-Pult"
               fill
               className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
               quality={95}
@@ -72,7 +72,7 @@ export default function SpendenPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2">Vom Event zur Bewegung</h3>
                 <p className="text-white/80">
-                  Inclusions 2 am 25. April 2026, 13:00 - 21:00 ist erst der Beginn. Der Start einer Bewegung 
+                  INCLUSIONS 2 am 25. April 2026, 13:00 - 21:00 ist erst der Beginn. Der Start einer Bewegung 
                   mit der Vision von echter Inklusion. Mit deiner Spende wirst du Teil dieser Bewegung.
                 </p>
               </div>
@@ -103,7 +103,7 @@ export default function SpendenPage() {
         <div className="text-center space-y-4">
           <h2 className="text-3xl md:text-4xl font-bold">So kannst du unterstützen</h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Wähle die für dich passende Spenden-Möglichkeit. Jeder Beitrag hilft uns, die Inclusions-Bewegung 
+            Wähle die für dich passende Spenden-Möglichkeit. Jeder Beitrag hilft uns, die INCLUSIONS-Bewegung 
             weiterzuführen und unvergessliche Erlebnisse zu schaffen.
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function SpendenPage() {
                 <p className="font-mono text-lg font-semibold text-white">CH87 8080 8006 0762 5517 5</p>
               </div>
               <div className="space-y-1 text-sm">
-                <p><strong>Verein Inclusions</strong></p>
+                <p><strong>Verein INCLUSIONS</strong></p>
                 <p>Freilagerstrasse 60</p>
                 <p>8047 Zürich</p>
               </div>
@@ -264,7 +264,7 @@ export default function SpendenPage() {
           feiern Vielfalt und machen Inklusion erlebbar.
         </p>
         <p className="text-xl font-semibold text-brand-pink">
-          Werde Teil der Inclusions-Bewegung – GEMEINSAM ANDERS!
+          Werde Teil der INCLUSIONS-Bewegung – GEMEINSAM ANDERS!
         </p>
         <div className="flex flex-wrap gap-4 justify-center pt-4">
           <Link

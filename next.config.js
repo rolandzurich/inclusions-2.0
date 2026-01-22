@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   async redirects() {
-    return [{ source: "/favicon.ico", destination: "/images/inclusions-logo.png", permanent: false }];
+    return [{ source: "/favicon.ico", destination: "/favicon.png", permanent: false }];
   },
   // Falls etwas /next/ statt /_next/ anfragt (z.B. Proxy): nach /_next/ weiterleiten
   async rewrites() {

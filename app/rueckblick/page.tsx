@@ -53,7 +53,7 @@ export default function RueckblickPage() {
           <div className="absolute inset-0 animate-float">
             <Image
               src="/images/rueckblick/rueckblick-21.png"
-              alt="Inclusions Event im Supermarket Zürich - Über 400 Menschen mit und ohne Beeinträchtigung tanzen zusammen mit INCLUSIONS Projektion"
+              alt="INCLUSIONS Event im Supermarket Zürich - Über 400 Menschen mit und ohne Beeinträchtigung tanzen zusammen mit INCLUSIONS Projektion"
               fill
               className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
               quality={95}
@@ -74,7 +74,7 @@ export default function RueckblickPage() {
                 Unsere Reise
               </h1>
               <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto [text-shadow:_1px_1px_4px_rgb(0_0_0_/_80%)]">
-                Von der ersten Besichtigung bis zum erfolgreichen Event – ein visueller Rückblick auf die Entstehung von Inclusions
+                Von der ersten Besichtigung bis zum erfolgreichen Event – ein visueller Rückblick auf die Entstehung von INCLUSIONS
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function RueckblickPage() {
             <div className="relative w-full h-[70vh] rounded-2xl overflow-hidden bg-black/50">
               <Image
                 src={`/images/rueckblick/${selectedImageData.filename}`}
-                alt={`${selectedImageData.title} - ${selectedImageData.description || "Inclusions Rückblick"}`}
+                alt={`${selectedImageData.title} - ${selectedImageData.description || "INCLUSIONS Rückblick"}`}
                 fill
                 className="object-contain"
                 sizes="100vw"
@@ -204,7 +204,7 @@ export default function RueckblickPage() {
           Die Reise geht weiter
         </h2>
         <p className="text-lg text-white/80 max-w-2xl mx-auto">
-          Inclusions 2 findet am 25. April 2026, 13:00 - 21:00 statt. Sei dabei und werde Teil dieser Bewegung!
+          INCLUSIONS 2 findet am 25. April 2026, 13:00 - 21:00 statt. Sei dabei und werde Teil dieser Bewegung!
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           <Link

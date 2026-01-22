@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SocialLinks } from "@/components/SocialLinks";
 
 const navLinks = [
   { href: "/events", label: "Events" },
@@ -34,17 +35,21 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-3">Über uns</h3>
             <p className="text-white/70 mb-4">
-              Inclusions verbindet Menschen mit und ohne Beeinträchtigung. Vom Event
+              INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung. Vom Event
               zur Bewegung – gemeinsam gestalten wir eine neue Clubkultur.
             </p>
             <p className="text-white/70 mb-4">
               Wir sind politisch und religiös neutral.
             </p>
-            <p className="text-xs text-white/60">
-              Verein Inclusions<br />
+            <p className="text-xs text-white/60 mb-4">
+              Verein INCLUSIONS<br />
               Zürich<br />
               gegründet: Januar 2025
             </p>
+            <div>
+              <h4 className="text-sm font-semibold mb-2">Folge uns</h4>
+              <SocialLinks className="!justify-start gap-3" />
+            </div>
           </div>
 
           {/* Links */}
@@ -130,7 +135,7 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/60">
-          <p>© Inclusions – Vom Event zur Bewegung</p>
+          <p>© INCLUSIONS – Vom Event zur Bewegung</p>
           <div className="flex items-center gap-4">
             <Link
               href="/admin/login"

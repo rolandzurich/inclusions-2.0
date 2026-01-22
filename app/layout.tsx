@@ -23,13 +23,13 @@ const jsonLdWebSite = getWebSiteSchema();
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Inclusions 2.0 - Inklusives Event Zürich | Vom Event zur Bewegung",
-    template: "%s | Inclusions",
+    default: "INCLUSIONS 2.0 - Inklusives Event Zürich | Vom Event zur Bewegung",
+    template: "%s | INCLUSIONS",
   },
   description:
-    "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
+    "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
   keywords: [
-    "Inclusions",
+    "INCLUSIONS",
     "Inklusion",
     "inklusive Events",
     "Zürich",
@@ -37,32 +37,35 @@ export const metadata: Metadata = {
     "Clubkultur",
     "Beeinträchtigung",
     "Gratis Eintritt Beeinträchtigung",
-    "VIP Inclusions",
+    "VIP INCLUSIONS",
     "DJ Pairs",
     "Dance Crew",
     "Techno",
-    "Inclusions 2",
+    "INCLUSIONS 2",
     "25. April 2026",
   ],
   openGraph: {
     type: "website",
     locale: "de_CH",
-    title: "Inclusions 2.0 - Inklusives Event Zürich",
+    title: "INCLUSIONS 2.0 - Inklusives Event Zürich",
     description:
-      "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
-    images: [{ url: "/images/hero.jpg", width: 1200, height: 630, alt: "Inclusions Event im Supermarket Zürich" }],
-    siteName: "Inclusions",
+      "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
+    images: [{ url: "/images/hero.jpg", width: 1200, height: 630, alt: "INCLUSIONS Event im Supermarket Zürich" }],
+    siteName: "INCLUSIONS",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Inclusions 2.0 - Inklusives Event Zürich",
-    description: "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit.",
+    title: "INCLUSIONS 2.0 - Inklusives Event Zürich",
+    description: "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit.",
     images: ["/images/hero.jpg"],
   },
   robots: { index: true, follow: true },
-  authors: [{ name: "Inclusions", url: baseUrl }],
-  creator: "Inclusions",
-  icons: { icon: "/images/inclusions-logo.png" },
+  authors: [{ name: "INCLUSIONS", url: baseUrl }],
+  creator: "INCLUSIONS",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

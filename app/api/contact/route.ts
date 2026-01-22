@@ -176,7 +176,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // E-Mails senden (async, nicht blockierend) - immer senden, auch wenn Speichern fehlgeschlagen ist
+    // E-Mails senden – AWAIT nötig: Auf Netlify (Serverless) wird die Funktion beendet,
+    // sobald die Response gesendet ist. Ohne await laufen die Promises nie zu Ende.
     try {
       const { sendContactConfirmation, sendBookingConfirmation, sendContactNotification } = await import('@/lib/resend');
       
@@ -192,7 +193,7 @@ export async function POST(request: NextRequest) {
           )
         : sendContactConfirmation(body.email, body.name);
       
-      Promise.all([
+      await Promise.all([
         confirmationPromise.catch(err => 
           console.error('Error sending confirmation email:', err)
         ),

@@ -3,12 +3,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Vision - Inclusions Inklusion & Gesellschaft",
-  description: "Inclusions setzt sich für eine Gesellschaft ein, in der kulturelle Teilhabe, Begegnung und Inklusion selbstverständlich sind. Menschenrechte, UNO-Behindertenrechtskonvention, Agenda 2030.",
+  title: "Vision - INCLUSIONS Inklusion & Gesellschaft",
+  description: "INCLUSIONS setzt sich für eine Gesellschaft ein, in der kulturelle Teilhabe, Begegnung und Inklusion selbstverständlich sind. Menschenrechte, UNO-Behindertenrechtskonvention, Agenda 2030.",
   openGraph: {
-    title: "Vision - Inclusions Inklusion & Gesellschaft",
+    title: "Vision - INCLUSIONS Inklusion & Gesellschaft",
     description: "Für eine Gesellschaft, in der kulturelle Teilhabe, Begegnung und Inklusion selbstverständlich sind.",
-    images: [{ url: "/images/ueber-uns-hero.jpg", width: 1200, height: 630, alt: "Inclusions Vision - Gemeinsam für Inklusion" }],
+    images: [{ url: "/images/ueber-uns-hero.jpg", width: 1200, height: 630, alt: "INCLUSIONS Vision - Gemeinsam für Inklusion" }],
   },
 };
 
@@ -21,7 +21,7 @@ export default function VisionPage() {
           <div className="absolute inset-0 animate-float">
             <Image
               src="/images/ueber-uns-hero.jpg"
-              alt="Inclusions Vision - Gemeinsam für Inklusion"
+              alt="INCLUSIONS Vision - Gemeinsam für Inklusion"
               fill
               className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
               quality={95}
@@ -51,15 +51,15 @@ export default function VisionPage() {
       <section className="space-y-8">
         <div className="space-y-6 text-white/90 leading-relaxed">
           <p className="text-lg">
-            Inclusions setzt sich für eine Gesellschaft ein, in der kulturelle Teilhabe, Begegnung und Inklusion als Selbstverständlichkeit gelebt werden. Wir stehen dafür ein, dass Menschen mit und ohne Beeinträchtigung selbstbestimmt, kreativ und aktiv am gesellschaftlichen Leben teilnehmen können. Musik, Tanz und gemeinsames Erleben dienen dabei als verbindende Kraft, um Barrieren abzubauen und neue Perspektiven zu eröffnen. Unsere Arbeit orientiert sich an den Grundsätzen der <Link href="https://www.un.org/german/de" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">Menschenrechte</Link> sowie an der <Link href="https://www.ebgb.admin.ch/de/uebereinkommen-der-uno-ueber-die-rechte-von-menschen-mit-behinderungen" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">UNO-Behindertenrechtskonvention</Link> und leistet einen Beitrag zur Förderung von Chancengleichheit und sozialer Teilhabe im Sinne der <Link href="https://sdgs.un.org/goals" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">Agenda 2030 der Vereinten Nationen</Link>.
+            INCLUSIONS setzt sich für eine Gesellschaft ein, in der kulturelle Teilhabe, Begegnung und Inklusion als Selbstverständlichkeit gelebt werden. Wir stehen dafür ein, dass Menschen mit und ohne Beeinträchtigung selbstbestimmt, kreativ und aktiv am gesellschaftlichen Leben teilnehmen können. Musik, Tanz und gemeinsames Erleben dienen dabei als verbindende Kraft, um Barrieren abzubauen und neue Perspektiven zu eröffnen. Unsere Arbeit orientiert sich an den Grundsätzen der <Link href="https://www.un.org/german/de" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">Menschenrechte</Link> sowie an der <Link href="https://www.ebgb.admin.ch/de/uebereinkommen-der-uno-ueber-die-rechte-von-menschen-mit-behinderungen" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">UNO-Behindertenrechtskonvention</Link> und leistet einen Beitrag zur Förderung von Chancengleichheit und sozialer Teilhabe im Sinne der <Link href="https://sdgs.un.org/goals" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:text-brand-pink/80 underline">Agenda 2030 der Vereinten Nationen</Link>.
           </p>
 
           <p className="text-lg">
-            Die Projekte von Inclusions richten sich konsequent nach den Bedürfnissen der beteiligten Menschen und werden partizipativ entwickelt. Im Zentrum steht ein inklusives Eventformat mit elektronischer Musik, das Menschen mit Beeinträchtigung in alle Bereiche aktiv einbindet – als Co-DJs, Tänzer:innen, Kreative, Filmschaffende, im Catering, Design oder in der Organisation. Ziel aller Aktivitäten ist es, Kreativität zu fördern, Selbstvertrauen zu stärken und Eigenverantwortung sowie Gemeinschaftsgefühl erlebbar zu machen. Sämtliche Angebote sind auf eine nachhaltige, ganzheitliche Wirkung ausgelegt und verstehen Inklusion nicht als Ausnahme, sondern als gelebte Normalität.
+            Die Projekte von INCLUSIONS richten sich konsequent nach den Bedürfnissen der beteiligten Menschen und werden partizipativ entwickelt. Im Zentrum steht ein inklusives Eventformat mit elektronischer Musik, das Menschen mit Beeinträchtigung in alle Bereiche aktiv einbindet – als Co-DJ's, Tänzer:innen, Kreative, Filmschaffende, im Catering, Design oder in der Organisation. Ziel aller Aktivitäten ist es, Kreativität zu fördern, Selbstvertrauen zu stärken und Eigenverantwortung sowie Gemeinschaftsgefühl erlebbar zu machen. Sämtliche Angebote sind auf eine nachhaltige, ganzheitliche Wirkung ausgelegt und verstehen Inklusion nicht als Ausnahme, sondern als gelebte Normalität.
           </p>
 
           <p className="text-lg">
-            Darüber hinaus sensibilisiert Inclusions die Öffentlichkeit und sucht Fachpersonen aus Kultur, Sozialarbeit und Eventmanagement für inklusive Arbeits- und Begegnungsformen. Wir teilen Erfahrungen und Good-Practice-Beispiele, vernetzen uns mit Gleichgesinnten und engagieren uns aktiv in der Bewusstseinsbildung. Durch gezielte Medienarbeit, Kooperationen, Workshops und öffentliche Auftritte tragen wir die Vision einer inklusiven Kulturbewegung nach aussen. Inclusions ist mehr als ein Event – es ist der Beginn einer Bewegung, die zeigt, was möglich wird, wenn Vielfalt als Stärke erkannt und gemeinsam gelebt wird.
+            Darüber hinaus sensibilisiert INCLUSIONS die Öffentlichkeit und sucht Fachpersonen aus Kultur, Sozialarbeit und Eventmanagement für inklusive Arbeits- und Begegnungsformen. Wir teilen Erfahrungen und Good-Practice-Beispiele, vernetzen uns mit Gleichgesinnten und engagieren uns aktiv in der Bewusstseinsbildung. Durch gezielte Medienarbeit, Kooperationen, Workshops und öffentliche Auftritte tragen wir die Vision einer inklusiven Kulturbewegung nach aussen. INCLUSIONS ist mehr als ein Event – es ist der Beginn einer Bewegung, die zeigt, was möglich wird, wenn Vielfalt als Stärke erkannt und gemeinsam gelebt wird.
           </p>
         </div>
       </section>

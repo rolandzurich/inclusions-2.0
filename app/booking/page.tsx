@@ -163,10 +163,10 @@ export default function BookingPage() {
   return (
     <main className="min-h-screen max-w-6xl px-4 py-12 mx-auto space-y-10 text-white">
       <section>
-        <h1 className="text-4xl font-bold">Booking – DJs &amp; DJ Pairs</h1>
+        <h1 className="text-4xl font-bold">Booking – DJ's &amp; DJ Pairs</h1>
         <p className="mt-3 text-lg text-white/70">
-          Buche unsere Resident DJs, DJ Pairs oder die Inclusions Dance Crew für deinen Event. Die DJ
-          Pairs sind ein USP von Inclusions – professionelle DJs legen zusammen mit DJs mit
+          Buche unsere Resident DJ's, DJ Pairs oder die INCLUSIONS Dance Crew für deinen Event. Die DJ
+          Pairs sind ein USP von INCLUSIONS – professionelle DJ's legen zusammen mit DJ's mit
           Beeinträchtigung auf.
         </p>
       </section>
@@ -176,7 +176,7 @@ export default function BookingPage() {
         <div>
           <h2 className="text-3xl font-semibold">DJ Pairs buchen</h2>
           <p className="mt-2 text-white/70">
-            Diese DJ Pairs können zusammen gebucht werden und bringen das Inclusions-Gefühl auf
+            Diese DJ Pairs können zusammen gebucht werden und bringen das INCLUSIONS-Gefühl auf
             deinen Event.
           </p>
         </div>
@@ -242,9 +242,9 @@ export default function BookingPage() {
       {/* Einzelne DJs */}
       <section className="space-y-6">
         <div>
-          <h2 className="text-3xl font-semibold">Einzelne DJs buchen</h2>
+          <h2 className="text-3xl font-semibold">Einzelne DJ's buchen</h2>
           <p className="mt-2 text-white/70">
-            Diese DJs können einzeln gebucht werden und sind Teil des Inclusions DJ Pools.
+            Diese DJ's können einzeln gebucht werden und sind Teil des INCLUSIONS DJ Pools.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -306,7 +306,7 @@ export default function BookingPage() {
         <div>
           <h2 className="text-3xl font-semibold">Dance Crew buchen</h2>
           <p className="mt-2 text-white/70">
-            Die Inclusions Dance Crew bringt die Inclusions-Energie auf deine Bühne, in deinen Club oder an dein Festival.
+            Die INCLUSIONS Dance Crew bringt die INCLUSIONS-Energie auf deine Bühne, in deinen Club oder an dein Festival.
           </p>
         </div>
         <div className="grid gap-6 md:grid-cols-1">
@@ -367,7 +367,7 @@ export default function BookingPage() {
       <section className="rounded-3xl bg-white/10 p-8">
         <h2 className="text-3xl font-semibold mb-2">
           Booking-Anfrage{" "}
-          {selectedBookingName ? `für ${selectedBookingName}` : "für Inclusions DJs & Dance Crew"}
+          {selectedBookingName ? `für ${selectedBookingName}` : "für INCLUSIONS DJ's & Dance Crew"}
         </h2>
           <p className="text-white/70 mb-6">
             Fülle das Formular aus und wir melden uns bei dir.
@@ -424,7 +424,7 @@ export default function BookingPage() {
                 </optgroup>
               )}
               {djs.length > 0 && (
-                <optgroup label="Resident DJs (einzeln buchbar)">
+                <optgroup label="Resident DJ's (einzeln buchbar)">
                   {djs.map((dj) => (
                     <option key={dj.id} value={`dj:${dj.id}`}>
                       {dj.name}

@@ -12,7 +12,7 @@ declare global {
 type SpeechRecognition = any;
 type SpeechRecognitionEvent = any;
 
-/** Lustiges, freundliches Icon: signalisiert klar «mit Inclusi sprechen» (Gesicht + Schallwellen) */
+/** Lustiges, freundliches Icon: signalisiert klar «mit INCLUSI sprechen» (Gesicht + Schallwellen) */
 function InclusiIcon({ className = "w-14 h-14" }: { className?: string }) {
   return (
     <svg
@@ -302,12 +302,12 @@ export function VoiceAgent() {
     return (
       <section 
         className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-3"
-        aria-label="Inclusi – Sprach-Assistent"
+        aria-label="INCLUSI – Sprach-Assistent"
       >
         <div className="flex items-center gap-3">
           <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0" />
           <div>
-            <h2 className="text-xl font-semibold">Inclusi</h2>
+            <h2 className="text-xl font-semibold">INCLUSI</h2>
             <p className="text-sm text-white/80" aria-live="polite">Lade...</p>
           </div>
         </div>
@@ -319,12 +319,12 @@ export function VoiceAgent() {
     return (
       <section 
         className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-3"
-        aria-label="Inclusi – Sprach-Assistent"
+        aria-label="INCLUSI – Sprach-Assistent"
       >
         <div className="flex items-center gap-3">
           <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0" />
           <div>
-            <h2 className="text-xl font-semibold">Inclusi</h2>
+            <h2 className="text-xl font-semibold">INCLUSI</h2>
             <p className="text-sm text-white/80" role="alert">
               Dein Browser unterstützt leider keine Spracherkennung. Bitte verwende Chrome oder Edge.
             </p>
@@ -343,14 +343,14 @@ export function VoiceAgent() {
   return (
     <section 
       className="rounded-2xl bg-white/10 p-4 md:p-5 text-white space-y-4"
-      aria-label="Inclusi – Sprach-Assistent für barrierefreie Infos"
+      aria-label="INCLUSI – Sprach-Assistent für barrierefreie Infos"
     >
       <div className="flex items-start gap-3">
         <InclusiIcon className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 flex-shrink-0" />
       <div className="min-w-0">
-        <h2 className="text-xl md:text-2xl font-semibold">Inclusi</h2>
+        <h2 className="text-xl md:text-2xl font-semibold">INCLUSI</h2>
         <p className="text-sm md:text-base text-white/90 mt-1">
-          Dein Sprach-Assistent: Infos zu Inclusions per Sprache – besonders für Menschen mit Beeinträchtigung.
+          Dein Sprach-Assistent: Infos zu INCLUSIONS per Sprache – besonders für Menschen mit Beeinträchtigung.
         </p>
         <p className="text-sm text-white/70 mt-1">
           Klicke auf den Knopf oder drücke Enter, stelle eine Frage und höre die Antwort.
@@ -367,7 +367,7 @@ export function VoiceAgent() {
         {statusText}
         {error && `Fehler: ${error}`}
         {lastUserText && `Du hast gesagt: ${lastUserText}`}
-        {lastReply && `Inclusi antwortet: ${lastReply}`}
+        {lastReply && `INCLUSI antwortet: ${lastReply}`}
       </div>
 
       {error && (
@@ -391,7 +391,7 @@ export function VoiceAgent() {
               ? "bg-red-600 hover:bg-red-500 animate-pulse" 
               : "bg-brand-pink hover:bg-brand-pink/90"
           }`}
-          aria-label={isListening ? "Zuhören stoppen" : "Mit Inclusi sprechen"}
+          aria-label={isListening ? "Zuhören stoppen" : "Mit INCLUSI sprechen"}
           aria-pressed={isListening}
           aria-describedby="voice-status"
         >
@@ -403,12 +403,12 @@ export function VoiceAgent() {
               </span>
             </>
           ) : (
-            "Mit Inclusi sprechen"
+            "Mit INCLUSI sprechen"
           )}
         </button>
 
         <p className="text-sm font-semibold text-amber-100 bg-amber-500/25 px-3 py-2 rounded-lg border border-amber-400/50 shrink-0">
-          Inclusi ist neu, versteht noch nicht alles – wir verbessern ihn dauernd verbessern.
+          INCLUSI ist neu, versteht noch nicht alles – wir werden INCLUSI laufend verbessern.
         </p>
 
         {isSpeaking && (
@@ -450,7 +450,7 @@ export function VoiceAgent() {
 
       {lastReply && (
         <div className="text-sm bg-white/5 p-3 rounded border border-white/10">
-          <div className="font-semibold mb-1">Inclusi:</div>
+          <div className="font-semibold mb-1">INCLUSI:</div>
           <div className="text-white/90" aria-live="polite">{lastReply}</div>
         </div>
       )}

@@ -122,11 +122,11 @@ export default function DJsPage() {
       <section>
         <h1 className="text-4xl font-bold">Resident DJs &amp; DJ Pairs</h1>
         <p className="mt-3 text-lg text-white/70">
-          Unsere Resident DJs sind mit Herz und Seele Teil von Inclusions. Sie legen ohne Gage auf
+          Unsere Resident DJ's sind mit Herz und Seele Teil von INCLUSIONS. Sie legen ohne Gage auf
           und unterstützen das Projekt als Botschafter.
         </p>
         <p className="mt-2 text-white/70">
-          Ein USP von Inclusions sind die DJ Pairs: professionelle DJs legen zusammen mit DJs mit
+          Ein USP von INCLUSIONS sind die DJ Pairs: professionelle DJ's legen zusammen mit DJ's mit
           Beeinträchtigung auf und schaffen ein inklusives, zugängliches Erlebnis auf der
           Tanzfläche.
         </p>
@@ -135,7 +135,7 @@ export default function DJsPage() {
             onClick={scrollToForm}
             className="inline-flex items-center rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
-            DJs für deinen Event anfragen
+            DJ's für deinen Event anfragen
           </button>
         </div>
       </section>
@@ -145,7 +145,7 @@ export default function DJsPage() {
         <div>
           <h2 className="text-3xl font-semibold">DJ Pairs</h2>
           <p className="mt-2 text-white/70">
-            Diese DJ Pairs können gemeinsam gebucht werden. Sie bringen das Inclusions-Gefühl auf
+            Diese DJ Pairs können gemeinsam gebucht werden. Sie bringen das INCLUSIONS-Gefühl auf
             deinen Event und verbinden Cluberfahrung mit gelebter Inklusion.
           </p>
           <p className="mt-2 text-white/70">
@@ -167,7 +167,7 @@ export default function DJsPage() {
                     <div className="absolute inset-0 animate-float">
                       <Image
                         src={pair.image}
-                        alt={`${pair.name} - Inklusives DJ-Pairing für das Inclusions Event${pairWithDJs.dj1.hasDisability || pairWithDJs.dj2.hasDisability ? " mit DJs mit Beeinträchtigung" : ""}`}
+                        alt={`${pair.name} - Inklusives DJ-Pairing für das INCLUSIONS Event${pairWithDJs.dj1.hasDisability || pairWithDJs.dj2.hasDisability ? " mit DJ's mit Beeinträchtigung" : ""}`}
                         fill
                         className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                         loading="lazy"
@@ -226,9 +226,9 @@ export default function DJsPage() {
       {/* Alle Resident DJs (inkl. nicht einzeln buchbare) */}
       <section className="space-y-6">
         <div>
-          <h2 className="text-3xl font-semibold">Alle Resident DJs</h2>
+          <h2 className="text-3xl font-semibold">Alle Resident DJ's</h2>
           <p className="mt-2 text-white/70">
-            Übersicht aller DJs im Inclusions Pool. Einige sind nur als Teil eines Pairs buchbar.
+            Übersicht aller DJ's im INCLUSIONS Pool. Einige sind nur als Teil eines Pairs buchbar.
             Die Badges zeigen dir, ob jemand inklusiv mit Beeinträchtigung auflegt oder nur als
             Pair verfügbar ist.
           </p>
@@ -244,7 +244,7 @@ export default function DJsPage() {
                   <div className="absolute inset-0 animate-float">
                     <Image 
                       src={dj.image} 
-                      alt={`${dj.name} - Resident DJ bei Inclusions${dj.hasDisability ? " mit Beeinträchtigung" : ""}${dj.bookableIndividually ? " - Einzeln buchbar" : " - Nur als Pair buchbar"}`}
+                      alt={`${dj.name} - Resident DJ bei INCLUSIONS${dj.hasDisability ? " mit Beeinträchtigung" : ""}${dj.bookableIndividually ? " - Einzeln buchbar" : " - Nur als Pair buchbar"}`}
                       fill 
                       className={`object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out ${
                         dj.id === "samy-jackson" || dj.id === "hoibaer" 
@@ -315,10 +315,10 @@ export default function DJsPage() {
       <section id="booking-form" className="rounded-3xl bg-white/10 p-8 space-y-6">
         <div className="space-y-3">
           <h2 className="text-3xl font-semibold">
-            Booking-Anfrage {selectedBookingName ? `für ${selectedBookingName}` : "für DJs & DJ Pairs"}
+            Booking-Anfrage {selectedBookingName ? `für ${selectedBookingName}` : "für DJ's & DJ Pairs"}
           </h2>
           <p className="text-white/80 max-w-2xl">
-            Du möchtest unsere Resident DJs oder DJ Pairs für deinen Event buchen? Fülle das Formular aus 
+            Du möchtest unsere Resident DJ's oder DJ Pairs für deinen Event buchen? Fülle das Formular aus 
             und wir melden uns bei dir mit weiteren Informationen, Verfügbarkeit und Konditionen.
           </p>
           <p className="text-sm text-white/60">
@@ -377,7 +377,7 @@ export default function DJsPage() {
                 </optgroup>
               )}
               {bookableDJs.length > 0 && (
-                <optgroup label="Resident DJs (einzeln buchbar)">
+                <optgroup label="Resident DJ's (einzeln buchbar)">
                   {bookableDJs.map((dj) => (
                     <option key={dj.id} value={`dj:${dj.id}`}>
                       {dj.name}

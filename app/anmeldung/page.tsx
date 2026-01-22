@@ -139,7 +139,7 @@ export default function AnmeldungPage() {
       <section className="text-center space-y-4 pt-4">
         <h1 className="text-4xl md:text-5xl font-bold">Werde Teil der Bewegung!</h1>
         <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto">
-          Verpasse keine Momente. Erhalte exklusive Updates zu unseren Events, DJs und der Inclusions-Community.
+          Verpasse keine Momente. Erhalte exklusive Updates zu unseren Events, DJ's und der INCLUSIONS-Community.
         </p>
       </section>
 

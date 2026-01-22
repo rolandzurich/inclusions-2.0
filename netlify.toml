@@ -11,7 +11,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Redirects für Next.js Routing
+# Redirects für Next.js: alles an den Netlify-Handler (Plugin stellt Static vorher bereit)
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/___netlify-handler"

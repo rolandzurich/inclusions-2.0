@@ -30,13 +30,13 @@ export const metadata: Metadata = {
   },
 };
 
-// Inclusi (Voice Agent) nur im Browser laden, nicht beim Server-Side Rendering
+// INCLUSI (Voice Agent) nur im Browser laden, nicht beim Server-Side Rendering
 function InclusiFallback({ msg, loading }: { msg: string; loading?: boolean }) {
   return (
-    <section className="rounded-2xl bg-white/10 p-4 md:p-5 text-white flex items-center gap-3" aria-label="Inclusi">
+    <section className="rounded-2xl bg-white/10 p-4 md:p-5 text-white flex items-center gap-3" aria-label="INCLUSI">
       <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full bg-brand-pink/50 flex-shrink-0 ${loading ? "animate-pulse" : ""}`} />
       <div>
-        <h2 className="text-xl font-semibold">Inclusi</h2>
+        <h2 className="text-xl font-semibold">INCLUSI</h2>
         <p className="text-sm text-white/80">{msg}</p>
       </div>
     </section>
@@ -48,8 +48,8 @@ const VoiceAgent = dynamic(
     import("@/components/VoiceAgent")
       .then((mod) => ({ default: mod.VoiceAgent }))
       .catch((err) => {
-        console.error("Inclusi (VoiceAgent) konnte nicht geladen werden:", err);
-        return { default: () => <InclusiFallback msg="Inclusi ist gerade nicht verfügbar. Bitte lade die Seite neu." /> };
+        console.error("INCLUSI (VoiceAgent) konnte nicht geladen werden:", err);
+        return { default: () => <InclusiFallback msg="INCLUSI ist gerade nicht verfügbar. Bitte lade die Seite neu." /> };
       }),
   {
     ssr: false,
@@ -58,7 +58,7 @@ const VoiceAgent = dynamic(
 );
 
 const quotes = [
-  '"Ich habe mich noch nie so frei gefühlt wie bei Inclusions."',
+  '"Ich habe mich noch nie so frei gefühlt wie bei INCLUSIONS."',
   '"Hier tanzen Menschen wirklich miteinander – nicht nebeneinander."',
   '"Das war einer der schönsten Tage meines Lebens."',
   '"Musik verbindet uns alle – das spürt man hier so stark."'
@@ -99,8 +99,8 @@ const baseUrl = getBaseUrl();
 
 const jsonLdEvent = getEventSchema({
   id: "inclusions-2",
-  name: "Inclusions 2",
-  description: "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event mit DJ-Workshops, Dance Crew und inklusiver Clubkultur im Supermarket Zürich.",
+  name: "INCLUSIONS 2",
+  description: "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event mit DJ-Workshops, Dance Crew und inklusiver Clubkultur im Supermarket Zürich.",
   startDate: "2026-04-25T13:00:00+02:00",
   endDate: "2026-04-25T21:00:00+02:00",
   location: "Supermarket Zürich",
@@ -126,7 +126,7 @@ export default function HomePage() {
           <div className="absolute inset-0 z-0">
             <Image
               src="/images/hero.jpg"
-              alt="Inclusions Event im Supermarket Zürich - Über 400 Menschen mit und ohne Beeinträchtigung tanzen zusammen in einer inklusiven Atmosphäre"
+              alt="INCLUSIONS Event im Supermarket Zürich - Über 400 Menschen mit und ohne Beeinträchtigung tanzen zusammen in einer inklusiven Atmosphäre"
               fill
               className="object-cover"
               quality={90}
@@ -165,10 +165,10 @@ export default function HomePage() {
               {/* Content unten: Choregrafie, Line-Up und Buttons */}
               <div className="space-y-4 animate-fade-in pb-8 md:pb-12 lg:pb-16 w-full max-w-4xl">
                 <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  Neue Choregrafie der Inclusions Dance Crew
+                  Neue Choreografie der INCLUSIONS Dance Crew
                 </p>
                 <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  Line-Up: Zagara, Coco.bewegt, Samy Jackson, Hoibaer, _miniArt°°°, Ashan (live) & Inclusions DJ's (werden noch bestätigt)
+                  Line-up: Zagara, Coco.bewegt, Samy Jackson, Hoibaer, _miniArt°°°, Ashan (live) & INCLUSIONS DJ's (werden noch bestätigt)
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-4 justify-center items-start">
@@ -197,7 +197,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Inclusi – above the fold als USP: Infos per Sprache, besonders für Menschen mit Beeinträchtigung */}
+        {/* INCLUSI – above the fold als USP: Infos per Sprache, besonders für Menschen mit Beeinträchtigung */}
         <VoiceAgent />
 
         {/* Hero Content */}
@@ -217,7 +217,7 @@ export default function HomePage() {
         <div className="grid gap-6 md:grid-cols-2 items-center">
           <div>
             <h2 className="text-3xl font-semibold">Nächster Event</h2>
-            <p className="mt-4 text-2xl font-bold text-brand-pink">Inclusions 2</p>
+            <p className="mt-4 text-2xl font-bold text-brand-pink">INCLUSIONS 2</p>
             <p className="mt-2 text-lg">25. April 2026, 13:00 - 21:00 · Supermarket Zürich</p>
             
             <ul className="mt-4 space-y-2 text-white/90 list-disc list-outside pl-6">
@@ -255,7 +255,7 @@ export default function HomePage() {
           <div className="w-full mt-6 md:mt-0 aspect-square relative rounded-2xl overflow-hidden">
             <Image
               src="/images/dance-crew-next-event-home.jpg"
-              alt="Inclusions Dance Crew - Nächster Event"
+              alt="INCLUSIONS Dance Crew - Nächster Event"
               fill
               className="object-cover rounded-2xl"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -272,7 +272,7 @@ export default function HomePage() {
           </h2>
           <p className="text-lg text-white/80 max-w-3xl mx-auto">
             Mit der 1. Edition haben wir gezeigt: Es funktioniert! Menschen mit und ohne Beeinträchtigung 
-            feiern gemeinsam auf Augenhöhe. Wähle deinen Weg zur Inclusions 2.
+            feiern gemeinsam auf Augenhöhe. Wähle deinen Weg zur INCLUSIONS 2.
           </p>
         </div>
 
@@ -292,7 +292,7 @@ export default function HomePage() {
                 </h3>
                 <p className="text-white/80 leading-relaxed">
                   Du liebst elektronische Musik und willst eine Party erleben, die wirklich anders ist? 
-                  Bei Inclusions tanzen Menschen mit und ohne Beeinträchtigung zusammen – auf Augenhöhe, 
+                  Bei INCLUSIONS tanzen Menschen mit und ohne Beeinträchtigung zusammen – auf Augenhöhe, 
                   mit Respekt und purem Spass.
                 </p>
               </div>
@@ -343,7 +343,7 @@ export default function HomePage() {
                 <p className="text-sm text-white/90">
                   <strong className="text-white">Komm mit Offenheit.</strong> Es entstehen Begegnungen auf Augenhöhe. 
                   Menschen mit Beeinträchtigung sind auch einfach nur Menschen mit Träumen, Wünschen und feiern gerne. 
-                  Bei Inclusions geht es ums gemeinsame Feiern und Erleben – du wirst dich wohlfühlen.
+                  Bei INCLUSIONS geht es ums gemeinsame Feiern und Erleben – du wirst dich wohlfühlen.
                 </p>
               </div>
 
@@ -416,8 +416,8 @@ export default function HomePage() {
                 <div className="space-y-2 text-sm text-white/80">
                   <p>• Du musst mindestens 20 Jahre alt sein</p>
                   <p>• Anmeldung im Vorfeld erforderlich</p>
-                  <p>• <strong>Nur VIPs kommen gratis:</strong> Freunde, Familie und Betreuer müssen ein Ticket kaufen</p>
-                  <p>• Betreuer kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</p>
+                  <p>• <strong>Nur VIPs kommen gratis:</strong> Freunde, Familie und Betreuer:in müssen ein Ticket kaufen. <a href="https://supermarket.li/events/inclusions/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></p>
+                  <p>• Betreuer:in kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</p>
                 </div>
               </div>
 
@@ -443,7 +443,7 @@ export default function HomePage() {
         {/* Verbindende Message */}
         <div className="text-center pt-6 border-t border-white/10">
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            <strong className="text-white">Gemeinsam feiern wir Vielfalt.</strong> Bei Inclusions 
+            <strong className="text-white">Gemeinsam feiern wir Vielfalt.</strong> Bei INCLUSIONS 
             bringen wir beide Welten zusammen – auf Augenhöhe, mit Respekt und purem Spass. 
             Sei dabei und erlebe, was möglich ist, wenn wir zusammenarbeiten.
           </p>
@@ -454,7 +454,7 @@ export default function HomePage() {
       <section className="space-y-6">
         <div>
           <p className="text-sm uppercase tracking-[0.3em] text-brand-pink mb-1">Rückblick</p>
-          <h2 className="text-3xl font-semibold text-white leading-snug mt-1">Inclusions 1. Edition</h2>
+          <h2 className="text-3xl font-semibold text-white leading-snug mt-1">INCLUSIONS 1. Edition</h2>
         </div>
         <div className="space-y-3 text-white/80">
           <p>Am 27. September 2025 haben wir Geschichte geschrieben.</p>
@@ -463,9 +463,9 @@ export default function HomePage() {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { src: "/images/rueckblick-1.jpg", alt: "Inclusions 1. Edition - Event Moment im Supermarket Zürich mit Menschen mit und ohne Beeinträchtigung" },
-            { src: "/images/rueckblick-2.jpg", alt: "Inclusions 1. Edition - Gemeinsam tanzen und feiern in inklusiver Atmosphäre" },
-            { src: "/images/rueckblick-3.jpg", alt: "Inclusions 1. Edition - Feiern zusammen - Über 400 Menschen im Supermarket Zürich" }
+            { src: "/images/rueckblick-1.jpg", alt: "INCLUSIONS 1. Edition - Event Moment im Supermarket Zürich mit Menschen mit und ohne Beeinträchtigung" },
+            { src: "/images/rueckblick-2.jpg", alt: "INCLUSIONS 1. Edition - Gemeinsam tanzen und feiern in inklusiver Atmosphäre" },
+            { src: "/images/rueckblick-3.jpg", alt: "INCLUSIONS 1. Edition - Feiern zusammen - Über 400 Menschen im Supermarket Zürich" }
           ].map((image, index) => (
             <div key={index} className="relative h-64 rounded-2xl overflow-hidden group">
               <div className="absolute inset-0 animate-float">
@@ -496,10 +496,10 @@ export default function HomePage() {
 
       {/* Was ist Inclusions – Prio 2 */}
       <section className="space-y-6">
-        <h2 className="text-3xl font-semibold text-white">Was ist Inclusions?</h2>
+        <h2 className="text-3xl font-semibold text-white">Was ist INCLUSIONS?</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            "Gemeinsam anders. Bei Inclusions schaffen wir Räume, in denen Menschen echt und auf Augenhöhe zusammenkommen.",
+            "Gemeinsam anders. Bei INCLUSIONS schaffen wir Räume, in denen Menschen echt und auf Augenhöhe zusammenkommen.",
             "Musik verbindet. Wir feiern eine Clubkultur, die offen für alle ist – unabhängig von Fähigkeit, Herkunft oder Background.",
             "Eine neue Bewegung. Nach dem Erfolg der ersten Edition gehen wir den Weg weiter: vom Event zur Community."
           ].map((text) => (
@@ -513,7 +513,7 @@ export default function HomePage() {
       <section className="rounded-2xl bg-white/5 p-6" aria-labelledby="faq-cta-heading">
         <h2 id="faq-cta-heading" className="text-xl font-semibold text-white mb-2">Fragen?</h2>
         <p className="text-white/80">
-          In unseren <Link href="/faq" className="text-brand-pink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded">Fragen & Antworten</Link> finden Sie die wichtigsten Infos zu Inclusions, Tickets, VIP-Anmeldung und mehr.
+          In unseren <Link href="/faq" className="text-brand-pink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded">Fragen & Antworten</Link> finden Sie die wichtigsten Infos zu INCLUSIONS, Tickets, VIP-Anmeldung und mehr.
         </p>
       </section>
 
@@ -589,7 +589,7 @@ export default function HomePage() {
       <section className="space-y-4 rounded-3xl bg-white/5 p-8 text-white">
         <h2 className="text-3xl font-semibold">Spenden</h2>
         <p className="text-lg text-white/80 max-w-3xl">
-          Inclusions ist eine gemeinnützige Bewegung. Mit deiner Unterstützung ermöglichen wir
+          INCLUSIONS ist eine gemeinnützige Bewegung. Mit deiner Unterstützung ermöglichen wir
           Events, Begleitung und Teilhabe. Jeder Beitrag macht einen Unterschied.
         </p>
         <div className="flex flex-wrap gap-4 items-center">
@@ -620,9 +620,9 @@ export default function HomePage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Resident DJs & DJ Pairs</p>
-            <h2 className="text-3xl font-semibold text-white mt-2">Unsere DJs</h2>
+            <h2 className="text-3xl font-semibold text-white mt-2">Unsere DJ's</h2>
             <p className="mt-3 text-white/80 max-w-2xl">
-              Ein USP von Inclusions sind die DJ Pairs: professionelle DJs legen zusammen mit DJs mit 
+              Ein USP von INCLUSIONS sind die DJ Pairs: professionelle DJ's legen zusammen mit DJ's mit 
               Beeinträchtigung auf und schaffen ein inklusives, zugängliches Erlebnis auf der Tanzfläche.
             </p>
           </div>
@@ -652,7 +652,7 @@ export default function HomePage() {
                       <div className="absolute inset-0 animate-float">
                         <Image
                           src={pair.image}
-                          alt={`${pair.name} - Inklusives DJ-Pairing für das Inclusions Event`}
+                          alt={`${pair.name} - Inklusives DJ-Pairing für das INCLUSIONS Event`}
                           fill
                           className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                           loading="lazy"
@@ -705,7 +705,7 @@ export default function HomePage() {
 
         {/* Bekannte DJs */}
         <div>
-          <h3 className="text-2xl font-semibold text-white mb-4">Bekannte Resident DJs</h3>
+          <h3 className="text-2xl font-semibold text-white mb-4">Bekannte Resident DJ's</h3>
           <div className="grid gap-6 md:grid-cols-2">
             {["samy-jackson", "zagara"].map((djId) => {
               const dj = getDJById(djId);
@@ -722,7 +722,7 @@ export default function HomePage() {
                         <div className="absolute inset-0 animate-float">
                           <Image
                             src={dj.image}
-                            alt={`${dj.name} - Resident DJ bei Inclusions${dj.hasDisability ? " mit Beeinträchtigung" : ""}`}
+                            alt={`${dj.name} - Resident DJ bei INCLUSIONS${dj.hasDisability ? " mit Beeinträchtigung" : ""}`}
                             fill
                             className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                             loading="lazy"
@@ -783,7 +783,7 @@ export default function HomePage() {
             href="/djs"
             className="inline-flex items-center rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
           >
-            DJs für dein Event buchen
+            DJ's für dein Event buchen
           </Link>
         </div>
       </section>
@@ -805,10 +805,10 @@ export default function HomePage() {
         <div className="relative z-10 p-8 md:p-12 space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Inclusions Dance Crew</p>
+              <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">INCLUSIONS Dance Crew</p>
               <h2 className="text-3xl font-semibold text-white mt-2">Tanz, Energie, Inklusion</h2>
               <p className="mt-3 text-white/80 max-w-2xl">
-                Unsere Dance Crew bringt die Inclusions-Energie auf deine Bühne, in deinen Club oder an dein Festival. 
+                Unsere Dance Crew bringt die INCLUSIONS-Energie auf deine Bühne, in deinen Club oder an dein Festival. 
                 Menschen mit und ohne Beeinträchtigung tanzen gemeinsam – professionell, kraftvoll und zutiefst berührend.{" "}
                 <Link 
                   href="/dance-crew" 

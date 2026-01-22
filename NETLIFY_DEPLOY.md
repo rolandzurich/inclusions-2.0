@@ -64,14 +64,31 @@ git ls-files '*.env*' '.env*'
    | `GEMINI_API_KEY` | Google Gemini API Key (Voice Agent) | **Ja** – nur in Netlify |
    | `RESEND_API_KEY` | Resend API Key (E-Mail) | Ja |
    | `RESEND_FROM_EMAIL` | Absender (z.B. `noreply@inclusions.zone`) | Nein |
-   | `RESEND_ADMIN_EMAIL` | Admin-E-Mail für Benachrichtigungen | Nein |
+   | `RESEND_ADMIN_EMAIL` | Admin-E-Mail für Benachrichtigungen (z.B. `info@inclusions.zone`) | Nein |
    | `NEXT_PUBLIC_SITE_URL` | Produktions-URL, z.B. `https://inclusions.zone` | Nein |
+
+   **Für Backend (DB), Admin-Bereich und Google-Sheets – unbedingt setzen:**
+
+   | Variable | Beschreibung |
+   |----------|--------------|
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase-Projekt-URL (z.B. `https://xxxx.supabase.co`) |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Service-Role-Key aus Supabase (Project Settings → API) |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon-Key (für Auth/RLS) |
+
+   Ohne diese werden **keine** Formulareinträge (VIP, Buchung, Newsletter) in der Datenbank gespeichert. Der Fallback „direkte DB“ funktioniert nur lokal, nicht auf Netlify.
+
+   **Für Google-Sheets-Automation (optional, nach DB):**
+
+   | Variable | Beschreibung |
+   |----------|--------------|
+   | `GOOGLE_SHEETS_CREDENTIALS` | JSON-String der Service-Account-Credentials |
+   | `GOOGLE_SHEET_CONTACT_REQUESTS` | Spreadsheet-ID für Buchungs-/Kontaktanfragen |
+   | `GOOGLE_SHEET_NEWSLETTER` | Spreadsheet-ID für Newsletter |
+   | `GOOGLE_SHEET_VIP` | Spreadsheet-ID für VIP-Anmeldungen |
 
    Optional, falls genutzt:
 
    - `NEXT_PUBLIC_UMAMI_URL`, `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
-   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-   - `GOOGLE_SHEETS_CREDENTIALS`, `GOOGLE_SHEET_*` (falls Google Sheets)
    - `NEXT_PUBLIC_AGENT_DEBUG` = `1` nur zum Debuggen, in Produktion weglassen.
 
 5. **Deploy starten** – Netlify baut bei jedem Push auf `main` automatisch.
@@ -115,6 +132,10 @@ Auch hier: **`GEMINI_API_KEY` und alle Secrets nur in Netlify unter Environment 
 | „API key not valid“ / Key gesperrt | Key war vermutlich öffentlich. Neuen Key in Google AI Studio erzeugen und nur in Netlify eintragen. |
 | API-Routen 404 | `@netlify/plugin-nextjs` in `package.json` prüfen; Build-Command `npm run build` und `netlify.toml` verwenden. |
 | Build schlägt fehl | Build-Logs in Netlify prüfen; `npm run build` lokal testen. |
+| **Buchung/Newsletter: Keine Bestätigungs-Mail, keine Notification** | `RESEND_API_KEY` und `RESEND_FROM_EMAIL` prüfen. Domain in Resend verifizieren. Nach Code-Deploy: E-Mail-Promises werden nun mit `await` abgewartet (ohne das endet die Serverless-Funktion, bevor E-Mails gesendet sind). |
+| **VIP: Bestätigung kommt, Notification an info@ nicht** | `RESEND_ADMIN_EMAIL=info@inclusions.zone` setzen. Resend-Dashboard und Netlify-Function-Logs prüfen (ob Fehler beim Senden an info@). Spam/Postfach prüfen. |
+| **Einträge erscheinen nicht im Backend / in der DB** | `NEXT_PUBLIC_SUPABASE_URL` und `SUPABASE_SERVICE_ROLE_KEY` **müssen** in Netlify gesetzt sein. Ohne sie ist `supabaseAdmin` leer, und der DB-Fallback funktioniert in Production nicht. Nach Änderung: Redeploy. |
+| **Keine Einträge in Google Sheets** | Erst DB prüfen (s. o.). Sheets-Export läuft nur nach erfolgreichem DB-Insert. Dann: `GOOGLE_SHEETS_CREDENTIALS` (JSON) sowie `GOOGLE_SHEET_CONTACT_REQUESTS`, `GOOGLE_SHEET_NEWSLETTER`, `GOOGLE_SHEET_VIP` setzen. |
 
 ---
 
