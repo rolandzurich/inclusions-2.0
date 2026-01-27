@@ -1,4 +1,4 @@
-// Direkter Datenbankzugriff für lokale Entwicklung (ohne PostgREST)
+// Direkter Datenbankzugriff (ohne Supabase)
 import { Pool } from 'pg';
 
 let pool: Pool | null = null;
@@ -8,23 +8,34 @@ export function getDbPool(): Pool | null {
     return pool;
   }
 
-  // Nur für lokale Entwicklung
-  if (process.env.NODE_ENV === 'production') {
+  // Verwende Umgebungsvariablen für DB-Verbindung
+  const dbHost = process.env.DB_HOST || 'localhost';
+  const dbPort = parseInt(process.env.DB_PORT || '5432', 10);
+  const dbDatabase = process.env.DB_DATABASE || 'inclusions_db';
+  const dbUser = process.env.DB_USER || 'inclusions_user';
+  const dbPassword = process.env.DB_PASSWORD || 'inclusions_secure_password_2024!';
+
+  // Prüfe ob alle notwendigen Werte vorhanden sind
+  if (!dbHost || !dbDatabase || !dbUser || !dbPassword) {
+    console.warn('⚠️  Datenbank-Umgebungsvariablen nicht vollständig gesetzt');
+    console.warn('   Erwartet: DB_HOST, DB_PORT, DB_DATABASE, DB_USER, DB_PASSWORD');
     return null;
   }
 
   try {
     pool = new Pool({
-      host: 'localhost',
-      port: 54322,
-      database: 'postgres',
-      user: 'supabase_admin',
-      password: 'your-super-secret-password-change-this-min-32-chars',
+      host: dbHost,
+      port: dbPort,
+      database: dbDatabase,
+      user: dbUser,
+      password: dbPassword,
       max: 5,
+      ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
     });
+    console.log('✅ Datenbank-Pool erstellt:', { host: dbHost, port: dbPort, database: dbDatabase, user: dbUser });
     return pool;
   } catch (error) {
-    console.error('Error creating DB pool:', error);
+    console.error('❌ Error creating DB pool:', error);
     return null;
   }
 }

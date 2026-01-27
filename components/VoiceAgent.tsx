@@ -277,7 +277,32 @@ export function VoiceAgent() {
       rec.onerror = (event: any) => {
         console.error("Spracherkennungsfehler:", event?.error);
         setIsListening(false);
-        setError(`Spracherkennungsfehler: ${event?.error || "Unbekannt"}`);
+        
+        // Benutzerfreundliche Fehlermeldungen
+        const errorType = event?.error || "unknown";
+        let errorMessage = "";
+        
+        switch (errorType) {
+          case "not-allowed":
+            errorMessage = "Mikrofon-Zugriff wurde verweigert. Bitte erlaube den Mikrofon-Zugriff in deinen Browser-Einstellungen und versuche es erneut.";
+            break;
+          case "no-speech":
+            errorMessage = "Keine Sprache erkannt. Bitte versuche es noch einmal und spreche deutlich.";
+            break;
+          case "audio-capture":
+            errorMessage = "Kein Mikrofon gefunden. Bitte stelle sicher, dass ein Mikrofon angeschlossen ist.";
+            break;
+          case "network":
+            errorMessage = "Netzwerkfehler. Bitte überprüfe deine Internetverbindung.";
+            break;
+          case "aborted":
+            errorMessage = "Spracherkennung wurde abgebrochen.";
+            break;
+          default:
+            errorMessage = `Spracherkennungsfehler: ${errorType}. Bitte versuche es noch einmal.`;
+        }
+        
+        setError(errorMessage);
       };
 
       rec.onend = () => {
@@ -372,12 +397,25 @@ export function VoiceAgent() {
 
       {error && (
         <div 
-          className="text-sm text-amber-200 bg-amber-500/15 p-3 rounded-xl border border-amber-500/25"
+          className="text-sm text-amber-200 bg-amber-500/15 p-3 rounded-xl border border-amber-500/25 space-y-2"
           role="alert"
           aria-live="assertive"
         >
-          <span className="font-semibold">Fehler: </span>
-          {error}
+          <div>
+            <span className="font-semibold">Fehler: </span>
+            {error}
+          </div>
+          {error.includes("Mikrofon-Zugriff") && (
+            <div className="text-xs text-amber-100/90 mt-2 pt-2 border-t border-amber-500/25">
+              <p className="font-semibold mb-1">So erlaubst du den Mikrofon-Zugriff:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li><strong>Chrome/Edge:</strong> Klicke auf das Schloss-Symbol in der Adressleiste → Mikrofon erlauben</li>
+                <li><strong>Firefox:</strong> Klicke auf das Schloss-Symbol → Berechtigungen → Mikrofon erlauben</li>
+                <li><strong>Safari:</strong> Einstellungen → Websites → Mikrofon → Erlauben</li>
+                <li>Lade die Seite danach neu (F5 oder Cmd+R)</li>
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

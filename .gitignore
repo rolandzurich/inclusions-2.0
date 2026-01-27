@@ -55,3 +55,6 @@ Thumbs.db
 backend/.env
 backend/supabase/.branches
 backend/supabase/.temp
+
+# Server credentials
+server.md

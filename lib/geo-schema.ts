@@ -3,14 +3,55 @@
  * Macht Inhalte für KI-Suchmaschinen (ChatGPT, Perplexity, Gemini etc.) maschinenlesbar.
  */
 
+/**
+ * Ermittelt die baseUrl dynamisch basierend auf dem Request-Host
+ * Funktioniert sowohl client-seitig (window.location) als auch server-seitig (Headers)
+ */
 export function getBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || "https://inclusions.zone";
-}
+  // Client-seitig: Verwende window.location.origin
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
 
-const BASE = getBaseUrl();
+  // Server-seitig: Versuche Headers zu verwenden (Next.js App Router)
+  // Nur ausführen, wenn wir definitiv server-seitig sind
+  if (typeof process !== "undefined" && process.env.NEXT_RUNTIME) {
+    try {
+      // Dynamischer Import von next/headers (nur server-seitig verfügbar)
+      const { headers } = require("next/headers");
+      const headersList = headers();
+      
+      // Versuche Host aus verschiedenen Headers zu extrahieren
+      // Nginx setzt normalerweise 'host' Header
+      const host = headersList.get("host") || 
+                   headersList.get("x-forwarded-host") ||
+                   headersList.get("x-real-ip");
+      
+      // Protocol aus Headers oder Standard (http für lokale IPs)
+      const forwardedProto = headersList.get("x-forwarded-proto");
+      const protocol = forwardedProto || 
+                       (headersList.get("x-forwarded-ssl") === "on" ? "https" : "http");
+      
+      if (host) {
+        // Für lokale IPs (10.x.x.x) immer http verwenden
+        if (host.startsWith("10.") || host.startsWith("192.168.") || host === "localhost") {
+          return `http://${host}`;
+        }
+        return `${protocol}://${host}`;
+      }
+    } catch (error) {
+      // headers() ist nicht verfügbar oder Fehler beim Zugriff
+      // Das ist OK, wir verwenden den Fallback
+    }
+  }
+
+  // Fallback: Umgebungsvariable oder Standard-URL
+  return process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || "https://inclusions.zone";
+}
 
 /** Erweiterte Organization für E-E-A-T und Entity-Erkennung */
 export function getOrganizationSchema() {
+  const BASE = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -40,6 +81,7 @@ export function getOrganizationSchema() {
 
 /** WebSite-Schema für bessere Auffindbarkeit in KI-Suchen */
 export function getWebSiteSchema() {
+  const BASE = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -85,6 +127,7 @@ export interface EventSchemaInput {
 
 /** Event-Schema für Kalender und KI-Antworten zu «Wann», «Wo» */
 export function getEventSchema(e: EventSchemaInput) {
+  const BASE = getBaseUrl();
   const start = e.startDate.includes("T") ? e.startDate : `${e.startDate}T13:00:00+02:00`;
   const end = e.endDate || (e.startDate.includes("T") ? undefined : `${e.startDate}T21:00:00+02:00`);
   return {
@@ -114,6 +157,7 @@ export interface BreadcrumbItem {
 
 /** BreadcrumbList für Kontext in KI-Antworten */
 export function getBreadcrumbSchema(items: BreadcrumbItem[]) {
+  const BASE = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -136,6 +180,7 @@ export interface PersonSchemaInput {
 
 /** Person für Über-uns, E-E-A-T */
 export function getPersonSchema(p: PersonSchemaInput) {
+  const BASE = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -149,6 +194,7 @@ export function getPersonSchema(p: PersonSchemaInput) {
 
 /** AboutPage / WebPage für Über-uns */
 export function getAboutPageSchema(description: string, url: string) {
+  const BASE = getBaseUrl();
   return {
     "@context": "https://schema.org",
     "@type": "AboutPage",

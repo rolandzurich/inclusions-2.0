@@ -1,33 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { insertNewsletterSubscriber } from '@/lib/db-json';
+import { sendNewsletterWelcome, sendNewsletterNotification } from '@/lib/resend';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate Limiting (optional, wenn Supabase verfügbar)
-    let ipAddress = 'unknown';
-    try {
-      const { getClientIP, checkRateLimit } = await import('@/lib/supabase');
-      ipAddress = getClientIP(request);
-      const rateLimit = await checkRateLimit(ipAddress, '/api/newsletter', 5, 60);
-      
-      if (!rateLimit.allowed) {
-        return NextResponse.json(
-          { success: false, message: 'Zu viele Anfragen. Bitte versuche es später erneut.' },
-          { status: 429 }
-        );
-      }
-    } catch (rateLimitError) {
-      // Rate Limiting nicht verfügbar, weiter ohne
-      console.log('Rate limiting nicht verfügbar');
-    }
-
     const body = await request.json();
-
-    // Spam-Schutz: Honeypot
-    if (body.honeypot && body.honeypot !== '') {
-      return NextResponse.json({ success: true });
-    }
 
     // Validierung
     if (!body.email) {
@@ -37,243 +16,67 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // E-Mail-Validierung
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(body.email)) {
-      return NextResponse.json(
-        { success: false, message: 'Ungültige E-Mail-Adresse.' },
-        { status: 400 }
+    // Speichere in JSON
+    const result = await insertNewsletterSubscriber({
+      email: body.email.toLowerCase().trim(),
+      first_name: body.first_name || null,
+      last_name: body.last_name || null,
+      interests: body.interests || [],
+      age_group: body.age_group || null,
+      has_disability: body.has_disability || false,
+      disability_type: body.disability_type || null,
+      accessibility_needs: body.accessibility_needs || null,
+    });
+
+    console.log('✅ Newsletter gespeichert:', result.data);
+
+    // Sende Willkommens-E-Mail an den Benutzer
+    try {
+      const welcomeResult = await sendNewsletterWelcome(
+        body.email,
+        body.first_name || 'Liebe/r'
       );
-    }
-
-    // Prüfen ob E-Mail bereits existiert (wenn Supabase verfügbar)
-    let existing = null;
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      if (supabaseAdmin) {
-        const { data } = await supabaseAdmin
-          .from('newsletter_subscribers')
-          .select('id, status, opt_in_confirmed_at')
-          .eq('email', body.email.toLowerCase().trim())
-          .single();
-        existing = data;
-      }
-    } catch (supabaseError) {
-      // Supabase nicht verfügbar, weiter ohne Prüfung
-      console.log('Supabase nicht verfügbar');
-    }
-
-    if (existing) {
-      if (existing.opt_in_confirmed_at) {
-        // Bereits bestätigt
-        return NextResponse.json(
-          { success: true, message: 'Diese E-Mail-Adresse ist bereits für den Newsletter angemeldet.' },
-          { status: 200 }
-        );
+      if (welcomeResult.error) {
+        console.error('⚠️ Willkommens-E-Mail Fehler:', welcomeResult.error);
       } else {
-        // Noch nicht bestätigt, neuen Token senden
-        try {
-          const { supabaseAdmin } = await import('@/lib/supabase');
-          const { sendNewsletterOptIn } = await import('@/lib/resend');
-          
-          if (!supabaseAdmin) {
-            throw new Error('Supabase nicht verfügbar');
-          }
-          
-          const { data: updated } = await supabaseAdmin
-            .from('newsletter_subscribers')
-            .update({
-              opt_in_token: crypto.randomUUID(),
-              opt_in_expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            })
-            .eq('id', existing.id)
-            .select()
-            .single();
-
-          if (updated) {
-            await sendNewsletterOptIn(
-              body.email,
-              body.first_name || 'Liebe/r',
-              updated.opt_in_token
-            ).catch(err => console.error('Error sending opt-in email:', err));
-          }
-
-          return NextResponse.json(
-            { success: true, message: 'Bitte bestätige deine E-Mail-Adresse. Wir haben dir eine E-Mail gesendet.' },
-            { status: 200 }
-          );
-        } catch (supabaseError) {
-          // Fallback wenn Supabase nicht verfügbar
-          return NextResponse.json(
-            { success: true, message: 'Vielen Dank für deine Anmeldung!' },
-            { status: 200 }
-          );
-        }
+        console.log('✅ Willkommens-E-Mail versendet an:', body.email);
       }
-    }
-
-    // UTM-Parameter
-    const url = new URL(request.url);
-    const sourceUrl = body.source_url || url.searchParams.get('source_url') || 'unknown';
-    const utmSource = body.utm_source || url.searchParams.get('utm_source') || null;
-    const utmMedium = body.utm_medium || url.searchParams.get('utm_medium') || null;
-    const utmCampaign = body.utm_campaign || url.searchParams.get('utm_campaign') || null;
-
-    // Neuen Eintrag erstellen - zuerst Supabase, dann direkter DB-Zugriff
-    const optInToken = crypto.randomUUID();
-    const optInExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    let saved = false;
-
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      
-      if (supabaseAdmin) {
-        const { data, error } = await supabaseAdmin
-          .from('newsletter_subscribers')
-          .insert({
-            email: body.email.toLowerCase().trim(),
-            first_name: body.first_name || body.vorname || null,
-            last_name: body.last_name || body.nachname || null,
-            has_disability: body.has_disability === 'ja' || body.beeintraechtigung === 'ja',
-            interests: body.interests || body.interessiert || [],
-            opt_in_token: optInToken,
-            opt_in_expires_at: optInExpiresAt,
-            source_url: sourceUrl,
-            utm_source: utmSource,
-            utm_medium: utmMedium,
-            utm_campaign: utmCampaign,
-            honeypot: body.honeypot || null,
-            ip_address: ipAddress,
-            status: 'pending',
-          })
-          .select()
-          .single();
-
-        if (!error && data) {
-          saved = true;
-          console.log('✅ Newsletter subscriber gespeichert via Supabase:', data.id);
-          
-          // Google Sheets Export (async, nicht blockierend)
-          import('@/lib/google-sheets').then(({ addNewsletterSubscriberToSheet }) => {
-            addNewsletterSubscriberToSheet({
-              id: data.id,
-              created_at: data.created_at || new Date().toISOString(),
-              email: data.email,
-              first_name: data.first_name,
-              last_name: data.last_name,
-              has_disability: data.has_disability,
-              interests: data.interests,
-              source_url: data.source_url,
-              utm_source: data.utm_source,
-              utm_medium: data.utm_medium,
-              utm_campaign: data.utm_campaign,
-              opt_in_confirmed_at: data.opt_in_confirmed_at,
-              status: data.status,
-            }).catch(err => 
-              console.error('Error exporting to Google Sheets:', err)
-            );
-          });
-        }
-      }
-    } catch (supabaseError) {
-      console.warn('Supabase nicht verfügbar, versuche direkten DB-Zugriff');
-    }
-
-    // Fallback: Direkter Datenbankzugriff
-    if (!saved) {
-      try {
-        const { insertDb } = await import('@/lib/db-direct');
-        const interestsArray = body.interests || body.interessiert || [];
-        
-        console.log('📝 Versuche Newsletter-Eintrag zu speichern via direkter DB...');
-        const { data, error } = await insertDb('newsletter_subscribers', {
-          email: body.email.toLowerCase().trim(),
-          first_name: body.first_name || body.vorname || null,
-          last_name: body.last_name || body.nachname || null,
-          has_disability: body.has_disability === 'ja' || body.beeintraechtigung === 'ja' || false,
-          interests: Array.isArray(interestsArray) ? interestsArray : [],
-          opt_in_token: optInToken,
-          opt_in_expires_at: optInExpiresAt,
-          source_url: sourceUrl || null,
-          utm_source: utmSource || null,
-          utm_medium: utmMedium || null,
-          utm_campaign: utmCampaign || null,
-          honeypot: body.honeypot || null,
-          ip_address: ipAddress || null,
-          status: 'pending',
-        });
-
-        if (!error && data) {
-          saved = true;
-          console.log('✅ Newsletter subscriber gespeichert via direkter DB:', data.id);
-          
-          // Google Sheets Export (async, nicht blockierend)
-          import('@/lib/google-sheets').then(({ addNewsletterSubscriberToSheet }) => {
-            addNewsletterSubscriberToSheet({
-              id: data.id,
-              created_at: data.created_at || new Date().toISOString(),
-              email: data.email,
-              first_name: data.first_name,
-              last_name: data.last_name,
-              has_disability: data.has_disability,
-              interests: data.interests,
-              source_url: data.source_url,
-              utm_source: data.utm_source,
-              utm_medium: data.utm_medium,
-              utm_campaign: data.utm_campaign,
-              opt_in_confirmed_at: data.opt_in_confirmed_at,
-              status: data.status || 'pending',
-            }).catch(err => 
-              console.error('Error exporting to Google Sheets:', err)
-            );
-          });
-        } else {
-          console.error('❌ Fehler beim Speichern:', error);
-        }
-      } catch (dbError) {
-        console.error('❌ Direkter DB-Zugriff fehlgeschlagen:', dbError);
-      }
-    }
-
-    // Opt-In und Notification senden – AWAIT nötig: Auf Netlify (Serverless) wird die
-    // Funktion beendet, sobald die Response gesendet ist. Ohne await laufen die Promises nie zu Ende.
-    try {
-      const { sendNewsletterOptIn, sendNewsletterNotification } = await import('@/lib/resend');
-      await Promise.all([
-        sendNewsletterOptIn(
-          body.email,
-          body.first_name || body.vorname || 'Liebe/r',
-          optInToken
-        ).catch(err => console.error('Error sending opt-in email:', err)),
-        sendNewsletterNotification({
-          email: body.email,
-          firstName: body.first_name || body.vorname,
-          lastName: body.last_name || body.nachname,
-          hasDisability: body.has_disability === 'ja' || body.beeintraechtigung === 'ja',
-          interests: body.interests || body.interessiert || [],
-          sourceUrl: sourceUrl,
-          utmSource: utmSource || undefined,
-          utmMedium: utmMedium || undefined,
-          utmCampaign: utmCampaign || undefined,
-        }).catch(err => console.error('Error sending notification email:', err)),
-      ]);
     } catch (emailError) {
-      console.error('E-Mail-Versand fehlgeschlagen:', emailError);
+      console.error('❌ Willkommens-E-Mail Fehler:', emailError);
     }
 
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: 'Bitte bestätige deine E-Mail-Adresse. Wir haben dir eine E-Mail mit einem Bestätigungslink gesendet.' 
-      },
-      { status: 200 }
-    );
+    // Sende Benachrichtigung an info@inclusions.zone
+    try {
+      const notificationResult = await sendNewsletterNotification({
+        email: body.email,
+        firstName: body.first_name,
+        lastName: body.last_name,
+        hasDisability: body.has_disability,
+        interests: body.interests,
+        sourceUrl: body.sourceUrl,
+        utmSource: body.utmSource,
+        utmMedium: body.utmMedium,
+        utmCampaign: body.utmCampaign,
+      });
+      if (notificationResult.error) {
+        console.error('⚠️ Benachrichtigungs-E-Mail Fehler:', notificationResult.error);
+      } else {
+        console.log('✅ Benachrichtigung versendet an info@inclusions.zone');
+      }
+    } catch (emailError) {
+      console.error('❌ Benachrichtigungs-E-Mail Fehler:', emailError);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Vielen Dank für deine Anmeldung! Wir haben dir eine Bestätigung per E-Mail gesendet.'
+    });
+
   } catch (error) {
-    console.error('Error processing newsletter subscription:', error);
+    console.error('❌ Newsletter Error:', error);
     return NextResponse.json(
-      { success: false, message: 'Fehler beim Verarbeiten der Anmeldung.' },
+      { success: false, message: 'Ein Fehler ist aufgetreten.' },
       { status: 500 }
     );
   }
 }
-

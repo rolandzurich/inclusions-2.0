@@ -4,21 +4,65 @@ const resendApiKey = process.env.RESEND_API_KEY;
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@inclusions.zone';
 const adminEmail = process.env.RESEND_ADMIN_EMAIL || 'info@inclusions.zone';
 
+// #region agent log
+fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:3',message:'Resend init - checking env vars',data:{hasApiKey:!!resendApiKey,apiKeyPrefix:resendApiKey?.substring(0,10)||'none',fromEmail,adminEmail},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+// #endregion
+
 if (!resendApiKey || resendApiKey === 're_your-resend-api-key-here') {
   console.warn('⚠️ RESEND_API_KEY ist nicht gesetzt oder ist ein Platzhalter. E-Mail-Versand wird nicht funktionieren.');
   console.warn('⚠️ Formulare funktionieren trotzdem, aber keine E-Mails werden versendet.');
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:10',message:'RESEND_API_KEY missing or placeholder',data:{resendApiKey:resendApiKey||'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+  // #endregion
 }
 
 export const resend = (resendApiKey && resendApiKey !== 're_your-resend-api-key-here') ? new Resend(resendApiKey) : null;
 
+// #region agent log
+fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:13',message:'Resend instance created',data:{resendIsNull:resend===null,hasApiKey:!!resendApiKey},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+// #endregion
+
 // Export für Prüfung in anderen Dateien
 export { resendApiKey, fromEmail, adminEmail };
 
+// Generische Email-Versand-Funktion
+export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  if (!resend) {
+    console.warn('⚠️ Resend nicht initialisiert - Email wird nicht versendet');
+    return { error: 'Resend not initialized' };
+  }
+
+  try {
+    const result = await resend.emails.send({
+      from: fromEmail,
+      to,
+      subject,
+      html,
+    });
+    return result;
+  } catch (error) {
+    console.error('❌ Email-Versand Fehler:', error);
+    return { error };
+  }
+}
+
 // E-Mail Templates
 export async function sendContactConfirmation(to: string, name: string) {
-  if (!resend) return { error: 'Resend nicht konfiguriert' };
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:18',message:'sendContactConfirmation called',data:{to,name,resendIsNull:resend===null,fromEmail},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+  // #endregion
+  if (!resend) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:20',message:'Resend is null - returning error',data:{to,name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
+    return { error: 'Resend nicht konfiguriert' };
+  }
 
-  return await resend.emails.send({
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:22',message:'Calling resend.emails.send for contact confirmation',data:{from:fromEmail,to},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+  // #endregion
+
+  const result = await resend.emails.send({
     from: fromEmail,
     to,
     subject: 'Vielen Dank für deine Anfrage - Inclusions',
@@ -38,6 +82,12 @@ export async function sendContactConfirmation(to: string, name: string) {
     `,
     text: `Vielen Dank, ${name}!\n\nWir haben deine Anfrage erhalten und melden uns bald bei dir.\n\nBis dahin,\nDas Inclusions Team`,
   });
+  
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:41',message:'Contact confirmation email result',data:{hasError:!!result.error,error:result.error,hasData:!!result.data,emailId:result.data?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+  // #endregion
+  
+  return result;
 }
 
 export async function sendBookingConfirmation(to: string, name: string, bookingItem?: string, eventDate?: string, eventLocation?: string) {
@@ -201,37 +251,88 @@ export async function sendContactNotification(data: {
 }
 
 export async function sendNewsletterOptIn(to: string, firstName: string, token: string) {
-  if (!resend) return { error: 'Resend nicht konfiguriert' };
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:203',message:'sendNewsletterOptIn called',data:{to,firstName,resendIsNull:resend===null,fromEmail},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+  // #endregion
+  if (!resend) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:205',message:'Resend is null - returning error',data:{to,firstName},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
+    return { error: 'Resend nicht konfiguriert' };
+  }
 
   const confirmUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/newsletter/confirm?token=${token}`;
 
-  return await resend.emails.send({
-    from: fromEmail,
-    to,
-    subject: 'Bitte bestätige deine Newsletter-Anmeldung - Inclusions',
-    html: `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #ff00ff;">Hallo ${firstName}!</h1>
-          <p>Vielen Dank für deine Anmeldung zum Inclusions Newsletter.</p>
-          <p>Bitte bestätige deine E-Mail-Adresse, indem du auf den folgenden Link klickst:</p>
-          <p style="text-align: center; margin: 30px 0;">
-            <a href="${confirmUrl}" style="background-color: #ff00ff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; display: inline-block;">
-              Newsletter bestätigen
-            </a>
-          </p>
-          <p>Der Link ist 7 Tage gültig.</p>
-          <p>Bis bald,<br>Das Inclusions Team</p>
-        </body>
-      </html>
-    `,
-    text: `Hallo ${firstName}!\n\nVielen Dank für deine Anmeldung zum Inclusions Newsletter.\n\nBitte bestätige deine E-Mail-Adresse:\n${confirmUrl}\n\nDer Link ist 7 Tage gültig.\n\nBis bald,\nDas Inclusions Team`,
-  });
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:208',message:'Calling resend.emails.send',data:{from:fromEmail,to,confirmUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+  // #endregion
+  
+  let result;
+  try {
+    result = await resend.emails.send({
+      from: fromEmail,
+      to,
+      subject: 'Bitte bestätige deine Newsletter-Anmeldung - Inclusions',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #ff00ff;">Hallo ${firstName}!</h1>
+            <p>Vielen Dank für deine Anmeldung zum Inclusions Newsletter.</p>
+            <p>Bitte bestätige deine E-Mail-Adresse, indem du auf den folgenden Link klickst:</p>
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="${confirmUrl}" style="background-color: #ff00ff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; display: inline-block;">
+                Newsletter bestätigen
+              </a>
+            </p>
+            <p>Der Link ist 7 Tage gültig.</p>
+            <p>Bis bald,<br>Das Inclusions Team</p>
+          </body>
+        </html>
+      `,
+      text: `Hallo ${firstName}!\n\nVielen Dank für deine Anmeldung zum Inclusions Newsletter.\n\nBitte bestätige deine E-Mail-Adresse:\n${confirmUrl}\n\nDer Link ist 7 Tage gültig.\n\nBis bald,\nDas Inclusions Team`,
+    });
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:270',message:'resend.emails.send result',data:{hasError:!!result.error,error:result.error,errorMessage:result.error?.message,errorName:result.error?.name,hasData:!!result.data,emailId:result.data?.id,fullResult:JSON.stringify(result)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+    // #endregion
+    
+    // Detailliertes Logging für Fehler
+    if (result.error) {
+      const errorDetails = {
+        error: result.error,
+        message: result.error?.message,
+        name: result.error?.name,
+        statusCode: (result.error as any)?.statusCode,
+        from: fromEmail,
+        to: to,
+      };
+      console.error('❌ Resend API Fehler (Newsletter Opt-In):', JSON.stringify(errorDetails, null, 2));
+      
+      // Spezifische Fehlermeldungen für häufige Probleme
+      if (result.error?.message?.includes('not authorized') || result.error?.message?.includes('Not authorized')) {
+        console.error('🔴 PROBLEM: Domain nicht verifiziert! Gehe zu https://resend.com/domains und verifiziere inclusions.zone');
+      } else if (result.error?.message?.includes('Invalid API key') || (result.error as any)?.statusCode === 401) {
+        console.error('🔴 PROBLEM: API Key ungültig! Prüfe RESEND_API_KEY in .env');
+      } else if (result.error?.message?.includes('domain')) {
+        console.error('🔴 PROBLEM: Domain-Problem! Prüfe Domain-Verifizierung in Resend Dashboard');
+      }
+    } else {
+      console.log('✅ Newsletter Opt-In E-Mail gesendet:', result.data?.id);
+    }
+  } catch (err: any) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:285',message:'Exception in resend.emails.send',data:{error:err?.message,errorName:err?.name,errorStack:err?.stack,from:fromEmail,to},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+    // #endregion
+    console.error('❌ Exception beim Senden der Newsletter Opt-In E-Mail:', err);
+    return { error: err?.message || String(err) };
+  }
+  
+  return result;
 }
 
 export async function sendNewsletterWelcome(to: string, firstName: string) {
@@ -270,7 +371,15 @@ export async function sendNewsletterNotification(data: {
   utmMedium?: string;
   utmCampaign?: string;
 }) {
-  if (!resend) return { error: 'Resend nicht konfiguriert' };
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:262',message:'sendNewsletterNotification called',data:{email:data.email,resendIsNull:resend===null,fromEmail,adminEmail},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+  // #endregion
+  if (!resend) {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:274',message:'Resend is null - returning error',data:{email:data.email},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
+    return { error: 'Resend nicht konfiguriert' };
+  }
 
   const emailSubject = `📬 Newsletter-Anmeldung${data.firstName || data.lastName ? `: ${[data.firstName, data.lastName].filter(Boolean).join(' ')}` : ''} - Inclusions`;
 
@@ -320,6 +429,9 @@ export async function sendNewsletterNotification(data: {
   // Primär an info@inclusions.zone
   if (adminEmail) {
     try {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:321',message:'Sending notification email to admin',data:{from:fromEmail,to:adminEmail},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+      // #endregion
       const result1 = await resend.emails.send({
         from: fromEmail,
         to: adminEmail,
@@ -327,13 +439,36 @@ export async function sendNewsletterNotification(data: {
         html: emailHtml,
         text: emailText,
       });
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:330',message:'Notification email result',data:{hasError:!!result1.error,error:result1.error,errorMessage:result1.error?.message,errorName:result1.error?.name,errorStatusCode:(result1.error as any)?.statusCode,hasData:!!result1.data,emailId:result1.data?.id,fullResult:JSON.stringify(result1)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H1,H2,H3,H5'})}).catch(()=>{});
+      // #endregion
       if (!result1.error) {
         console.log(`✅ Newsletter-Benachrichtigung an ${adminEmail} gesendet`);
         results.push({ email: adminEmail, id: result1.data?.id });
       } else {
-        console.warn(`⚠️ ${adminEmail} Fehler:`, result1.error);
+        const errorDetails = {
+          error: result1.error,
+          message: result1.error?.message,
+          name: result1.error?.name,
+          statusCode: (result1.error as any)?.statusCode,
+          from: fromEmail,
+          to: adminEmail,
+        };
+        console.error(`❌ ${adminEmail} Fehler (Newsletter Notification):`, JSON.stringify(errorDetails, null, 2));
+        
+        // Spezifische Fehlermeldungen für häufige Probleme
+        if (result1.error?.message?.includes('not authorized') || result1.error?.message?.includes('Not authorized')) {
+          console.error('🔴 PROBLEM: Domain nicht verifiziert! Gehe zu https://resend.com/domains und verifiziere inclusions.zone');
+        } else if (result1.error?.message?.includes('Invalid API key') || (result1.error as any)?.statusCode === 401) {
+          console.error('🔴 PROBLEM: API Key ungültig! Prüfe RESEND_API_KEY in .env');
+        } else if (result1.error?.message?.includes('domain')) {
+          console.error('🔴 PROBLEM: Domain-Problem! Prüfe Domain-Verifizierung in Resend Dashboard');
+        }
       }
     } catch (error) {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/resend.ts:337',message:'Exception sending notification email',data:{error:error instanceof Error?error.message:String(error)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H5'})}).catch(()=>{});
+      // #endregion
       console.error(`❌ Fehler beim Senden an ${adminEmail}:`, error);
     }
   }
