@@ -1,0 +1,15 @@
+export const dynamic = 'force-dynamic';
+
+import { NextResponse } from 'next/server';
+import { clearAuthCookie } from '@/lib/auth';
+
+/**
+ * POST /api/auth/logout
+ * 
+ * Löscht den Auth-Cookie.
+ */
+export async function POST() {
+  const response = NextResponse.json({ success: true });
+  clearAuthCookie(response);
+  return response;
+}

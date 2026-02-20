@@ -1,0 +1,48 @@
+#!/usr/bin/expect -f
+
+set timeout 300
+set server "10.55.55.155"
+set username "incluzone"
+set password "13vor12!Asdf"
+
+# Kommando als Argument übergeben
+set command [lindex $argv 0]
+
+# Verwende -T für non-interactive mode
+spawn ssh -T -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 $username@$server $command
+
+expect {
+    "password:" {
+        send "$password\r"
+        exp_continue
+    }
+    "Password:" {
+        send "$password\r"
+        exp_continue
+    }
+    "(yes/no)?" {
+        send "yes\r"
+        exp_continue
+    }
+    "yes/no" {
+        send "yes\r"
+        exp_continue
+    }
+    eof {
+        # Kommando beendet
+    }
+    timeout {
+        puts "Timeout erreicht"
+        exit 1
+    }
+}
+
+# Warte auf Prozessende
+catch {wait} result
+set exit_status [lindex $result 3]
+
+# Explizit schließen
+catch {close}
+catch {wait}
+
+exit $exit_status

@@ -1,0 +1,15 @@
+-- ============================================
+-- Migration 001: Baseline
+-- ============================================
+-- Markiert alle bestehenden Schemas als "bereits vorhanden".
+-- Keine Änderungen an der DB – nur Dokumentation.
+--
+-- Enthaltene Schemas (bereits auf Produktion):
+--   - 001_initial_schema.sql (contact_requests, newsletter_subscribers, vip_registrations)
+--   - 005_admin_v2_crm_os.sql (companies, contacts, deals, projects, events_v2, etc.)
+--   - schema_crm_migration.sql (CRM V2 Erweiterungen)
+--   - schema_cms.sql (CMS Seiten & Sections)
+--   - schema_email_hub.sql (E-Mail-Hub)
+--
+-- Diese Migration tut nichts – sie existiert nur als Referenzpunkt.
+SELECT 1;

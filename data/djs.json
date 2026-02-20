@@ -104,19 +104,11 @@
     },
     {
       "id": "miniart-sarita",
-      "name": "_miniArt°°° & Sarita",
+      "name": "_miniArt°°° & Sandro M",
       "dj1Id": "miniart",
-      "dj2Id": "sarita",
-      "text": "Sara liebt die Bühne, und das Publikum liebt ihre Energie. Zusammen mit Reto verbreiten sie pure Lebensfreude und jede Menge Spass.",
-      "image": "/images/miniart-sarita.png"
-    },
-    {
-      "id": "zagara-sandro",
-      "name": "Zagara",
-      "dj1Id": "zagara",
       "dj2Id": "sandro",
-      "text": "Die beiden haben erst an der Inclusions 1 zueinandergefunden. Wir sind gespannt, wie diese neue Connection den Dancefloor künftig erobern wird.",
-      "image": "/images/zagara-sandro.png"
+      "text": "Reto und Sandro werden an der INCLUSIONS 2 ihre Premiere feiern und zum ersten Mal zusammen auflegen.",
+      "image": "/images/miniart-sandro.png"
     }
   ]
 }

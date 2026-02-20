@@ -40,22 +40,6 @@ export function Header() {
     };
   }, [ueberUnsOpen]);
 
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_AGENT_DEBUG !== "1") return;
-    fetch("http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "Header.tsx:mount",
-        message: "Header mounted",
-        data: {},
-        timestamp: Date.now(),
-        sessionId: "debug-session",
-        runId: "run1",
-        hypothesisId: "H4",
-      }),
-    }).catch(() => {});
-  }, []);
 
   return (
     <header className="bg-brand-dark sticky top-0 z-50 border-b border-white/10">
@@ -189,6 +173,23 @@ export function Header() {
             >
               Spenden
             </Link>
+            <div className="pt-4 border-t border-white/10">
+              <Link
+                href="https://insieme-zuerich.ch/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3"
+              >
+                <span className="text-xs text-white/40">in Partnerschaft mit</span>
+                <Image
+                  src="/images/partners/insieme.png"
+                  alt="insieme Zürich"
+                  width={80}
+                  height={28}
+                  className="h-6 w-auto object-contain opacity-70"
+                />
+              </Link>
+            </div>
           </div>
         </div>
       )}

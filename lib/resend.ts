@@ -95,22 +95,12 @@ export async function sendBookingConfirmation(to: string, name: string, bookingI
 
   // Vorname extrahieren (erster Teil des Namens)
   const firstName = name.split(' ')[0];
-  
-  // Booking-Info zusammenstellen
-  const bookingInfo = bookingItem ? ` für ${bookingItem}` : '';
-  const eventInfo = eventDate && eventLocation 
-    ? ` am ${eventDate} in ${eventLocation}`
-    : eventDate 
-      ? ` am ${eventDate}`
-      : eventLocation
-        ? ` in ${eventLocation}`
-        : '';
 
   return await resend.emails.send({
     from: fromEmail,
     to,
     reply_to: adminEmail,
-    subject: 'Vielen Dank für deine Buchungsanfrage - Inclusions',
+    subject: 'Herzlichen Dank für deine Anfrage - Inclusions',
     html: `
       <!DOCTYPE html>
       <html>
@@ -120,16 +110,13 @@ export async function sendBookingConfirmation(to: string, name: string, bookingI
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px;">
           <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe / Lieber ${firstName}</h1>
-          <p style="font-size: 18px; margin-bottom: 15px;">vielen Dank für deine Buchungsanfrage${bookingInfo}${eventInfo}.</p>
-          <p style="margin-bottom: 15px;">Wir haben deine Anfrage erhalten und werden sie schnellstmöglich prüfen.</p>
-          <p style="margin-bottom: 15px;">Falls es vorab noch Unklarheiten gibt, melden wir uns bei dir.</p>
-          <p style="margin-bottom: 15px;">Wir melden uns bald bei dir mit weiteren Details zu deiner Buchung.</p>
-          <p style="margin-top: 30px;">Bis bald – wir freuen uns auf deine Anfrage.</p>
-          <p style="margin-top: 20px;">Herzlich<br>Dein Inclusions Team</p>
+          <p style="font-size: 18px; margin-bottom: 15px;">Herzlichen Dank für deine Anfrage.</p>
+          <p style="margin-bottom: 15px;">Wir werden uns bald bei dir melden.</p>
+          <p style="margin-top: 30px;">Bis bald,<br>Dein Inclusions Team</p>
         </body>
       </html>
     `,
-    text: `Liebe / Lieber ${firstName}\n\nvielen Dank für deine Buchungsanfrage${bookingInfo}${eventInfo}.\n\nWir haben deine Anfrage erhalten und werden sie schnellstmöglich prüfen.\n\nFalls es vorab noch Unklarheiten gibt, melden wir uns bei dir.\nWir melden uns bald bei dir mit weiteren Details zu deiner Buchung.\n\nBis bald – wir freuen uns auf deine Anfrage.\n\nHerzlich\nDein Inclusions Team`,
+    text: `Liebe / Lieber ${firstName}\n\nHerzlichen Dank für deine Anfrage.\n\nWir werden uns bald bei dir melden.\n\nBis bald,\nDein Inclusions Team`,
   });
 }
 
@@ -349,14 +336,15 @@ export async function sendNewsletterWelcome(to: string, firstName: string) {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #ff00ff;">Willkommen, ${firstName}!</h1>
-          <p>Du erhältst jetzt die neuesten Infos zu unseren Events, exklusive Updates und wirst Teil einer Bewegung, die wirklich etwas bewegt.</p>
-          <p>Bis bald,<br>Das Inclusions Team</p>
+        <body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px;">
+          <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe / Lieber ${firstName}</h1>
+          <p style="font-size: 18px; margin-bottom: 15px;">Herzlichen Dank für deine Anmeldung.</p>
+          <p style="margin-bottom: 15px;">Du bist nun Teil der Inclusions-Freunde und wirst regelmässig informiert.</p>
+          <p style="margin-top: 30px;">Bis bald,<br>Dein Inclusions Team</p>
         </body>
       </html>
     `,
-    text: `Willkommen, ${firstName}!\n\nDu erhältst jetzt die neuesten Infos zu unseren Events, exklusive Updates und wirst Teil einer Bewegung, die wirklich etwas bewegt.\n\nBis bald,\nDas Inclusions Team`,
+    text: `Liebe / Lieber ${firstName}\n\nHerzlichen Dank für deine Anmeldung.\n\nDu bist nun Teil der Inclusions-Freunde und wirst regelmässig informiert.\n\nBis bald,\nDein Inclusions Team`,
   });
 }
 
@@ -520,7 +508,7 @@ export async function sendVIPConfirmation(to: string, name: string, eventDate?: 
       from: fromEmail,
       to,
       reply_to: adminEmail,
-      subject: 'Ihre VIP-Anmeldung ist angekommen - Inclusions',
+      subject: 'Deine VIP-Anmeldung ist angekommen - Inclusions',
       html: `
         <!DOCTYPE html>
         <html>
@@ -530,15 +518,15 @@ export async function sendVIPConfirmation(to: string, name: string, eventDate?: 
           </head>
           <body style="font-family: Arial, sans-serif; line-height: 1.8; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; font-size: 16px;">
             <h1 style="color: #ff00ff; font-size: 24px; margin-bottom: 20px;">Liebe / Lieber ${firstName}</h1>
-            <p style="font-size: 18px; margin-bottom: 15px;">vielen Dank für deine Anmeldung. Wir freuen uns sehr, dass du${eventInfo ? ` ${eventInfo} dabei bist` : ' dabei bist'}.</p>
-            <p style="margin-bottom: 15px;">Falls es vorab noch Unklarheiten gibt, melden wir uns bei dir.</p>
-            <p style="margin-bottom: 15px;">Kurz vor dem Event erhältst du von uns alle wichtigen Infos zu Anreise, Einlass und Ablauf der Party.</p>
+            <p style="font-size: 18px; margin-bottom: 15px;">Vielen Dank für deine Anmeldung${eventInfo ? ` ${eventInfo}` : ''}.</p>
+            <p style="margin-bottom: 15px;">Falls wir noch Fragen haben, werden wir uns bei dir melden.</p>
+            <p style="margin-bottom: 15px;">Vor dem Anlass wirst du noch Informationen erhalten.</p>
             <p style="margin-top: 30px;">Bis bald – wir freuen uns auf dich.</p>
             <p style="margin-top: 20px;">Herzlich<br>Dein Inclusions Team</p>
           </body>
         </html>
       `,
-      text: `Liebe / Lieber ${firstName}\n\nvielen Dank für deine Anmeldung. Wir freuen uns sehr, dass du${eventInfo ? ` ${eventInfo} dabei bist` : ' dabei bist'}.\n\nFalls es vorab noch Unklarheiten gibt, melden wir uns bei dir.\nKurz vor dem Event erhältst du von uns alle wichtigen Infos zu Anreise, Einlass und Ablauf der Party.\n\nBis bald – wir freuen uns auf dich.\n\nHerzlich\nDein Inclusions Team`,
+      text: `Liebe / Lieber ${firstName}\n\nVielen Dank für deine Anmeldung${eventInfo ? ` ${eventInfo}` : ''}.\n\nFalls wir noch Fragen haben, werden wir uns bei dir melden.\nVor dem Anlass wirst du noch Informationen erhalten.\n\nBis bald – wir freuen uns auf dich.\n\nHerzlich\nDein Inclusions Team`,
     });
 
     if (result.error) {

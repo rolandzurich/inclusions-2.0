@@ -8,7 +8,6 @@ import {
   getAllDJPairs,
   getDJById,
   getDJPairWithDJs,
-  getPairDisplayName,
 } from "@/lib/dj-utils";
 import { FormNotification } from "@/components/FormNotification";
 
@@ -219,7 +218,7 @@ export default function BookingPage() {
                     </div>
                   )}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{getPairDisplayName(pair.id) || pair.name}</h3>
+                <h3 className="text-xl font-semibold mb-2">{pair.name}</h3>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className="text-xs px-2 py-1 rounded-full bg-brand-pink/20 text-brand-pink">
                     DJ Pair

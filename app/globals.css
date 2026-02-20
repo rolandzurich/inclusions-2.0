@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Admin-V2 Animationen */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
 /* ---- Neuro-inclusive: Basis ---- */
 body {
   @apply bg-brand-gray text-white;
@@ -93,6 +109,25 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   @apply font-bangers;
+}
+
+/* === Admin-Bereich: Website-Styles überschreiben === */
+.admin-area h1,
+.admin-area h2,
+.admin-area h3,
+.admin-area h4,
+.admin-area h5,
+.admin-area h6 {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.admin-area a {
+  color: inherit;
+}
+
+.admin-area body,
+.admin-area {
+  letter-spacing: normal;
 }
 
 /* Text-Lesbarkeit: max. Zeilenlänge ~65 Zeichen (nur anwenden wo gewünscht) */

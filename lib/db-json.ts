@@ -55,12 +55,13 @@ export async function insertVipRegistration(data: any) {
   const registrations = await readJsonFile('vip_registrations.json');
   const newEntry = {
     id: Date.now(),
-    ...data,
+    ...data, // Alle übergebenen Daten speichern
     status: 'pending',
     created_at: new Date().toISOString()
   };
   registrations.push(newEntry);
   await writeJsonFile('vip_registrations.json', registrations);
+  console.log('✅ VIP-Anmeldung gespeichert mit allen Feldern:', Object.keys(newEntry));
   return { success: true, data: newEntry };
 }
 

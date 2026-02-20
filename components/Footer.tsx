@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SocialLinks } from "@/components/SocialLinks";
 
 const navLinks = [
@@ -10,23 +11,6 @@ const navLinks = [
 ];
 
 export function Footer() {
-  // #region agent log
-  if (typeof fetch !== "undefined") {
-    fetch("http://127.0.0.1:7243/ingest/10419aa7-e8ae-40cb-b044-efefcfde0373", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        location: "Footer.tsx:render",
-        message: "Footer render",
-        data: {},
-        timestamp: Date.now(),
-        sessionId: "debug-session",
-        runId: "run1",
-        hypothesisId: "H4",
-      }),
-    }).catch(() => {});
-  }
-  // #endregion
   return (
     <footer className="bg-gradient-to-b from-brand-dark to-black border-t border-white/10 text-sm text-white" role="contentinfo">
       <div className="mx-auto max-w-6xl px-4 py-12">
@@ -133,16 +117,35 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Strategischer Partner */}
+        <div className="border-t border-white/10 pt-6 pb-2 flex items-center justify-center gap-3">
+          <span className="text-xs text-white/50">Strategischer Partner:</span>
+          <Link
+            href="https://insieme-zuerich.ch/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <Image
+              src="/images/partners/insieme.png"
+              alt="insieme Zürich"
+              width={80}
+              height={30}
+              className="h-6 w-auto object-contain brightness-110"
+            />
+          </Link>
+        </div>
+
         {/* Bottom Bar */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/60">
           <p>© INCLUSIONS – Vom Event zur Bewegung</p>
           <div className="flex items-center gap-4">
             <Link
-              href="/admin/login"
+              href="/admin-v2/dashboard"
               className="text-white/60 hover:text-white transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-inset rounded"
               aria-label="Admin-Bereich"
             >
-              Admin
+              Admin-Bereich
             </Link>
             <p>
               Webseite erstellt durch{" "}

@@ -101,34 +101,56 @@ export default function VIPPage() {
   };
 
   const handleExportCSV = () => {
-    // CSV Header für Google Sheets
+    // CSV Header mit ALLEN Feldern
     const headers = [
       'Datum',
       'Name',
       'E-Mail',
       'Telefon',
+      'Adresse',
+      'Alter',
+      'IV-Ausweis',
+      'Beeinträchtigung',
       'Event-Datum',
       'Event-Ort',
-      'Nachricht',
-      'Firma',
-      'Anzahl Gäste',
-      'Besondere Anforderungen',
+      'Ankunftszeit',
+      'TIXI-Taxi',
+      'Betreuer benötigt',
+      'Anmeldung durch',
+      'Betreuer Name',
+      'Betreuer E-Mail',
+      'Betreuer Telefon',
+      'Kontaktperson',
+      'Kontaktperson Telefon',
+      'Besondere Bedürfnisse',
+      'Vollständige Nachricht',
       'Status'
     ];
 
-    // CSV Rows
+    // CSV Rows mit ALLEN Daten
     const rows = registrations.map(reg => [
       new Date(reg.created_at).toLocaleString('de-CH'),
       reg.name || '',
       reg.email || '',
       reg.phone || '',
+      (reg as any).adresse || '',
+      (reg as any).alter || '',
+      (reg as any).iv_ausweis || '',
+      (reg as any).beeintraechtigung || '',
       reg.event_date || '',
       reg.event_location || '',
+      (reg as any).ankunftszeit || '',
+      (reg as any).tixi_taxi || '',
+      (reg as any).betreuer_benoetigt || '',
+      (reg as any).anmeldung_durch === 'betreuer' ? 'Betreuer:in' : 'Selbst',
+      (reg as any).betreuer_name || '',
+      (reg as any).betreuer_email || '',
+      (reg as any).betreuer_telefon || '',
+      (reg as any).kontaktperson_name || '',
+      (reg as any).kontaktperson_telefon || '',
+      ((reg as any).besondere_beduerfnisse || '').replace(/\n/g, ' ').replace(/"/g, '""'),
       (reg.message || '').replace(/\n/g, ' ').replace(/"/g, '""'),
-      (reg as any).company || '',
-      (reg as any).number_of_guests || '',
-      ((reg as any).special_requirements || '').replace(/\n/g, ' ').replace(/"/g, '""'),
-      reg.status || 'new'
+      reg.status || 'pending'
     ]);
 
     // CSV Content mit BOM für Excel/Google Sheets
@@ -142,7 +164,7 @@ export default function VIPPage() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `vip-anmeldungen-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `vip-anmeldungen-vollstaendig-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -189,8 +211,13 @@ export default function VIPPage() {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold">{registration.name}</p>
+                      {(registration as any).anmeldung_durch === 'betreuer' && (
+                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">
+                          via Betreuer:in
+                        </span>
+                      )}
                       {registration.is_duplicate && (
                         <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
                           Doppelt
@@ -203,9 +230,17 @@ export default function VIPPage() {
                       )}
                     </div>
                     <p className="text-sm text-gray-400">{registration.email}</p>
-                    {registration.event_date && (
-                      <p className="text-xs text-gray-500 mt-1">{registration.event_date}</p>
-                    )}
+                    <div className="flex gap-3 mt-1 text-xs text-gray-500">
+                      {(registration as any).alter && (
+                        <span>Alter: {(registration as any).alter}</span>
+                      )}
+                      {(registration as any).iv_ausweis && (
+                        <span>IV: {(registration as any).iv_ausweis}</span>
+                      )}
+                      {(registration as any).ankunftszeit && (
+                        <span>{(registration as any).ankunftszeit}</span>
+                      )}
+                    </div>
                   </div>
                   <span className="text-xs text-gray-500">
                     {new Date(registration.created_at).toLocaleDateString('de-CH')}
@@ -232,72 +267,229 @@ export default function VIPPage() {
                 </button>
               </div>
               <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-400">Name</p>
-                  <p className="font-semibold">{selectedRegistration.name}</p>
+                {/* Anmeldungsart - GANZ OBEN */}
+                {(selectedRegistration as any).anmeldung_durch && (
+                  <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold mb-2 text-purple-400">
+                      📝 Angemeldet durch: {(selectedRegistration as any).anmeldung_durch === 'betreuer' ? 'Betreuer:in' : 'Selbst'}
+                    </h3>
+                  </div>
+                )}
+
+                {/* Persönliche Daten des VIP */}
+                <div className="pb-4 border-b border-gray-700">
+                  <h3 className="text-lg font-semibold mb-3 text-brand-pink">👤 VIP-Gast Daten</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-400">Vorname</p>
+                      <p className="font-semibold">{(selectedRegistration as any).first_name || selectedRegistration.name?.split(' ')[0]}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Nachname</p>
+                      <p className="font-semibold">{(selectedRegistration as any).last_name || selectedRegistration.name?.split(' ').slice(1).join(' ')}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">E-Mail</p>
+                      <p className="text-sm break-all">{selectedRegistration.email}</p>
+                    </div>
+                    {selectedRegistration.phone && (
+                      <div>
+                        <p className="text-sm text-gray-400">Telefon</p>
+                        <p>{selectedRegistration.phone}</p>
+                      </div>
+                    )}
+                    {(selectedRegistration as any).alter && (
+                      <div>
+                        <p className="text-sm text-gray-400">Alter</p>
+                        <p className="font-medium text-lg">{(selectedRegistration as any).alter} Jahre</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-400">E-Mail</p>
-                  <p>{selectedRegistration.email}</p>
+
+                {/* VIP-Status */}
+                <div className="pb-4 border-b border-gray-700">
+                  <h3 className="text-lg font-semibold mb-3 text-brand-pink">⭐ VIP-Status</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {(selectedRegistration as any).iv_ausweis && (
+                      <div className="bg-gray-700/50 p-3 rounded">
+                        <p className="text-sm text-gray-400 mb-1">IV-Ausweis</p>
+                        <p className="font-bold text-lg">
+                          {(selectedRegistration as any).iv_ausweis === 'Ja' ? '✅ Ja' : '❌ Nein'}
+                        </p>
+                      </div>
+                    )}
+                    {(selectedRegistration as any).beeintraechtigung && (
+                      <div className="bg-gray-700/50 p-3 rounded">
+                        <p className="text-sm text-gray-400 mb-1">Beeinträchtigung</p>
+                        <p className="font-bold text-lg">
+                          {(selectedRegistration as any).beeintraechtigung === 'Ja' ? '✅ Ja' : '❌ Nein'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {selectedRegistration.phone && (
-                  <div>
-                    <p className="text-sm text-gray-400">Telefon</p>
-                    <p>{selectedRegistration.phone}</p>
+
+                {/* Event-Details */}
+                <div className="pb-4 border-b border-gray-700">
+                  <h3 className="text-lg font-semibold mb-3 text-brand-pink">📅 Event-Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedRegistration.event_date && (
+                      <div className="bg-gray-700/50 p-3 rounded">
+                        <p className="text-sm text-gray-400 mb-1">Datum</p>
+                        <p className="font-semibold">{selectedRegistration.event_date}</p>
+                      </div>
+                    )}
+                    {selectedRegistration.event_location && (
+                      <div className="bg-gray-700/50 p-3 rounded">
+                        <p className="text-sm text-gray-400 mb-1">Ort</p>
+                        <p className="font-semibold">{selectedRegistration.event_location}</p>
+                      </div>
+                    )}
+                    {(selectedRegistration as any).ankunftszeit && (
+                      <div className="bg-gray-700/50 p-3 rounded col-span-2">
+                        <p className="text-sm text-gray-400 mb-1">Ankunftszeit</p>
+                        <p className="font-bold text-lg">🕐 {(selectedRegistration as any).ankunftszeit}</p>
+                      </div>
+                    )}
                   </div>
-                )}
-                {selectedRegistration.event_date && (
-                  <div>
-                    <p className="text-sm text-gray-400">Event-Datum</p>
-                    <p>{selectedRegistration.event_date}</p>
-                  </div>
-                )}
-                {selectedRegistration.event_location && (
-                  <div>
-                    <p className="text-sm text-gray-400">Event-Ort</p>
-                    <p>{selectedRegistration.event_location}</p>
-                  </div>
-                )}
-                {selectedRegistration.message && (
-                  <div>
-                    <p className="text-sm text-gray-400">Nachricht</p>
-                    <p className="whitespace-pre-wrap">{selectedRegistration.message}</p>
-                  </div>
-                )}
-                {selectedRegistration.company && (
-                  <div>
-                    <p className="text-sm text-gray-400">Firma</p>
-                    <p>{selectedRegistration.company}</p>
-                  </div>
-                )}
-                {selectedRegistration.number_of_guests && (
-                  <div>
-                    <p className="text-sm text-gray-400">Anzahl Gäste</p>
-                    <p>{selectedRegistration.number_of_guests}</p>
-                  </div>
-                )}
-                {selectedRegistration.special_requirements && (
-                  <div>
-                    <p className="text-sm text-gray-400">Besondere Anforderungen</p>
-                    <p className="whitespace-pre-wrap">{selectedRegistration.special_requirements}</p>
-                  </div>
-                )}
-                {selectedRegistration.is_duplicate && (
-                  <div>
-                    <p className="text-sm text-gray-400">Hinweis</p>
-                    <p className="text-yellow-400 font-semibold">⚠️ Doppelte E-Mail-Adresse</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-sm text-gray-400">Erstellt am</p>
-                  <p>{new Date(selectedRegistration.created_at).toLocaleString('de-CH')}</p>
                 </div>
-                {selectedRegistration.viewed_at && (
-                  <div>
-                    <p className="text-sm text-gray-400">Angeschaut am</p>
-                    <p>{new Date(selectedRegistration.viewed_at).toLocaleString('de-CH')}</p>
+
+                {/* TIXI-Taxi */}
+                {(selectedRegistration as any).tixi_taxi && (
+                  <div className="pb-4 border-b border-gray-700">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-pink">🚕 TIXI-Taxi</h3>
+                    <div className="bg-gray-700/50 p-4 rounded">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm text-gray-400">TIXI-Taxi gewünscht</p>
+                        <p className="font-bold text-lg">
+                          {(selectedRegistration as any).tixi_taxi === 'Ja' ? '✅ Ja' : '❌ Nein'}
+                        </p>
+                      </div>
+                      {(selectedRegistration as any).tixi_adresse && (
+                        <div className="mt-3 pt-3 border-t border-gray-600">
+                          <p className="text-sm text-gray-400 mb-1">Abholadresse</p>
+                          <p className="font-semibold">{(selectedRegistration as any).tixi_adresse}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
+
+                {/* VIP Betreuer (1-zu-1 Betreuung) */}
+                {(selectedRegistration as any).vip_braucht_betreuer && (
+                  <div className="pb-4 border-b border-gray-700">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-pink">🤝 1-zu-1 Betreuer (für VIP)</h3>
+                    <div className="bg-gray-700/50 p-4 rounded">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm text-gray-400">Betreuer benötigt</p>
+                        <p className="font-bold text-lg">
+                          {(selectedRegistration as any).vip_braucht_betreuer === 'Ja' ? '✅ Ja' : '❌ Nein'}
+                        </p>
+                      </div>
+                      {(selectedRegistration as any).vip_betreuer_name && (
+                        <div className="mt-3 pt-3 border-t border-gray-600 space-y-2">
+                          <div>
+                            <p className="text-sm text-gray-400">Name Betreuer:in</p>
+                            <p className="font-semibold">{(selectedRegistration as any).vip_betreuer_name}</p>
+                          </div>
+                          {(selectedRegistration as any).vip_betreuer_telefon && (
+                            <div>
+                              <p className="text-sm text-gray-400">Telefon Betreuer:in</p>
+                              <p className="font-semibold">{(selectedRegistration as any).vip_betreuer_telefon}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Anmeldungs-Betreuer (wenn durch Betreuer angemeldet) */}
+                {(selectedRegistration as any).anmeldung_durch === 'betreuer' && (selectedRegistration as any).anmeldung_betreuer_name && (
+                  <div className="pb-4 border-b border-gray-700">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-pink">👔 Anmeldungs-Betreuer:in (hat angemeldet)</h3>
+                    <div className="bg-purple-500/10 border border-purple-500/30 p-4 rounded space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-400">Name</p>
+                        <p className="font-semibold text-lg">{(selectedRegistration as any).anmeldung_betreuer_name}</p>
+                      </div>
+                      {(selectedRegistration as any).anmeldung_betreuer_email && (
+                        <div>
+                          <p className="text-sm text-gray-400">E-Mail</p>
+                          <p className="font-semibold break-all">{(selectedRegistration as any).anmeldung_betreuer_email}</p>
+                        </div>
+                      )}
+                      {(selectedRegistration as any).anmeldung_betreuer_telefon && (
+                        <div>
+                          <p className="text-sm text-gray-400">Telefon</p>
+                          <p className="font-semibold">{(selectedRegistration as any).anmeldung_betreuer_telefon}</p>
+                        </div>
+                      )}
+                      <p className="text-xs text-purple-300 italic mt-2">
+                        ℹ️ Dieser Betreuer hat die Anmeldung durchgeführt und ist Notfallkontakt
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Kontaktperson für Notfälle (wenn selbst angemeldet) */}
+                {(selectedRegistration as any).anmeldung_durch === 'selbst' && (selectedRegistration as any).kontaktperson_name && (
+                  <div className="pb-4 border-b border-gray-700">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-pink">📞 Kontaktperson für Notfälle</h3>
+                    <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-400">Name</p>
+                        <p className="font-semibold text-lg">{(selectedRegistration as any).kontaktperson_name}</p>
+                      </div>
+                      {(selectedRegistration as any).kontaktperson_telefon && (
+                        <div>
+                          <p className="text-sm text-gray-400">Telefon</p>
+                          <p className="font-semibold">{(selectedRegistration as any).kontaktperson_telefon}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Besondere Bedürfnisse */}
+                {(selectedRegistration as any).besondere_beduerfnisse && (
+                  <div className="pb-4 border-b border-gray-700">
+                    <h3 className="text-lg font-semibold mb-3 text-brand-pink">💬 Besondere Bedürfnisse</h3>
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded">
+                      <p className="whitespace-pre-wrap text-white">
+                        {(selectedRegistration as any).besondere_beduerfnisse}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* System-Info */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-brand-pink">System-Info</h3>
+                  <div className="space-y-3">
+                    {selectedRegistration.is_duplicate && (
+                      <div>
+                        <p className="text-sm text-gray-400">Hinweis</p>
+                        <p className="text-yellow-400 font-semibold">⚠️ Doppelte E-Mail-Adresse</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm text-gray-400">Status</p>
+                      <p>{selectedRegistration.status || 'pending'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Erstellt am</p>
+                      <p>{new Date(selectedRegistration.created_at).toLocaleString('de-CH')}</p>
+                    </div>
+                    {selectedRegistration.viewed_at && (
+                      <div>
+                        <p className="text-sm text-gray-400">Angeschaut am</p>
+                        <p>{new Date(selectedRegistration.viewed_at).toLocaleString('de-CH')}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ) : (

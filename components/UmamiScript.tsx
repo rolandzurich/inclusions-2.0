@@ -12,9 +12,10 @@ export default function UmamiScript() {
 
   return (
     <Script
+      defer
       src={`${umamiUrl}/script.js`}
       data-website-id={umamiWebsiteId}
-      strategy="lazyOnload"
+      strategy="afterInteractive"
     />
   );
 }

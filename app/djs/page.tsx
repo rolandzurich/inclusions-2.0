@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { getAllDJs, getAllDJPairs, getDJPairWithDJs, getBookableDJs, getDJById, getPairDisplayName } from "@/lib/dj-utils";
+import { getAllDJs, getAllDJPairs, getDJPairWithDJs, getBookableDJs, getDJById } from "@/lib/dj-utils";
 import { FormNotification } from "@/components/FormNotification";
 
 type BookingType = "dj" | "pair";
@@ -56,7 +56,7 @@ export default function DJsPage() {
 
   const bookingSelectValue = selectedType && selectedId ? `${selectedType}:${selectedId}` : "";
 
-  const selectedBookingName = selectedDJ?.name || (selectedPair ? getPairDisplayName(selectedPair.id) || selectedPair.name : null);
+  const selectedBookingName = selectedDJ?.name || (selectedPair ? selectedPair.name : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +67,7 @@ export default function DJsPage() {
       const bookingData = {
         type: selectedType,
         bookingItem:
-          selectedType === "dj" ? selectedDJ?.name : (selectedPair ? getPairDisplayName(selectedPair.id) || selectedPair.name : null),
+          selectedType === "dj" ? selectedDJ?.name : (selectedPair ? selectedPair.name : null),
         ...formData,
       };
 
@@ -123,7 +123,7 @@ export default function DJsPage() {
         <h1 className="text-4xl font-bold">Resident DJs &amp; DJ Pairs</h1>
         <p className="mt-3 text-lg text-white/70">
           Unsere Resident DJ's sind mit Herz und Seele Teil von INCLUSIONS. Sie legen ohne Gage auf
-          und unterstützen das Projekt als Botschafter.
+          und unterstützen INCLUSIONS als Botschafter.
         </p>
         <p className="mt-2 text-white/70">
           Ein USP von INCLUSIONS sind die DJ Pairs: professionelle DJ's legen zusammen mit DJ's mit
@@ -192,7 +192,7 @@ export default function DJsPage() {
                     </div>
                   )}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{getPairDisplayName(pair.id) || pair.name}</h3>
+                <h3 className="text-xl font-semibold mb-2">{pair.name}</h3>
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className="text-xs px-2 py-1 rounded-full bg-brand-pink/20 text-brand-pink">
                     DJ Pair
@@ -371,7 +371,7 @@ export default function DJsPage() {
                 <optgroup label="DJ Pairs">
                   {pairs.map((pair) => (
                     <option key={pair.id} value={`pair:${pair.id}`}>
-                      {getPairDisplayName(pair.id) || pair.name}
+                      {pair.name}
                     </option>
                   ))}
                 </optgroup>

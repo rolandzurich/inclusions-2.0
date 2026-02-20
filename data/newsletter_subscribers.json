@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": 1738091890123,
+    "email": "julia@example.com",
+    "first_name": "Julia",
+    "last_name": "Zimmermann",
+    "interests": ["Events", "DJ"],
+    "has_disability": false,
+    "status": "confirmed",
+    "opt_in_confirmed_at": "2026-01-28T09:00:00.000Z",
+    "created_at": "2026-01-28T08:55:00.000Z"
+  },
+  {
+    "id": 1738091901234,
+    "email": "david@example.com",
+    "first_name": "David",
+    "last_name": "Müller",
+    "interests": ["Dance Crew", "Events"],
+    "has_disability": true,
+    "status": "confirmed",
+    "opt_in_confirmed_at": "2026-01-27T12:30:00.000Z",
+    "created_at": "2026-01-27T12:25:00.000Z",
+    "viewed_at": "2026-01-27T13:00:00.000Z"
+  },
+  {
+    "id": 1738092012345,
+    "email": "petra@example.com",
+    "first_name": "Petra",
+    "last_name": "Keller",
+    "interests": ["Events"],
+    "has_disability": false,
+    "status": "pending",
+    "created_at": "2026-01-26T15:20:00.000Z"
+  },
+  {
+    "id": 1738092123456,
+    "email": "marco@example.com",
+    "first_name": "Marco",
+    "last_name": "Hoffmann",
+    "interests": ["DJ", "Dance Crew", "Events"],
+    "has_disability": false,
+    "status": "confirmed",
+    "opt_in_confirmed_at": "2026-01-25T10:15:00.000Z",
+    "created_at": "2026-01-25T10:10:00.000Z"
+  }
+]

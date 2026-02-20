@@ -28,6 +28,7 @@ yarn-error.log*
 .env*.local
 .env
 .env*.backup
+.env.server
 .env.local.backup
 
 # vercel
@@ -58,3 +59,6 @@ backend/supabase/.temp
 
 # Server credentials
 server.md
+
+# Produktions-Backups (sensible Daten)
+backups/

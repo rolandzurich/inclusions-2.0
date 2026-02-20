@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import UmamiScript from "@/components/UmamiScript";
-import { ClientCSSCheck } from "@/components/AgentDebug";
+import { HideOnAdmin, AdminBodyClass } from "@/components/AdminRouteGuard";
 import { getOrganizationSchema, getWebSiteSchema } from "@/lib/geo-schema";
 
 const bangers = Bangers({
@@ -93,10 +93,9 @@ export default function RootLayout({
         }}
       >
         <UmamiScript />
-        <Header />
-        {children}
-        <Footer />
-        <ClientCSSCheck />
+        <HideOnAdmin><Header /></HideOnAdmin>
+        <AdminBodyClass>{children}</AdminBodyClass>
+        <HideOnAdmin><Footer /></HideOnAdmin>
       </body>
     </html>
   );

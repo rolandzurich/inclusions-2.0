@@ -1,1 +1,48 @@
-[]
+[
+  {
+    "id": 1738091567890,
+    "first_name": "Laura",
+    "last_name": "Meier",
+    "email": "laura@example.com",
+    "phone": "+41 79 111 22 33",
+    "company": "Meier Events AG",
+    "guests": 5,
+    "event_date": "2026-05-10",
+    "event_location": "St. Gallen",
+    "message": "Wir möchten gerne VIP-Zugang für unser Team buchen. Wir sind sehr an euren inklusiven Events interessiert.",
+    "special_requirements": "Rollstuhlzugang erforderlich",
+    "status": "pending",
+    "created_at": "2026-01-28T08:20:00.000Z"
+  },
+  {
+    "id": 1738091678901,
+    "first_name": "Michael",
+    "last_name": "Bauer",
+    "email": "michael@example.com",
+    "phone": "+41 76 444 55 66",
+    "company": null,
+    "guests": 2,
+    "event_date": "2026-04-15",
+    "event_location": "Luzern",
+    "message": "Ich und meine Frau würden gerne an eurem nächsten Event teilnehmen.",
+    "special_requirements": null,
+    "status": "pending",
+    "created_at": "2026-01-27T16:45:00.000Z",
+    "viewed_at": "2026-01-27T17:00:00.000Z"
+  },
+  {
+    "id": 1738091789012,
+    "first_name": "Anna",
+    "last_name": "Fischer",
+    "email": "anna@example.com",
+    "phone": "+41 78 777 88 99",
+    "company": "Fischer & Co",
+    "guests": 10,
+    "event_date": "2026-06-20",
+    "event_location": "Genf",
+    "message": "Unsere Firma möchte VIP-Tickets für das nächste große Event kaufen.",
+    "special_requirements": "Gebärdensprachdolmetscher gewünscht",
+    "status": "pending",
+    "created_at": "2026-01-25T11:30:00.000Z"
+  }
+]

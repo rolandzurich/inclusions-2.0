@@ -79,7 +79,7 @@ export default function EventsPage() {
                   <div className="space-y-2">
                     {[
                       "Zagara",
-                      "Coco.bewegt",
+                      "Coco.bewegt B2B Lina's Lab",
                       "Samy Jackson",
                       "Hoibaer",
                       "_miniArt°°°",

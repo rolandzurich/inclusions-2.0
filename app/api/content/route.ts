@@ -3,53 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
 // GET: Öffentlicher Zugriff auf published Content Blocks
+// TODO: Migrate to PostgreSQL via lib/db-postgres
 export async function GET(request: NextRequest) {
   try {
-    const { supabase } = await import('@/lib/supabase');
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Service nicht verfügbar.' },
-        { status: 503 }
-      );
-    }
-
-    const url = new URL(request.url);
-    const key = url.searchParams.get('key');
-
-    if (key) {
-      // Einzelner Block
-      const { data, error } = await supabase
-        .from('content_blocks')
-        .select('*')
-        .eq('key', key)
-        .eq('published', true)
-        .single();
-
-      if (error || !data) {
-        return NextResponse.json(
-          { error: 'Content Block nicht gefunden.' },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json(data);
-    } else {
-      // Alle published Blocks
-      const { data, error } = await supabase
-        .from('content_blocks')
-        .select('*')
-        .eq('published', true)
-        .order('order_index', { ascending: true });
-
-      if (error) {
-        return NextResponse.json(
-          { error: 'Fehler beim Laden der Content Blocks.' },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({ blocks: data });
-    }
+    return NextResponse.json(
+      { error: 'Service nicht verfügbar. Content-Migration ausstehend.' },
+      { status: 503 }
+    );
   } catch (error) {
     console.error('Error fetching content:', error);
     return NextResponse.json(
@@ -81,38 +41,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { supabaseAdmin } = await import('@/lib/supabase');
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: 'Supabase nicht verfügbar.' },
-        { status: 503 }
-      );
-    }
-
-    const { data, error } = await supabaseAdmin
-      .from('content_blocks')
-      .upsert({
-        key: body.key,
-        title: body.title || null,
-        body_markdown: body.body_markdown || null,
-        body_html: body.body_html || null,
-        image_url: body.image_url || null,
-        published: body.published !== undefined ? body.published : true,
-        order_index: body.order_index || 0,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Fehler beim Speichern des Content Blocks.' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(data);
+    // TODO: Migrate to PostgreSQL via lib/db-postgres
+    return NextResponse.json(
+      { error: 'Service nicht verfügbar. Content-Migration ausstehend.' },
+      { status: 503 }
+    );
   } catch (error) {
     console.error('Error saving content:', error);
     return NextResponse.json(

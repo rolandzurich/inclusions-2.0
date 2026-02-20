@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
+
+const DATA_DIR = join(process.cwd(), 'data');
+const FILENAME = 'vip_registrations.json';
+
+async function readJsonFile(): Promise<any[]> {
+  try {
+    const data = await fs.readFile(join(DATA_DIR, FILENAME), 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
+}
+
+async function writeJsonFile(data: any[]) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(join(DATA_DIR, FILENAME), JSON.stringify(data, null, 2));
+}
 
 // GET: Get single VIP registration and mark as viewed
 export async function GET(
@@ -13,42 +32,23 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      if (!supabaseAdmin) {
-        throw new Error('Supabase nicht verfügbar');
-      }
-      
-      // Get the VIP registration
-      const { data, error } = await supabaseAdmin
-        .from('vip_registrations')
-        .select('*')
-        .eq('id', params.id)
-        .single();
+    const data = await readJsonFile();
+    const item = data.find((r: any) => String(r.id) === String(params.id));
 
-      if (error) {
-        console.error('Database error:', error);
-        return NextResponse.json(
-          { error: 'Fehler beim Laden der VIP-Anmeldung.' },
-          { status: 500 }
-        );
-      }
-
-      // Mark as viewed if not already viewed
-      if (data && !data.viewed_at) {
-        await supabaseAdmin
-          .from('vip_registrations')
-          .update({ viewed_at: new Date().toISOString() })
-          .eq('id', params.id);
-      }
-
-      return NextResponse.json(data);
-    } catch (supabaseError) {
+    if (!item) {
       return NextResponse.json(
-        { error: 'Supabase nicht verfügbar.' },
-        { status: 503 }
+        { error: 'VIP-Anmeldung nicht gefunden.' },
+        { status: 404 }
       );
     }
+
+    // Mark as viewed if not already viewed
+    if (!item.viewed_at) {
+      item.viewed_at = new Date().toISOString();
+      await writeJsonFile(data);
+    }
+
+    return NextResponse.json(item);
   } catch (error) {
     console.error('Error fetching VIP registration:', error);
     return NextResponse.json(
@@ -70,40 +70,23 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    const data = await readJsonFile();
+    const item = data.find((r: any) => String(r.id) === String(params.id));
 
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      if (!supabaseAdmin) {
-        throw new Error('Supabase nicht verfügbar');
-      }
-      
-      const updateData: any = {};
-      if (body.status !== undefined) updateData.status = body.status;
-      if (body.viewed_at !== undefined) updateData.viewed_at = body.viewed_at;
-      if (body.admin_notes !== undefined) updateData.admin_notes = body.admin_notes;
-
-      const { data, error } = await supabaseAdmin
-        .from('vip_registrations')
-        .update(updateData)
-        .eq('id', params.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Database error:', error);
-        return NextResponse.json(
-          { error: 'Fehler beim Aktualisieren der VIP-Anmeldung.' },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json(data);
-    } catch (supabaseError) {
+    if (!item) {
       return NextResponse.json(
-        { error: 'Supabase nicht verfügbar.' },
-        { status: 503 }
+        { error: 'VIP-Anmeldung nicht gefunden.' },
+        { status: 404 }
       );
     }
+
+    // Update fields
+    if (body.status !== undefined) item.status = body.status;
+    if (body.viewed_at !== undefined) item.viewed_at = body.viewed_at;
+    if (body.admin_notes !== undefined) item.admin_notes = body.admin_notes;
+
+    await writeJsonFile(data);
+    return NextResponse.json(item);
   } catch (error) {
     console.error('Error updating VIP registration:', error);
     return NextResponse.json(
@@ -123,32 +106,18 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      if (!supabaseAdmin) {
-        throw new Error('Supabase nicht verfügbar');
-      }
-      
-      const { error } = await supabaseAdmin
-        .from('vip_registrations')
-        .delete()
-        .eq('id', params.id);
+    const data = await readJsonFile();
+    const filtered = data.filter((r: any) => String(r.id) !== String(params.id));
 
-      if (error) {
-        console.error('Database error:', error);
-        return NextResponse.json(
-          { error: 'Fehler beim Löschen der VIP-Anmeldung.' },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({ success: true });
-    } catch (supabaseError) {
+    if (filtered.length === data.length) {
       return NextResponse.json(
-        { error: 'Supabase nicht verfügbar.' },
-        { status: 503 }
+        { error: 'VIP-Anmeldung nicht gefunden.' },
+        { status: 404 }
       );
     }
+
+    await writeJsonFile(filtered);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting VIP registration:', error);
     return NextResponse.json(

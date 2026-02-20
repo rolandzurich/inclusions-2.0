@@ -1,1 +1,48 @@
-[]
+[
+  {
+    "id": 1738091234567,
+    "name": "Max Mustermann",
+    "email": "max@example.com",
+    "phone": "+41 79 123 45 67",
+    "subject": "DJ Booking: DJ Vibes",
+    "message": "Hallo, ich möchte gerne DJ Vibes für meine Hochzeit am 15. Juni 2026 buchen. Ist er verfügbar?",
+    "booking_type": "DJ",
+    "booking_item": "DJ Vibes",
+    "event_date": "2026-06-15",
+    "event_location": "Zürich",
+    "event_type": "Hochzeit",
+    "status": "new",
+    "created_at": "2026-01-28T10:30:00.000Z"
+  },
+  {
+    "id": 1738091345678,
+    "name": "Sarah Schmidt",
+    "email": "sarah@example.com",
+    "phone": "+41 76 987 65 43",
+    "subject": "DJ Booking: Dance Crew Performance",
+    "message": "Ich interessiere mich für eine Dance Crew Performance für unser Firmenevent.",
+    "booking_type": "Dance Crew",
+    "booking_item": "Dance Crew Performance",
+    "event_date": "2026-03-20",
+    "event_location": "Basel",
+    "event_type": "Firmenevent",
+    "status": "new",
+    "created_at": "2026-01-27T14:15:00.000Z",
+    "viewed_at": "2026-01-27T15:30:00.000Z"
+  },
+  {
+    "id": 1738091456789,
+    "name": "Thomas Weber",
+    "email": "thomas@example.com",
+    "phone": "+41 78 555 44 33",
+    "subject": "DJ Booking: DJ Beats",
+    "message": "Ich plane einen Geburtstag und suche einen DJ. Könnt ihr mir helfen?",
+    "booking_type": "DJ",
+    "booking_item": "DJ Beats",
+    "event_date": "2026-02-14",
+    "event_location": "Bern",
+    "event_type": "Geburtstag",
+    "status": "new",
+    "created_at": "2026-01-26T09:45:00.000Z"
+  }
+]

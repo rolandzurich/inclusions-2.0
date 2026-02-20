@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
+
+async function readJsonFile(filename: string): Promise<any[]> {
+  try {
+    const dataDir = join(process.cwd(), 'data');
+    const data = await fs.readFile(join(dataDir, filename), 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return [];
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,38 +22,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Dynamisch Supabase importieren
-    const { supabaseAdmin } = await import('@/lib/supabase');
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: 'Supabase nicht verfügbar.' },
-        { status: 503 }
-      );
-    }
-
-    // Stats parallel abrufen
-    const [contactRequests, newsletterSubscribers, vipRegistrations, recentRequests, newContactRequests, newVIPRegistrations, newNewsletterSubscribers] = await Promise.all([
-      supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }),
-      supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }), // Alle zählen, nicht nur confirmed
-      supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }),
-      supabaseAdmin
-        .from('contact_requests')
-        .select('id, created_at, name, email, booking_item, viewed_at')
-        .order('created_at', { ascending: false })
-        .limit(5),
-      supabaseAdmin.from('contact_requests').select('id', { count: 'exact', head: true }).is('viewed_at', null),
-      supabaseAdmin.from('vip_registrations').select('id', { count: 'exact', head: true }).is('viewed_at', null),
-      supabaseAdmin.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).is('viewed_at', null),
+    // Lese alle Daten aus JSON-Dateien
+    const [contactRequests, newsletterSubscribers, vipRegistrations] = await Promise.all([
+      readJsonFile('contact_requests.json'),
+      readJsonFile('newsletter_subscribers.json'),
+      readJsonFile('vip_registrations.json'),
     ]);
 
+    // Sortiere nach Datum und hole die neuesten 5 Booking-Anfragen
+    const sortedRequests = contactRequests
+      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 5);
+
+    // Zähle neue (ungesehene) Einträge
+    const newContactRequests = contactRequests.filter((r: any) => !r.viewed_at).length;
+    const newVIPRegistrations = vipRegistrations.filter((r: any) => !r.viewed_at).length;
+    const newNewsletterSubscribers = newsletterSubscribers.filter((r: any) => !r.viewed_at).length;
+
     return NextResponse.json({
-      contactRequests: contactRequests.count || 0,
-      newsletterSubscribers: newsletterSubscribers.count || 0,
-      vipRegistrations: vipRegistrations.count || 0,
-      recentContactRequests: recentRequests.data || [],
-      newContactRequests: newContactRequests.count || 0,
-      newVIPRegistrations: newVIPRegistrations.count || 0,
-      newNewsletterSubscribers: newNewsletterSubscribers.count || 0,
+      contactRequests: contactRequests.length,
+      newsletterSubscribers: newsletterSubscribers.length,
+      vipRegistrations: vipRegistrations.length,
+      recentContactRequests: sortedRequests,
+      newContactRequests,
+      newVIPRegistrations,
+      newNewsletterSubscribers,
     });
   } catch (error) {
     console.error('Error fetching stats:', error);

@@ -34,33 +34,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Falls Supabase verfügbar ist, versuche es damit
-    try {
-      const { supabaseAdmin } = await import('@/lib/supabase');
-      if (!supabaseAdmin) {
-        throw new Error('Supabase nicht verfügbar');
-      }
-      const { data: authData, error: authError } = await supabaseAdmin.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (!authError && authData.user) {
-        const token = Buffer.from(`${email}:${Date.now()}`).toString('base64');
-        return NextResponse.json({
-          success: true,
-          token,
-          user: {
-            email: authData.user.email,
-            id: authData.user.id,
-          },
-        });
-      }
-    } catch (supabaseError) {
-      // Supabase nicht verfügbar, verwende Test-Auth
-      console.log('Supabase nicht verfügbar, verwende Test-Auth');
-    }
-
     return NextResponse.json(
       { error: 'Ungültige Anmeldedaten.' },
       { status: 401 }
