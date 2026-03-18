@@ -34,6 +34,13 @@ interface Summary {
   reimbursed_expense: number;
   open_expense: number;
   balance: number;
+  operating_income: number;
+  operating_expense: number;
+  operating_result: number;
+  transfer_in: number;
+  transfer_out: number;
+  opening_balance: number;
+  estimated_closing_balance: number;
 }
 
 // Schweizer MWST-Sätze 2026
@@ -45,15 +52,25 @@ const VAT_RATES = [
 
 // Kategorien für Vereinsbuchhaltung
 const INCOME_CATEGORIES = [
+  'Eventumsatz',
+  'Spende (Twint/RaiseNow)',
+  'Spende',
   'Eintrittsgelder',
   'Bar-Einnahmen',
   'Sponsoring',
   'Mitgliederbeiträge',
   'Spenden',
+  'Einnahme',
+  'Transfer intern (nicht P&L)',
   'Sonstige Einnahmen',
 ];
 
 const EXPENSE_CATEGORIES = [
+  'Merch',
+  'Social Media',
+  'Bankgebühren',
+  'Rückerstattung',
+  'Spenden/Ausschüttung',
   'Location-Miete',
   'Equipment',
   'Marketing',
@@ -61,19 +78,32 @@ const EXPENSE_CATEGORIES = [
   'Getränke & Verpflegung',
   'Versicherungen',
   'Verwaltung',
+  'Transfer intern (nicht P&L)',
   'Sonstige Ausgaben',
 ];
 
 const CURRENCIES = ['CHF', 'USD', 'EUR'];
 
 export default function AccountingPage() {
+  const currentYear = new Date().getFullYear();
+  const defaultFrom = `${currentYear - 1}-01-01`;
+  const defaultTo = `${currentYear}-12-31`;
+
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [apiError, setApiError] = useState('');
   const [summary, setSummary] = useState<Summary>({
     total_income: 0,
     total_expense: 0,
     reimbursed_expense: 0,
     open_expense: 0,
     balance: 0,
+    operating_income: 0,
+    operating_expense: 0,
+    operating_result: 0,
+    transfer_in: 0,
+    transfer_out: 0,
+    opening_balance: 0,
+    estimated_closing_balance: 0,
   });
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -83,21 +113,24 @@ export default function AccountingPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'expenses' | 'income'>('expenses');
 
   // Filter
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [dateFrom, setDateFrom] = useState(defaultFrom);
+  const [dateTo, setDateTo] = useState(defaultTo);
   const [typeFilter, setTypeFilter] = useState<'' | EntryType>('');
   const [reimbursedFilter, setReimbursedFilter] = useState<'' | 'true' | 'false'>('');
+  const [openingBalance, setOpeningBalance] = useState(0);
 
   useEffect(() => {
     fetchEntries();
-  }, [dateFrom, dateTo, typeFilter, reimbursedFilter, activeTab]);
+  }, [dateFrom, dateTo, typeFilter, reimbursedFilter, activeTab, openingBalance]);
 
   async function fetchEntries() {
     setLoading(true);
+    setApiError('');
     try {
       const params = new URLSearchParams();
       if (dateFrom) params.append('from', dateFrom);
       if (dateTo) params.append('to', dateTo);
+      params.append('opening_balance', String(openingBalance));
 
       // Tab-Filter
       if (activeTab === 'expenses') {
@@ -113,12 +146,49 @@ export default function AccountingPage() {
       const res = await fetch(`/api/admin-v2/journal?${params}`);
       const data = await res.json();
 
+      if (!res.ok || !data.success) {
+        const message = data?.error || 'Buchhaltungsdaten konnten nicht geladen werden';
+        setApiError(message);
+        setEntries([]);
+        setSummary({
+          total_income: 0,
+          total_expense: 0,
+          reimbursed_expense: 0,
+          open_expense: 0,
+          balance: 0,
+          operating_income: 0,
+          operating_expense: 0,
+          operating_result: 0,
+          transfer_in: 0,
+          transfer_out: 0,
+          opening_balance: 0,
+          estimated_closing_balance: 0,
+        });
+        return;
+      }
+
       if (data.success) {
         setEntries(data.entries);
         setSummary(data.summary);
       }
     } catch (error) {
       console.error('Fehler beim Laden:', error);
+      setApiError('Netzwerkfehler beim Laden der Buchhaltung');
+      setEntries([]);
+      setSummary({
+        total_income: 0,
+        total_expense: 0,
+        reimbursed_expense: 0,
+        open_expense: 0,
+        balance: 0,
+        operating_income: 0,
+        operating_expense: 0,
+        operating_result: 0,
+        transfer_in: 0,
+        transfer_out: 0,
+        opening_balance: 0,
+        estimated_closing_balance: 0,
+      });
     } finally {
       setLoading(false);
     }
@@ -195,10 +265,11 @@ export default function AccountingPage() {
     });
   };
 
-  // Aktuelles Jahr als Default
-  const currentYear = new Date().getFullYear();
-  const defaultFrom = `${currentYear - 1}-01-01`;
-  const defaultTo = `${currentYear}-12-31`;
+  const toReceiptHref = (url?: string) => {
+    if (!url) return '#';
+    if (url.startsWith('/')) return encodeURI(url);
+    return url;
+  };
 
   return (
     <div className="space-y-6">
@@ -231,6 +302,19 @@ export default function AccountingPage() {
             + Neuer Eintrag
           </button>
         </div>
+      </div>
+
+      {apiError && (
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+          <div className="font-medium">Buchhaltung konnte nicht geladen werden</div>
+          <div className="text-sm mt-1">{apiError}</div>
+        </div>
+      )}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-900">
+        Die Kacheln zeigen die Werte fuer den gewaehlten Zeitraum unabhaengig von Tab/Spesen-Filter.
+        <span className="font-semibold"> Betriebsergebnis</span> = ohne interne Transfers;
+        <span className="font-semibold"> Netto-Geldfluss</span> = alle Ein-/Auszahlungen.
       </div>
 
       {/* Summary Cards */}
@@ -271,7 +355,7 @@ export default function AccountingPage() {
               summary.balance >= 0 ? 'text-blue-800' : 'text-orange-800'
             }`}
           >
-            Saldo
+            Netto-Geldfluss
           </div>
           <div
             className={`text-xl font-bold ${
@@ -279,6 +363,32 @@ export default function AccountingPage() {
             }`}
           >
             {formatCurrency(summary.balance)}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-medium text-gray-600 mb-1">Betriebsertrag</div>
+          <div className="text-lg font-semibold text-gray-900">{formatCurrency(summary.operating_income)}</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-medium text-gray-600 mb-1">Betriebsaufwand</div>
+          <div className="text-lg font-semibold text-gray-900">{formatCurrency(summary.operating_expense)}</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-medium text-gray-600 mb-1">Betriebsergebnis (ER)</div>
+          <div className={`text-lg font-semibold ${summary.operating_result >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+            {formatCurrency(summary.operating_result)}
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-medium text-gray-600 mb-1">Geschaetzter Kontostand</div>
+          <div className={`text-lg font-semibold ${summary.estimated_closing_balance >= 0 ? 'text-blue-700' : 'text-red-700'}`}>
+            {formatCurrency(summary.estimated_closing_balance)}
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            Start: {formatCurrency(summary.opening_balance)} | Transfer In/Out: {formatCurrency(summary.transfer_in)} / {formatCurrency(summary.transfer_out)}
           </div>
         </div>
       </div>
@@ -324,7 +434,7 @@ export default function AccountingPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Von</label>
             <input
               type="date"
-              value={dateFrom || defaultFrom}
+              value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
@@ -333,8 +443,18 @@ export default function AccountingPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Bis</label>
             <input
               type="date"
-              value={dateTo || defaultTo}
+              value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Start-Kontostand CHF</label>
+            <input
+              type="number"
+              step="0.01"
+              value={openingBalance}
+              onChange={(e) => setOpeningBalance(parseFloat(e.target.value || '0'))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
@@ -367,6 +487,7 @@ export default function AccountingPage() {
               onClick={() => {
                 setDateFrom('');
                 setDateTo('');
+                setOpeningBalance(0);
                 setTypeFilter('');
                 setReimbursedFilter('');
               }}
@@ -387,28 +508,48 @@ export default function AccountingPage() {
           </div>
         ) : entries.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Noch keine Einträge
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Importiere Ausgaben aus dem Google Sheet oder erstelle einen neuen Eintrag
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={handleImport}
-                disabled={importing}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors"
-              >
-                {importing ? 'Importiere...' : 'Google Sheet importieren'}
-              </button>
-              <button
-                onClick={() => openModal()}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                + Manuell erstellen
-              </button>
-            </div>
+            {apiError ? (
+              <>
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Datenquelle aktuell nicht erreichbar
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Bitte Verbindung/Session prüfen und Seite neu laden.
+                </p>
+                <button
+                  onClick={fetchEntries}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Erneut laden
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Noch keine Einträge
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Importiere Ausgaben aus dem Google Sheet oder erstelle einen neuen Eintrag
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={handleImport}
+                    disabled={importing}
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                  >
+                    {importing ? 'Importiere...' : 'Google Sheet importieren'}
+                  </button>
+                  <button
+                    onClick={() => openModal()}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    + Manuell erstellen
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -454,7 +595,12 @@ export default function AccountingPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {entries.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={entry.id}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => openModal(entry)}
+                    title="Klicken zum Bearbeiten"
+                  >
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                       {formatDate(entry.entry_date)}
                     </td>
@@ -475,6 +621,38 @@ export default function AccountingPage() {
                       <div className="text-sm font-medium text-gray-900">
                         {entry.description || '-'}
                       </div>
+                      {entry.receipt_filename && (
+                        <div className="mt-1">
+                          <a
+                            href={toReceiptHref(entry.receipt_url)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                            title={entry.receipt_filename}
+                          >
+                            Quittung: {entry.receipt_filename}
+                          </a>
+                        </div>
+                      )}
+                      {!entry.receipt_filename && entry.metadata?.attachment && (
+                        <div className="mt-1">
+                          <a
+                            href={entry.metadata.attachment.data}
+                            download={entry.metadata.attachment.filename}
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                            onClick={(e) => e.stopPropagation()}
+                            title={entry.metadata.attachment.filename}
+                          >
+                            Quittung: {entry.metadata.attachment.filename}
+                          </a>
+                        </div>
+                      )}
+                      {!entry.receipt_filename && !entry.metadata?.attachment && (
+                        <div className="mt-1 text-xs text-red-600">
+                          Quittung fehlt
+                        </div>
+                      )}
                       {entry.notes && !entry.notes.includes('Google-Sheet-Import') && (
                         <div className="text-xs text-gray-500 mt-0.5">{entry.notes}</div>
                       )}
@@ -534,10 +712,11 @@ export default function AccountingPage() {
                     <td className="px-4 py-3 whitespace-nowrap text-center text-sm">
                       {entry.receipt_filename ? (
                         <a
-                          href={entry.receipt_url || '#'}
+                          href={toReceiptHref(entry.receipt_url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
                           title={entry.receipt_filename}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -550,6 +729,7 @@ export default function AccountingPage() {
                           href={entry.metadata.attachment.data}
                           download={entry.metadata.attachment.filename}
                           className="text-blue-600 hover:text-blue-900"
+                          onClick={(e) => e.stopPropagation()}
                           title={entry.metadata.attachment.filename}
                         >
                           <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -557,12 +737,17 @@ export default function AccountingPage() {
                           </svg>
                         </a>
                       ) : (
-                        <span className="text-gray-300">-</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                          Fehlt
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
                       <button
-                        onClick={() => openModal(entry)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(entry);
+                        }}
                         className="text-blue-600 hover:text-blue-900 mr-2"
                         title="Bearbeiten"
                       >
@@ -571,7 +756,10 @@ export default function AccountingPage() {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(entry.id, entry.description || 'Eintrag')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(entry.id, entry.description || 'Eintrag');
+                        }}
                         className="text-red-600 hover:text-red-900"
                         title="Löschen"
                       >
@@ -676,6 +864,10 @@ function JournalModal({
       }
 
       setAttachmentFile(file);
+      setFormData((prev) => ({
+        ...prev,
+        receipt_filename: prev.receipt_filename || file.name,
+      }));
 
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -710,6 +902,8 @@ function JournalModal({
 
       const payload = {
         ...formData,
+        receipt_filename:
+          formData.receipt_filename || attachmentFile?.name || entry?.receipt_filename || null,
         vat_amount_chf: vatAmount,
         is_reconciled: true,
         metadata: attachmentData
