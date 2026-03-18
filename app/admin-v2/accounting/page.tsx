@@ -925,6 +925,22 @@ function JournalModal({
 
       const data = await res.json();
 
+      // Falls ein neuer Eintrag als Duplikat erkannt wird, aktualisieren wir automatisch
+      // den bestehenden Datensatz (wichtig für "Quittung nachtragen").
+      if (!entry && data?.duplicate && data?.existing_entry?.id) {
+        const mergeRes = await fetch(`/api/admin-v2/journal/${data.existing_entry.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const mergeData = await mergeRes.json();
+        if (mergeData?.success) {
+          onSuccess('Bestehender Eintrag aktualisiert (Quittung gespeichert)');
+          return;
+        }
+      }
+
       if (data.success) {
         onSuccess(data.message);
       } else {
