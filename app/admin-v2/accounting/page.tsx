@@ -635,20 +635,12 @@ export default function AccountingPage() {
                           </a>
                         </div>
                       )}
-                      {!entry.receipt_filename && entry.metadata?.attachment && (
-                        <div className="mt-1">
-                          <a
-                            href={entry.metadata.attachment.data}
-                            download={entry.metadata.attachment.filename}
-                            className="text-xs text-blue-600 hover:text-blue-800 underline"
-                            onClick={(e) => e.stopPropagation()}
-                            title={entry.metadata.attachment.filename}
-                          >
-                            Quittung: {entry.metadata.attachment.filename}
-                          </a>
+                      {!entry.receipt_filename && entry.metadata?.attachment?.filename && (
+                        <div className="mt-1 text-xs text-amber-600">
+                          Quittung: {entry.metadata.attachment.filename}
                         </div>
                       )}
-                      {!entry.receipt_filename && !entry.metadata?.attachment && (
+                      {!entry.receipt_filename && !entry.metadata?.attachment?.filename && (
                         <div className="mt-1 text-xs text-red-600">
                           Quittung fehlt
                         </div>
@@ -724,18 +716,10 @@ export default function AccountingPage() {
                           </svg>
                           <span className="text-xs max-w-[100px] truncate">{entry.receipt_filename}</span>
                         </a>
-                      ) : entry.metadata?.attachment ? (
-                        <a
-                          href={entry.metadata.attachment.data}
-                          download={entry.metadata.attachment.filename}
-                          className="text-blue-600 hover:text-blue-900"
-                          onClick={(e) => e.stopPropagation()}
-                          title={entry.metadata.attachment.filename}
-                        >
-                          <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                          </svg>
-                        </a>
+                      ) : entry.metadata?.attachment?.filename ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 rounded-full" title={entry.metadata.attachment.filename}>
+                          {entry.metadata.attachment.filename}
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">
                           Fehlt
@@ -866,7 +850,7 @@ function JournalModal({
       setAttachmentFile(file);
       setFormData((prev) => ({
         ...prev,
-        receipt_filename: prev.receipt_filename || file.name,
+        receipt_filename: file.name,
       }));
 
       if (file.type.startsWith('image/')) {
@@ -887,35 +871,28 @@ function JournalModal({
     setError('');
 
     try {
-      let attachmentData = null;
-      if (attachmentFile) {
-        const reader = new FileReader();
-        attachmentData = await new Promise((resolve, reject) => {
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(attachmentFile);
-        });
-      }
+      // receipt_filename: immer aus hochgeladener Datei oder manuellem Feld
+      const resolvedFilename =
+        attachmentFile?.name ||
+        formData.receipt_filename ||
+        entry?.receipt_filename ||
+        null;
 
-      const url = entry ? `/api/admin-v2/journal/${entry.id}` : '/api/admin-v2/journal';
-      const method = entry ? 'PUT' : 'POST';
+      // metadata: nur Filename+Type speichern, KEIN base64 in die DB
+      const resolvedMetadata = attachmentFile
+        ? { attachment: { filename: attachmentFile.name, type: attachmentFile.type } }
+        : (entry?.metadata || null);
 
       const payload = {
         ...formData,
-        receipt_filename:
-          formData.receipt_filename || attachmentFile?.name || entry?.receipt_filename || null,
+        receipt_filename: resolvedFilename,
         vat_amount_chf: vatAmount,
         is_reconciled: true,
-        metadata: attachmentData
-          ? {
-              attachment: {
-                filename: attachmentFile?.name,
-                type: attachmentFile?.type,
-                data: attachmentData,
-              },
-            }
-          : entry?.metadata || null,
+        metadata: resolvedMetadata,
       };
+
+      const url = entry ? `/api/admin-v2/journal/${entry.id}` : '/api/admin-v2/journal';
+      const method = entry ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
         method,
@@ -925,20 +902,20 @@ function JournalModal({
 
       const data = await res.json();
 
-      // Falls ein neuer Eintrag als Duplikat erkannt wird, aktualisieren wir automatisch
-      // den bestehenden Datensatz (wichtig für "Quittung nachtragen").
+      // Duplikat erkannt → bestehenden Eintrag automatisch aktualisieren
       if (!entry && data?.duplicate && data?.existing_entry?.id) {
         const mergeRes = await fetch(`/api/admin-v2/journal/${data.existing_entry.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-
         const mergeData = await mergeRes.json();
         if (mergeData?.success) {
-          onSuccess('Bestehender Eintrag aktualisiert (Quittung gespeichert)');
+          onSuccess('Eintrag aktualisiert');
           return;
         }
+        setError(mergeData?.error || 'Fehler beim Aktualisieren');
+        return;
       }
 
       if (data.success) {
@@ -947,7 +924,7 @@ function JournalModal({
         setError(data.error || 'Fehler beim Speichern');
       }
     } catch (err) {
-      setError('Netzwerkfehler');
+      setError('Netzwerkfehler – bitte Seite neu laden und nochmals versuchen');
     } finally {
       setSaving(false);
     }

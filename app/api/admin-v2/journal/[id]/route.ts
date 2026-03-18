@@ -1,21 +1,21 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { executeMultiple, query } from '@/lib/db-postgres';
+import { query } from '@/lib/db-postgres';
 
-async function ensureJournalEntriesSchema() {
-  const migrationResult = await executeMultiple(`
-    ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS metadata JSONB;
-  `);
-
-  if (!migrationResult.success) {
-    throw new Error(`Schema-Migration fehlgeschlagen: ${migrationResult.error}`);
-  }
+function normalizePaidBy(value: any): string | null {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return null;
+  if (raw.includes('roland')) return 'Roland';
+  if (raw.includes('reto')) return 'Reto';
+  return String(value).trim();
 }
 
-function isMissingMetadataColumnError(errorMessage?: string | null): boolean {
-  if (!errorMessage) return false;
-  return errorMessage.toLowerCase().includes('column "metadata" of relation "journal_entries" does not exist');
+function normalizeDate(raw: any): string | null {
+  if (!raw) return null;
+  const s = String(raw).trim();
+  const match = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : null;
 }
 
 // GET - Einzelner Journal-Eintrag
@@ -24,23 +24,15 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const sql = `SELECT * FROM journal_entries WHERE id = $1`;
-    const result = await query(sql, [params.id]);
+    const result = await query(`SELECT * FROM journal_entries WHERE id = $1`, [params.id]);
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
-    }
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 500 });
+    if (!result.data?.length) return NextResponse.json({ error: 'Eintrag nicht gefunden' }, { status: 404 });
 
-    if (!result.data || result.data.length === 0) {
-      return NextResponse.json(
-        { error: 'Eintrag nicht gefunden' },
-        { status: 404 }
-      );
-    }
-
+    const entry = result.data[0];
     return NextResponse.json({
       success: true,
-      entry: result.data[0],
+      entry: { ...entry, entry_date: normalizeDate(entry.entry_date) || entry.entry_date },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -53,12 +45,10 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    await ensureJournalEntriesSchema();
-
     const body = await request.json();
     const {
       entry_type,
-      entry_date,
+      entry_date: rawEntryDate,
       amount_chf,
       vat_rate,
       vat_amount_chf,
@@ -82,164 +72,85 @@ export async function PUT(
       receipt_filename,
     } = body;
 
-    if (!entry_type || !entry_date || !amount_chf) {
-      return NextResponse.json(
-        { error: 'Typ, Datum und Betrag sind erforderlich' },
-        { status: 400 }
-      );
+    if (!entry_type || !rawEntryDate || !amount_chf) {
+      return NextResponse.json({ error: 'Typ, Datum und Betrag sind erforderlich' }, { status: 400 });
     }
-
     if (!['income', 'expense'].includes(entry_type)) {
-      return NextResponse.json(
-        { error: 'Typ muss "income" oder "expense" sein' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Typ muss "income" oder "expense" sein' }, { status: 400 });
     }
-
     const validVatRates = [0, 2.6, 8.1];
-    if (vat_rate && !validVatRates.includes(parseFloat(vat_rate))) {
-      return NextResponse.json(
-        { error: 'Ungültiger MWST-Satz. Erlaubt: 0%, 2.6%, 8.1%' },
-        { status: 400 }
-      );
+    if (vat_rate !== undefined && vat_rate !== null && !validVatRates.includes(parseFloat(vat_rate))) {
+      return NextResponse.json({ error: 'Ungültiger MWST-Satz. Erlaubt: 0%, 2.6%, 8.1%' }, { status: 400 });
     }
 
-    if (amount_chf && (isNaN(amount_chf) || amount_chf <= 0)) {
-      return NextResponse.json(
-        { error: 'Betrag muss positiv sein' },
-        { status: 400 }
-      );
-    }
+    const entry_date = normalizeDate(rawEntryDate) || rawEntryDate;
+    const normalizedPaidBy = normalizePaidBy(paid_by);
 
-    const sql = `
-      UPDATE journal_entries SET
-        entry_type = $1,
-        entry_date = $2,
-        amount_chf = $3,
-        vat_rate = $4,
-        vat_amount_chf = $5,
-        category = $6,
-        subcategory = $7,
-        description = $8,
-        reference = $9,
-        contact_id = $10,
-        company_id = $11,
-        project_id = $12,
-        event_id = $13,
-        notes = $14,
-        is_reconciled = $15,
-        metadata = $16,
-        supplier = $17,
-        paid_by = $18,
-        is_reimbursed = $19,
-        original_currency = $20,
-        original_amount = $21,
-        receipt_url = $22,
-        receipt_filename = $23,
-        updated_at = NOW()
-      WHERE id = $24
-      RETURNING *
-    `;
+    // Bereinige metadata: base64-Daten werden nicht in der DB gespeichert
+    const cleanMetadata = metadata?.attachment
+      ? {
+          attachment: {
+            filename: metadata.attachment.filename,
+            type: metadata.attachment.type,
+          },
+        }
+      : (metadata || null);
 
-    let result = await query(sql, [
-      entry_type,
-      entry_date,
-      amount_chf,
-      vat_rate || 0,
-      vat_amount_chf || 0,
-      category || null,
-      subcategory || null,
-      description || null,
-      reference || null,
-      contact_id || null,
-      company_id || null,
-      project_id || null,
-      event_id || null,
-      notes || null,
-      is_reconciled !== undefined ? is_reconciled : false,
-      metadata || null,
-      supplier || null,
-      paid_by || null,
-      is_reimbursed !== undefined ? is_reimbursed : false,
-      original_currency || 'CHF',
-      original_amount || null,
-      receipt_url || null,
-      receipt_filename || null,
-      params.id,
-    ]);
-
-    if (isMissingMetadataColumnError(result.error)) {
-      const fallbackSql = `
-        UPDATE journal_entries SET
-          entry_type = $1,
-          entry_date = $2,
-          amount_chf = $3,
-          vat_rate = $4,
-          vat_amount_chf = $5,
-          category = $6,
-          subcategory = $7,
-          description = $8,
-          reference = $9,
-          contact_id = $10,
-          company_id = $11,
-          project_id = $12,
-          event_id = $13,
-          notes = $14,
-          is_reconciled = $15,
-          supplier = $16,
-          paid_by = $17,
-          is_reimbursed = $18,
-          original_currency = $19,
-          original_amount = $20,
-          receipt_url = $21,
-          receipt_filename = $22,
-          updated_at = NOW()
-        WHERE id = $23
-        RETURNING *
-      `;
-
-      result = await query(fallbackSql, [
-        entry_type,
-        entry_date,
-        amount_chf,
-        vat_rate || 0,
-        vat_amount_chf || 0,
-        category || null,
-        subcategory || null,
-        description || null,
-        reference || null,
-        contact_id || null,
-        company_id || null,
-        project_id || null,
-        event_id || null,
+    const result = await query(
+      `UPDATE journal_entries SET
+         entry_type         = $1,
+         entry_date         = $2,
+         amount_chf         = $3,
+         vat_rate           = $4,
+         vat_amount_chf     = $5,
+         category           = $6,
+         subcategory        = $7,
+         description        = $8,
+         reference          = $9,
+         contact_id         = $10,
+         company_id         = $11,
+         project_id         = $12,
+         event_id           = $13,
+         notes              = $14,
+         is_reconciled      = $15,
+         metadata           = $16,
+         supplier           = $17,
+         paid_by            = $18,
+         is_reimbursed      = $19,
+         original_currency  = $20,
+         original_amount    = $21,
+         receipt_url        = $22,
+         receipt_filename   = $23,
+         updated_at         = NOW()
+       WHERE id = $24
+       RETURNING *`,
+      [
+        entry_type, entry_date, amount_chf,
+        vat_rate ?? 0, vat_amount_chf ?? 0,
+        category || null, subcategory || null, description || null,
+        reference || null, contact_id || null, company_id || null,
+        project_id || null, event_id || null,
         notes || null,
         is_reconciled !== undefined ? is_reconciled : false,
-        supplier || null,
-        paid_by || null,
+        cleanMetadata,
+        supplier || null, normalizedPaidBy,
         is_reimbursed !== undefined ? is_reimbursed : false,
         original_currency || 'CHF',
         original_amount || null,
         receipt_url || null,
         receipt_filename || null,
         params.id,
-      ]);
-    }
+      ]
+    );
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
-    }
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 500 });
+    if (!result.data?.length) return NextResponse.json({ error: 'Eintrag nicht gefunden' }, { status: 404 });
 
-    if (!result.data || result.data.length === 0) {
-      return NextResponse.json(
-        { error: 'Eintrag nicht gefunden' },
-        { status: 404 }
-      );
-    }
-
+    const entry = result.data[0];
     return NextResponse.json({
       success: true,
       message: 'Eintrag erfolgreich aktualisiert',
-      entry: result.data[0],
+      entry: { ...entry, entry_date: normalizeDate(entry.entry_date) || entry.entry_date },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -252,24 +163,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const sql = `DELETE FROM journal_entries WHERE id = $1 RETURNING *`;
-    const result = await query(sql, [params.id]);
+    const result = await query(`DELETE FROM journal_entries WHERE id = $1 RETURNING *`, [params.id]);
 
-    if (result.error) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
-    }
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 500 });
+    if (!result.data?.length) return NextResponse.json({ error: 'Eintrag nicht gefunden' }, { status: 404 });
 
-    if (!result.data || result.data.length === 0) {
-      return NextResponse.json(
-        { error: 'Eintrag nicht gefunden' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Eintrag erfolgreich gelöscht',
-    });
+    return NextResponse.json({ success: true, message: 'Eintrag erfolgreich gelöscht' });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
