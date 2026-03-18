@@ -1,7 +1,22 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db-postgres';
+import { executeMultiple, query } from '@/lib/db-postgres';
+
+async function ensureJournalEntriesSchema() {
+  const migrationResult = await executeMultiple(`
+    ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS metadata JSONB;
+  `);
+
+  if (!migrationResult.success) {
+    throw new Error(`Schema-Migration fehlgeschlagen: ${migrationResult.error}`);
+  }
+}
+
+function isMissingMetadataColumnError(errorMessage?: string | null): boolean {
+  if (!errorMessage) return false;
+  return errorMessage.toLowerCase().includes('column "metadata" of relation "journal_entries" does not exist');
+}
 
 // GET - Einzelner Journal-Eintrag
 export async function GET(
@@ -38,6 +53,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    await ensureJournalEntriesSchema();
+
     const body = await request.json();
     const {
       entry_type,
@@ -124,7 +141,7 @@ export async function PUT(
       RETURNING *
     `;
 
-    const result = await query(sql, [
+    let result = await query(sql, [
       entry_type,
       entry_date,
       amount_chf,
@@ -150,6 +167,63 @@ export async function PUT(
       receipt_filename || null,
       params.id,
     ]);
+
+    if (isMissingMetadataColumnError(result.error)) {
+      const fallbackSql = `
+        UPDATE journal_entries SET
+          entry_type = $1,
+          entry_date = $2,
+          amount_chf = $3,
+          vat_rate = $4,
+          vat_amount_chf = $5,
+          category = $6,
+          subcategory = $7,
+          description = $8,
+          reference = $9,
+          contact_id = $10,
+          company_id = $11,
+          project_id = $12,
+          event_id = $13,
+          notes = $14,
+          is_reconciled = $15,
+          supplier = $16,
+          paid_by = $17,
+          is_reimbursed = $18,
+          original_currency = $19,
+          original_amount = $20,
+          receipt_url = $21,
+          receipt_filename = $22,
+          updated_at = NOW()
+        WHERE id = $23
+        RETURNING *
+      `;
+
+      result = await query(fallbackSql, [
+        entry_type,
+        entry_date,
+        amount_chf,
+        vat_rate || 0,
+        vat_amount_chf || 0,
+        category || null,
+        subcategory || null,
+        description || null,
+        reference || null,
+        contact_id || null,
+        company_id || null,
+        project_id || null,
+        event_id || null,
+        notes || null,
+        is_reconciled !== undefined ? is_reconciled : false,
+        supplier || null,
+        paid_by || null,
+        is_reimbursed !== undefined ? is_reimbursed : false,
+        original_currency || 'CHF',
+        original_amount || null,
+        receipt_url || null,
+        receipt_filename || null,
+        params.id,
+      ]);
+    }
 
     if (result.error) {
       return NextResponse.json({ error: result.error }, { status: 500 });

@@ -5,6 +5,45 @@ import { query, executeMultiple } from '@/lib/db-postgres';
 
 // Google Drive Quittungen-Ordner
 const DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1mJM-sqwAyGclC2gNhOSUsKakZfDHIt9G';
+const LOCAL_RECEIPT_BASE_PATH = '/accounting-receipts';
+
+function normalizePaidBy(value: any): string | null {
+  const raw = String(value || '').trim().toLowerCase();
+  if (!raw) return null;
+  if (raw.includes('roland')) return 'Roland';
+  if (raw.includes('reto')) return 'Reto';
+  return String(value).trim();
+}
+
+function buildDedupKey(input: {
+  entry_type: string;
+  entry_date: string;
+  amount_chf: number;
+  description?: string;
+  supplier?: string;
+  paid_by?: string | null;
+  reference?: string;
+}) {
+  const normalizedDescription = String(input.description || '').trim().toLowerCase();
+  const normalizedSupplier = String(input.supplier || '').trim().toLowerCase();
+  const normalizedReference = String(input.reference || '').trim().toLowerCase();
+  const normalizedPaidBy = String(input.paid_by || '').trim().toLowerCase();
+
+  return [
+    input.entry_type,
+    input.entry_date,
+    Number(input.amount_chf).toFixed(2),
+    normalizedDescription,
+    normalizedSupplier,
+    normalizedPaidBy,
+    normalizedReference,
+  ].join('|');
+}
+
+function buildReceiptUrl(filename?: string | null): string | null {
+  if (!filename) return null;
+  return `${LOCAL_RECEIPT_BASE_PATH}/${encodeURIComponent(filename)}`;
+}
 
 /**
  * Ausgaben aus Google Sheet - aufbereitet mit Quittungs-Zuordnung
@@ -371,6 +410,42 @@ const EXPENSES_DATA = [
     category: 'Marketing',
     receipt_filename: 'Canva-invoice-04778-25962847.pdf',
   },
+  {
+    entry_date: '2026-02-25',
+    description: 'Google One 2TB',
+    supplier: 'Google One',
+    original_currency: 'CHF',
+    original_amount: 100.00,
+    amount_chf: 100.00,
+    paid_by: 'Roland',
+    is_reimbursed: false,
+    category: 'Verwaltung',
+    receipt_filename: 'google-one-abo-2026.pdf',
+  },
+  {
+    entry_date: '2026-02-27',
+    description: 'Newsletter',
+    supplier: 'Mailchimp',
+    original_currency: 'CHF',
+    original_amount: 10.95,
+    amount_chf: 10.95,
+    paid_by: 'Roland',
+    is_reimbursed: false,
+    category: 'Marketing',
+    receipt_filename: 'mailchimp-receipt-MC18150987.pdf',
+  },
+  {
+    entry_date: '2026-03-04',
+    description: 'Website Builder',
+    supplier: 'elementor.com',
+    original_currency: 'USD',
+    original_amount: 59.00,
+    amount_chf: 48.35,
+    paid_by: 'Roland',
+    is_reimbursed: false,
+    category: 'Marketing',
+    receipt_filename: 'elementor-invoice-ZINV02154930.pdf',
+  },
 ];
 
 // POST - Ausgaben aus Google Sheet importieren
@@ -384,7 +459,8 @@ export async function POST(request: Request) {
       ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS original_currency TEXT DEFAULT 'CHF';
       ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS original_amount DECIMAL(12, 2);
       ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS receipt_url TEXT;
-      ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS receipt_filename TEXT
+      ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS receipt_filename TEXT;
+      ALTER TABLE journal_entries ADD COLUMN IF NOT EXISTS metadata JSONB
     `);
 
     if (!migrationResult.success) {
@@ -393,28 +469,63 @@ export async function POST(request: Request) {
       }, { status: 500 });
     }
 
-    // Prüfe ob schon importiert
-    const existing = await query(
-      `SELECT COUNT(*) as count FROM journal_entries WHERE notes LIKE '%Google-Sheet-Import%'`
-    );
-    const existingCount = parseInt(existing.data?.[0]?.count || '0');
-
-    if (existingCount > 0) {
-      return NextResponse.json({
-        success: false,
-        error: `Es wurden bereits ${existingCount} Einträge importiert. Bitte zuerst die bestehenden Import-Einträge löschen.`,
-        existing_count: existingCount,
-      }, { status: 409 });
-    }
-
     // Alle Ausgaben importieren
     const imported = [];
+    const duplicates = [];
     const errors = [];
 
     for (const expense of EXPENSES_DATA) {
-      const receiptUrl = expense.receipt_filename
-        ? `${DRIVE_FOLDER_URL}`
-        : null;
+      const normalizedPaidBy = normalizePaidBy(expense.paid_by);
+      const dedupKey = buildDedupKey({
+        entry_type: 'expense',
+        entry_date: expense.entry_date,
+        amount_chf: expense.amount_chf,
+        description: expense.description,
+        supplier: expense.supplier,
+        paid_by: normalizedPaidBy,
+      });
+
+      const duplicateCheck = await query(
+        `
+          SELECT id, entry_date, amount_chf, description
+          FROM journal_entries
+          WHERE entry_type = $1
+            AND entry_date = $2
+            AND amount_chf = $3
+            AND COALESCE(LOWER(description), '') = COALESCE(LOWER($4), '')
+            AND COALESCE(LOWER(supplier), '') = COALESCE(LOWER($5), '')
+            AND COALESCE(LOWER(paid_by), '') = COALESCE(LOWER($6), '')
+          LIMIT 1
+        `,
+        [
+          'expense',
+          expense.entry_date,
+          expense.amount_chf,
+          expense.description,
+          expense.supplier,
+          normalizedPaidBy || '',
+        ]
+      );
+
+      if (duplicateCheck.error) {
+        errors.push({
+          description: expense.description,
+          date: expense.entry_date,
+          error: duplicateCheck.error,
+        });
+        continue;
+      }
+
+      if (duplicateCheck.data && duplicateCheck.data.length > 0) {
+        duplicates.push({
+          description: expense.description,
+          date: expense.entry_date,
+          existing_id: duplicateCheck.data[0].id,
+        });
+        continue;
+      }
+
+      const receiptUrl = buildReceiptUrl(expense.receipt_filename);
 
       const notesWithSource = [
         expense.notes || '',
@@ -438,7 +549,7 @@ export async function POST(request: Request) {
           expense.category,
           expense.description,
           expense.supplier,
-          expense.paid_by,
+        normalizedPaidBy,
           expense.is_reimbursed,
           expense.original_currency,
           expense.original_amount,
@@ -471,12 +582,14 @@ export async function POST(request: Request) {
       summary: {
         total_entries: EXPENSES_DATA.length,
         imported: imported.length,
+        duplicates: duplicates.length,
         errors: errors.length,
         total_amount_chf: totalAmount.toFixed(2),
         reimbursed_amount_chf: reimbursedAmount.toFixed(2),
         open_amount_chf: openAmount.toFixed(2),
       },
       imported,
+      duplicates: duplicates.length > 0 ? duplicates : undefined,
       errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error: any) {
