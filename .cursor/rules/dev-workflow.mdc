@@ -1,0 +1,18 @@
+---
+description: Dev-Server-Workflow für inclusions.zone
+alwaysApply: true
+---
+
+# Lokaler Dev-Server
+
+**Vor jedem lokalen Test oder Anzeigen der Seite:** `npm run serve` im Projektordner ausführen.
+
+Wenn der Nutzer die Webseite lokal sehen, öffnen oder daran weiterarbeiten möchte:
+
+1. **Server starten** (falls nicht läuft): `npm run serve` im Projektordner ausführen – baut die Seite und startet sie auf Port 3000
+2. **URL angeben**: Immer nur **http://localhost:3000** – keine Alternativen, keine Port-Auswahl
+3. **Keine Anweisungen** an den Nutzer – der Agent erledigt alles
+
+4. **Vorschau ohne Rückfrage:** Hat der Nutzer an einer Seite, am Layout oder an sichtbaren Inhalten gearbeitet (oder fragt implizit nach «ansehen» / «lokal»), soll der Agent **von sich aus** den Server starten (falls nicht läuft) und die **konkrete URL** nennen, z. B. `http://localhost:3000/partner/anormal` — nicht nur die Startseite, wenn eine Unterseite im Fokus war. Der Nutzer soll nicht jedes Mal explizit bitten müssen, die Seite lokal verfügbar zu machen.
+
+`npm run serve` baut die Seite, befreit Port 3000 und startet den Server. Stabiler als `npm run dev`.

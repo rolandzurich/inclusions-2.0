@@ -5,6 +5,7 @@
  */
 
 import { query } from './db-postgres';
+import { upsertContact } from './crm-helpers';
 
 // ============================================
 // TYPEN
@@ -41,6 +42,20 @@ export interface SuggestedAction {
   type: string;
   reason: string;
   data: Record<string, any>;
+}
+
+function normalizeTags(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((tag) => String(tag || '').trim())
+    .filter((tag) => tag.length > 0);
+}
+
+function splitName(fullName: string): { first_name: string; last_name: string } {
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { first_name: '', last_name: '' };
+  if (parts.length === 1) return { first_name: parts[0], last_name: '' };
+  return { first_name: parts[0], last_name: parts.slice(1).join(' ') };
 }
 
 // ============================================
@@ -310,7 +325,7 @@ export async function analyzeUnprocessedEmails(limit: number = 20): Promise<{
 /**
  * Wendet eine vorgeschlagene Aktion an (erstellt den CRM-Eintrag).
  */
-export async function applyAction(actionId: string, appliedBy: string): Promise<{ success: boolean; resultId?: string; error?: string }> {
+export async function applyAction(actionId: string, appliedBy: string): Promise<{ success: boolean; resultId?: string; resultType?: string; error?: string }> {
   // Aktion laden
   const actionResult = await query(`
     SELECT ea.*, em.from_email, em.subject
@@ -332,39 +347,152 @@ export async function applyAction(actionId: string, appliedBy: string): Promise<
     
     switch (action.action_type) {
       case 'create_contact': {
-        const res = await query(`
-          INSERT INTO contacts (first_name, last_name, email, phone, role, source, tags, notes)
-          VALUES ($1, $2, $3, $4, $5, 'email', $6, $7)
-          ON CONFLICT (email) DO UPDATE SET
-            notes = COALESCE(contacts.notes, '') || E'\n---\n' || $7,
+        const email = (data.email || action.from_email || '').toLowerCase().trim();
+        const firstName = (data.first_name || '').trim();
+        const lastName = (data.last_name || '').trim();
+        const parsedName = splitName((data.person_name || '').trim());
+        const finalFirstName = firstName || parsedName.first_name || 'Unbekannt';
+        const finalLastName = lastName || parsedName.last_name || '-';
+        const note = `[E-Mail-Hub] ${data.reason || ''}\nQuelle: ${action.subject}`.trim();
+
+        let existingId: string | null = null;
+        if (email) {
+          const existing = await query(`SELECT id, notes FROM contacts WHERE LOWER(email) = LOWER($1) LIMIT 1`, [email]);
+          existingId = existing.data?.[0]?.id || null;
+        }
+
+        if (existingId) {
+          await query(`
+            UPDATE contacts SET
+              first_name = COALESCE(NULLIF($2, ''), first_name),
+              last_name = COALESCE(NULLIF($3, ''), last_name),
+              phone = COALESCE($4, phone),
+              role = COALESCE($5, role),
+              tags = CASE
+                WHEN $6::text[] IS NULL OR array_length($6::text[], 1) IS NULL THEN tags
+                WHEN tags IS NULL THEN $6::text[]
+                ELSE ARRAY(SELECT DISTINCT unnest(tags || $6::text[]))
+              END,
+              notes = CASE
+                WHEN COALESCE(notes, '') = '' THEN $7
+                ELSE notes || E'\n---\n' || $7
+              END,
+              updated_at = NOW()
+            WHERE id = $1
+          `, [
+            existingId,
+            finalFirstName,
+            finalLastName,
+            data.phone || null,
+            data.role || null,
+            normalizeTags(data.tags).length > 0 ? normalizeTags(data.tags) : null,
+            note,
+          ]);
+          resultId = existingId;
+        } else {
+          const res = await query(`
+            INSERT INTO contacts (first_name, last_name, email, phone, role, source, tags, notes)
+            VALUES ($1, $2, $3, $4, $5, 'email', $6, $7)
+            RETURNING id
+          `, [
+            finalFirstName,
+            finalLastName,
+            email || null,
+            data.phone || null,
+            data.role || null,
+            normalizeTags(data.tags).length > 0 ? normalizeTags(data.tags) : null,
+            note,
+          ]);
+          resultId = res.data?.[0]?.id;
+        }
+
+        resultType = 'contacts';
+        break;
+      }
+
+      case 'update_contact': {
+        const email = (data.email || action.from_email || '').toLowerCase().trim();
+        if (!email) {
+          return { success: false, error: 'update_contact benötigt eine E-Mail-Adresse' };
+        }
+
+        const existing = await query(`SELECT id, notes FROM contacts WHERE LOWER(email) = LOWER($1) LIMIT 1`, [email]);
+        const existingId = existing.data?.[0]?.id;
+        if (!existingId) {
+          return { success: false, error: `Kein bestehender Kontakt für ${email} gefunden` };
+        }
+
+        const nameFallback = splitName((data.person_name || '').trim());
+        const updateResult = await query(`
+          UPDATE contacts SET
+            first_name = COALESCE(NULLIF($2, ''), first_name),
+            last_name = COALESCE(NULLIF($3, ''), last_name),
+            phone = COALESCE($4, phone),
+            role = COALESCE($5, role),
+            tags = CASE
+              WHEN $6::text[] IS NULL OR array_length($6::text[], 1) IS NULL THEN tags
+              WHEN tags IS NULL THEN $6::text[]
+              ELSE ARRAY(SELECT DISTINCT unnest(tags || $6::text[]))
+            END,
+            notes = CASE
+              WHEN COALESCE(notes, '') = '' THEN $7
+              ELSE notes || E'\n---\n' || $7
+            END,
             updated_at = NOW()
+          WHERE id = $1
           RETURNING id
         `, [
-          data.first_name || '',
-          data.last_name || '',
-          data.email || action.from_email,
-          data.phone,
-          data.role || '',
-          data.tags ? `{${data.tags.join(',')}}` : '{}',
-          `[E-Mail-Hub] ${data.reason || ''}\nQuelle: ${action.subject}`,
+          existingId,
+          (data.first_name || nameFallback.first_name || '').trim(),
+          (data.last_name || nameFallback.last_name || '').trim(),
+          data.phone || null,
+          data.role || null,
+          normalizeTags(data.tags).length > 0 ? normalizeTags(data.tags) : null,
+          `[E-Mail-Hub] ${data.reason || ''}\nQuelle: ${action.subject}`.trim(),
         ]);
-        resultId = res.data?.[0]?.id;
+
+        resultId = updateResult.data?.[0]?.id;
         resultType = 'contacts';
         break;
       }
       
       case 'create_company': {
-        const res = await query(`
-          INSERT INTO companies (name, website, email, notes)
-          VALUES ($1, $2, $3, $4)
-          RETURNING id
-        `, [
-          data.name,
-          data.website,
-          data.email,
-          `[E-Mail-Hub] ${data.reason || data.notes || ''}`,
-        ]);
-        resultId = res.data?.[0]?.id;
+        const companyName = (data.name || data.organization || '').trim();
+        if (!companyName) {
+          return { success: false, error: 'create_company benötigt mindestens einen Firmennamen' };
+        }
+        const existing = await query(`SELECT id FROM companies WHERE LOWER(name) = LOWER($1) LIMIT 1`, [companyName]);
+        if (existing.data?.length) {
+          await query(`
+            UPDATE companies SET
+              website = COALESCE($2, website),
+              email = COALESCE($3, email),
+              notes = CASE
+                WHEN COALESCE(notes, '') = '' THEN $4
+                ELSE notes || E'\n---\n' || $4
+              END,
+              updated_at = NOW()
+            WHERE id = $1
+          `, [
+            existing.data[0].id,
+            data.website || null,
+            data.email || null,
+            `[E-Mail-Hub] ${data.reason || data.notes || ''}`.trim(),
+          ]);
+          resultId = existing.data[0].id;
+        } else {
+          const res = await query(`
+            INSERT INTO companies (name, website, email, notes)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id
+          `, [
+            companyName,
+            data.website || null,
+            data.email || null,
+            `[E-Mail-Hub] ${data.reason || data.notes || ''}`.trim(),
+          ]);
+          resultId = res.data?.[0]?.id;
+        }
         resultType = 'companies';
         break;
       }
@@ -392,15 +520,18 @@ export async function applyAction(actionId: string, appliedBy: string): Promise<
       }
       
       case 'create_project': {
+        const normalizedStatus = ['planning', 'active', 'on_hold', 'completed', 'cancelled'].includes(data.status)
+          ? data.status
+          : 'planning';
         const res = await query(`
           INSERT INTO projects (title, description, status, tags, metadata)
           VALUES ($1, $2, $3, $4, $5)
           RETURNING id
         `, [
-          data.title,
+          data.title || data.name || 'Neues Projekt',
           data.description || '',
-          data.status || 'planned',
-          data.tags ? `{${data.tags.join(',')}}` : '{}',
+          normalizedStatus,
+          normalizeTags(data.tags).length > 0 ? normalizeTags(data.tags) : null,
           JSON.stringify({ source: 'email-hub', email_id: action.email_id }),
         ]);
         resultId = res.data?.[0]?.id;
@@ -414,14 +545,89 @@ export async function applyAction(actionId: string, appliedBy: string): Promise<
           VALUES ($1, $2, $3, $4, 'draft', $5)
           RETURNING id
         `, [
-          data.name,
+          data.name || data.title || 'Neues Event',
           data.description || '',
-          data.start_at,
+          data.start_at || new Date().toISOString(),
           data.location_name || '',
-          data.tags ? `{${data.tags.join(',')}}` : '{}',
+          normalizeTags(data.tags).length > 0 ? normalizeTags(data.tags) : null,
         ]);
         resultId = res.data?.[0]?.id;
         resultType = 'events_v2';
+        break;
+      }
+
+      case 'create_booking': {
+        const fullName = (data.name || data.person_name || '').trim();
+        const split = splitName(fullName);
+        const firstName = (data.first_name || split.first_name || 'Unbekannt').trim();
+        const lastName = (data.last_name || split.last_name || '-').trim();
+        const email = (data.email || action.from_email || '').toLowerCase().trim();
+
+        const res = await query(`
+          INSERT INTO contact_requests (
+            name, email, phone, message,
+            booking_type, booking_item, event_date, event_location, event_type,
+            admin_notes, status
+          )
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'new')
+          RETURNING id
+        `, [
+          `${firstName} ${lastName}`.trim(),
+          email || 'unknown@inclusions.zone',
+          data.phone || null,
+          data.description || data.intent || data.reason || action.subject || null,
+          data.booking_type || null,
+          data.booking_item || data.item || null,
+          data.event_date || null,
+          data.event_location || null,
+          data.event_type || null,
+          `[E-Mail-Hub] ${data.reason || ''}\nQuelle: ${action.subject}`.trim(),
+        ]);
+
+        resultId = res.data?.[0]?.id;
+        resultType = 'contact_requests';
+        break;
+      }
+
+      case 'create_vip': {
+        const fullName = (data.name || data.person_name || '').trim();
+        const split = splitName(fullName);
+        const firstName = (data.first_name || split.first_name || 'VIP').trim();
+        const lastName = (data.last_name || split.last_name || 'Gast').trim();
+        const email = (data.email || action.from_email || '').toLowerCase().trim();
+
+        const contactId = await upsertContact({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone: data.phone || null,
+          categories: ['vip'],
+          source: 'email_hub',
+          special_needs: data.special_needs || null,
+        });
+
+        const res = await query(`
+          INSERT INTO vip_registrations (
+            contact_id, registration_type, event_date, event_location,
+            arrival_time, status, raw_data
+          )
+          VALUES ($1, 'self', $2, $3, $4, 'pending', $5)
+          RETURNING id
+        `, [
+          contactId,
+          data.event_date || null,
+          data.event_location || null,
+          data.arrival_time || null,
+          JSON.stringify({
+            source: 'email_hub',
+            reason: data.reason || null,
+            action_id: actionId,
+            email_id: action.email_id,
+            payload: data,
+          }),
+        ]);
+        resultId = res.data?.[0]?.id;
+        resultType = 'vip_registrations';
         break;
       }
       
@@ -431,6 +637,29 @@ export async function applyAction(actionId: string, appliedBy: string): Promise<
           UPDATE email_messages SET notes = COALESCE(notes, '') || E'\n' || $2, updated_at = NOW()
           WHERE id = $1
         `, [action.email_id, data.note || data.reason || '']);
+        resultType = 'email_messages';
+        resultId = action.email_id;
+        break;
+      }
+
+      case 'web_research': {
+        await query(`
+          UPDATE email_messages SET
+            web_research = jsonb_build_object(
+              'query', $2,
+              'reason', $3,
+              'status', 'queued',
+              'requested_by', $4,
+              'requested_at', NOW()
+            ),
+            updated_at = NOW()
+          WHERE id = $1
+        `, [
+          action.email_id,
+          data.query || data.web_research_query || '',
+          data.reason || 'Web-Recherche angefordert',
+          appliedBy,
+        ]);
         resultType = 'email_messages';
         resultId = action.email_id;
         break;
@@ -461,7 +690,7 @@ export async function applyAction(actionId: string, appliedBy: string): Promise<
       await query(`UPDATE email_messages SET is_processed = true, processed_at = NOW() WHERE id = $1`, [action.email_id]);
     }
     
-    return { success: true, resultId };
+    return { success: true, resultId, resultType };
     
   } catch (err: any) {
     await query(`UPDATE email_actions SET status = 'error' WHERE id = $1`, [actionId]);

@@ -4,6 +4,7 @@ import { getAllDJPairs, getDJPairWithDJs, getDJById } from "@/lib/dj-utils";
 import dynamic from "next/dynamic";
 import { PartnerLogo } from "@/components/PartnerLogo";
 import { TwintButton } from "@/components/TwintButton";
+import { Countdown } from "@/components/Countdown";
 import { getEventSchema, getBaseUrl } from "@/lib/geo-schema";
 import type { Metadata } from "next";
 
@@ -116,27 +117,6 @@ export default function HomePage() {
       />
       {/* Hero */}
       <section className="space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <Link href="/ki-innovator" className="text-sm uppercase tracking-[0.25em] text-brand-pink hover:text-brand-pink/80 transition-colors inline-block">
-            Inclusions KI-First Social Innovator
-          </Link>
-          <Link
-            href="https://insieme-zuerich.ch/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 group"
-          >
-            <span className="text-xs text-white/50 tracking-wide">in Partnerschaft mit</span>
-            <Image
-              src="/images/partners/insieme.png"
-              alt="insieme Zürich"
-              width={140}
-              height={50}
-              className="h-10 w-auto object-contain group-hover:brightness-110 transition-all duration-200"
-            />
-          </Link>
-        </div>
-        
         {/* Header Image – stabile Darstellung ohne doppelte Skalierung */}
         <div className="relative w-full h-[500px] sm:h-[550px] md:h-[600px] lg:h-[700px] rounded-2xl overflow-hidden">
           <div className="absolute inset-0 z-0">
@@ -166,11 +146,14 @@ export default function HomePage() {
               </div>
               
               {/* Datum/Zeit/Ort - größere Schrift */}
-              <div className="animate-fade-in mb-6 md:mb-8">
+              <div className="animate-fade-in">
                 <p className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
                   25.04.2026 | 13:00 - 21:00 | Club Supermarket, Zürich
                 </p>
               </div>
+
+              {/* Countdown */}
+              <Countdown />
 
               {/* Spacer für DJ-Gesichter - flex-grow um Platz zu schaffen */}
               <div className="flex-grow"></div>
@@ -181,7 +164,7 @@ export default function HomePage() {
                   Neue Choreografie der INCLUSIONS Dance Crew
                 </p>
                 <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  Line-up: Coco.bewegt B2B Lina's Lab, Zagara, Samy Jackson, Hoibaer, _miniArt°°°, Ashan (live) & INCLUSIONS DJ's (werden noch bestätigt)
+                  Line-up: Samy Jackson & Jimmytschanga | Zagara & Sarita Duracel | _miniArt°°° & SandroM | Hoibaer & Jerry | Coco.bewegt B2b AndreasK | Ashan (live)
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-4 justify-center items-start">
@@ -480,11 +463,18 @@ export default function HomePage() {
             { src: "/images/rueckblick-2.jpg", alt: "INCLUSIONS 1. Edition - Gemeinsam tanzen und feiern in inklusiver Atmosphäre" },
             { src: "/images/rueckblick-3.jpg", alt: "INCLUSIONS 1. Edition - Feiern zusammen - Über 400 Menschen im Supermarket Zürich" }
           ].map((image, index) => (
-            <div key={index} className="relative h-64 rounded-2xl overflow-hidden group">
+            <div
+              key={index}
+              className="relative h-64 rounded-2xl overflow-hidden group"
+              aria-label={image.alt}
+            >
               <div className="absolute inset-0 animate-float">
                 <Image
                   src={image.src}
-                  alt={image.alt}
+                  // Wenn ein Bild aus irgendeinem Grund nicht geladen werden kann,
+                  // soll nicht der lange Alt-Text "inline" angezeigt werden.
+                  // Die Semantik bleibt über `aria-label` am Container erhalten.
+                  alt=""
                   fill
                   className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                   loading="lazy"
@@ -536,16 +526,16 @@ export default function HomePage() {
           <p className="text-sm uppercase tracking-[0.3em] text-brand-pink mb-1">Strategischer Partner</p>
           <h2 className="text-3xl font-semibold text-white">Gemeinsam für Inklusion</h2>
         </div>
-        <Link
-          href="https://insieme-zuerich.ch/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block group"
-        >
-          <div className="rounded-3xl bg-gradient-to-br from-[#1a6fa0]/20 via-white/5 to-[#1a6fa0]/10 border border-[#1a6fa0]/30 hover:border-[#1a6fa0]/50 p-8 md:p-10 transition-all duration-300">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-shrink-0">
-                <div className="bg-white rounded-2xl p-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+        <div className="rounded-3xl bg-gradient-to-br from-[#1a6fa0]/20 via-white/5 to-[#1a6fa0]/10 border border-[#1a6fa0]/30 p-8 md:p-10 pointer-events-none [&_a]:pointer-events-auto">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-shrink-0">
+              <Link
+                href="https://insieme-zuerich.ch/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block group/logo"
+              >
+                <div className="bg-white rounded-2xl p-4 shadow-lg group-hover/logo:shadow-xl transition-shadow">
                   <Image
                     src="/images/partners/insieme-zuerich-banner.png"
                     alt="insieme Zürich – Gemeinsam anders – Strategischer Partner von INCLUSIONS"
@@ -554,27 +544,37 @@ export default function HomePage() {
                     className="h-auto w-[240px] md:w-[280px] object-contain"
                   />
                 </div>
-              </div>
-              <div className="flex-1 text-center md:text-left space-y-3">
-                <h3 className="text-2xl font-semibold text-white">insieme Zürich</h3>
-                <p className="text-white/80 leading-relaxed max-w-2xl">
-                  insieme Zürich setzt sich für die Rechte und Anliegen von Menschen mit einer geistigen 
-                  Beeinträchtigung und deren Angehörigen ein. Als strategischer Partner stärkt insieme 
-                  die Glaubwürdigkeit unserer Bewegung und ermöglicht echte Teilhabe und Inklusion.
-                </p>
-                <p className="text-white/60 text-sm">
-                  Gemeinsam schaffen wir Räume, in denen Inklusion gelebt wird – nicht nur an Events, sondern als Haltung.
-                </p>
-                <span className="inline-flex items-center gap-2 text-[#4aa8d8] group-hover:text-[#6bbde8] transition-colors text-sm font-semibold mt-2">
-                  insieme-zuerich.ch besuchen
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </div>
+              </Link>
+            </div>
+            <div className="flex-1 text-center md:text-left space-y-3">
+              <h3 className="text-2xl font-semibold text-white">insieme Zürich</h3>
+              <p className="text-white/80 leading-relaxed max-w-2xl">
+                insieme Zürich bietet seit fast 70 Jahren vielfältige Freizeit- und Betreuungsangebote für Menschen mit einer kognitiven Beeinträchtigung und leistet damit auch einen wertvollen Entlastungsdienst für deren Eltern und Angehörige. Mitglieder und Gäste von insieme Zürich erleben entweder bei attraktiven Ferienwochen, in zahlreichen Kursen sowie vielfältigen Anlässen im insieme-Kulturlokal soziale Teilhabe, Gemeinschaft und Inklusion. insieme Zürich setzt sich im Netzwerk des Dachverbandes{" "}
+                <Link href="https://insieme.ch/" target="_blank" rel="noopener noreferrer" className="text-[#4aa8d8] hover:text-[#6bbde8] underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded">
+                  insieme Schweiz
+                </Link>{" "}
+                für die Rechte und Anliegen von Menschen mit einer kognitiven Beeinträchtigung und deren Angehörigen ein.
+              </p>
+              <p className="text-white/80 leading-relaxed max-w-2xl">
+                Gemeinsam schaffen wir Orte und Möglichkeiten, in denen Inklusion gelebt wird – so arbeiten wir an einer neuen Inklusionskultur in der Gesellschaft.
+              </p>
+              <p className="text-white/80 leading-relaxed max-w-2xl">
+                Als strategischer Partner stärkt insieme Zürich die Glaubwürdigung der Bewegung von INCLUSIONS – nicht nur an Events, sondern als Haltung!
+              </p>
+              <Link
+                href="https://insieme-zuerich.ch/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[#4aa8d8] hover:text-[#6bbde8] transition-colors text-sm font-semibold mt-2 group/link"
+              >
+                insieme-zuerich.ch besuchen
+                <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           </div>
-        </Link>
+        </div>
       </section>
 
       {/* Partner – Prio 2: Neue Partner und Sponsoren finden */}
@@ -587,6 +587,7 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
           {[
+            { name: "ANORMAL Fashion", logo: "/images/partners/anormal-wordmark.png", hasLogo: true, url: "/partner/anormal" },
             { name: "Supermarket", logo: "/images/partners/supermarket.png", hasLogo: true, url: "https://supermarket.li/" },
             { name: "Animaltrainer", logo: "/images/partners/animaltrainer.png", hasLogo: true, url: "https://www.schoolofsound.ch/" },
             { name: "Colette M", logo: "/images/partners/colette-m.png", hasLogo: true, url: "https://www.magicdancers.ch/" },
@@ -608,12 +609,14 @@ export default function HomePage() {
             );
 
             if (partner.url) {
+              const isExternal = partner.url.startsWith("http");
               return (
                 <Link
                   key={index}
                   href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...(isExternal
+                    ? { target: "_blank" as const, rel: "noopener noreferrer" }
+                    : {})}
                   className="flex items-center justify-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300 h-32"
                 >
                   {content}
@@ -708,10 +711,13 @@ export default function HomePage() {
                 >
                   <div className="relative h-48 rounded-xl bg-white/10 mb-4 overflow-hidden group">
                     {pair.image ? (
-                      <div className="absolute inset-0 animate-float">
+                      <div
+                        className="absolute inset-0 animate-float"
+                        aria-label={`${pair.name} - Inklusives DJ-Pairing für das INCLUSIONS Event`}
+                      >
                         <Image
                           src={pair.image}
-                          alt={`${pair.name} - Inklusives DJ-Pairing für das INCLUSIONS Event`}
+                          alt=""
                           fill
                           className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                           loading="lazy"
@@ -778,10 +784,13 @@ export default function HomePage() {
                   <div className="flex gap-6">
                     <div className="relative h-32 w-32 rounded-xl bg-white/10 overflow-hidden flex-shrink-0 group">
                       {dj.image ? (
-                        <div className="absolute inset-0 animate-float">
+                        <div
+                          className="absolute inset-0 animate-float"
+                          aria-label={`${dj.name} - Resident DJ bei INCLUSIONS${dj.hasDisability ? " mit Beeinträchtigung" : ""}`}
+                        >
                           <Image
                             src={dj.image}
-                            alt={`${dj.name} - Resident DJ bei INCLUSIONS${dj.hasDisability ? " mit Beeinträchtigung" : ""}`}
+                            alt=""
                             fill
                             className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
                             loading="lazy"

@@ -2,6 +2,16 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db-postgres';
+import {
+  deleteCompanyLocal,
+  getCompanyLocal,
+  listCompaniesLocal,
+  updateCompanyLocal,
+} from '@/lib/crm-local-store';
+
+const ALLOW_LOCAL_FALLBACK =
+  process.env.NODE_ENV !== 'production' &&
+  process.env.CRM_LOCAL_FALLBACK === 'true';
 
 // GET - Einzelnes Unternehmen
 export async function GET(
@@ -22,6 +32,25 @@ export async function GET(
     const result = await query(sql, [params.id]);
 
     if (result.error) {
+      if (ALLOW_LOCAL_FALLBACK) {
+        const company = await getCompanyLocal(params.id);
+        if (!company) {
+          return NextResponse.json(
+            { error: 'Unternehmen nicht gefunden' },
+            { status: 404 }
+          );
+        }
+        const list = await listCompaniesLocal('');
+        const withCount = list.find((c) => c.id === company.id) || {
+          ...company,
+          contact_count: 0,
+        };
+        return NextResponse.json({
+          success: true,
+          company: withCount,
+          source: 'local-fallback',
+        });
+      }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
@@ -128,6 +157,36 @@ export async function PUT(
     ]);
 
     if (result.error) {
+      if (ALLOW_LOCAL_FALLBACK) {
+        const updated = await updateCompanyLocal(params.id, {
+          name,
+          legal_name,
+          uid,
+          vat_number,
+          email,
+          phone,
+          website,
+          address_line1,
+          address_line2,
+          postal_code,
+          city,
+          country: country || 'CH',
+          notes,
+          tags,
+        });
+        if (!updated) {
+          return NextResponse.json(
+            { error: 'Unternehmen nicht gefunden' },
+            { status: 404 }
+          );
+        }
+        return NextResponse.json({
+          success: true,
+          message: 'Unternehmen erfolgreich aktualisiert',
+          company: updated,
+          source: 'local-fallback',
+        });
+      }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
@@ -158,6 +217,20 @@ export async function DELETE(
     const result = await query(sql, [params.id]);
 
     if (result.error) {
+      if (ALLOW_LOCAL_FALLBACK) {
+        const deleted = await deleteCompanyLocal(params.id);
+        if (!deleted) {
+          return NextResponse.json(
+            { error: 'Unternehmen nicht gefunden' },
+            { status: 404 }
+          );
+        }
+        return NextResponse.json({
+          success: true,
+          message: 'Unternehmen erfolgreich gelöscht',
+          source: 'local-fallback',
+        });
+      }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 

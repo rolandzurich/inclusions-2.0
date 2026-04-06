@@ -31,9 +31,24 @@ interface EmailAction {
   action_data: any;
   status: string;
   is_research: boolean;
-  email_subject: string;
-  email_from: string;
-  email_from_name: string;
+  result_type?: string;
+  result_id?: string;
+  research_source?: string;
+  applied_at?: string;
+  email_subject?: string;
+  email_from?: string;
+  email_from_name?: string;
+}
+
+interface EmailDetail extends Email {
+  to_email?: string;
+  cc?: string;
+  body_text?: string;
+  body_html?: string;
+  ai_analysis?: any;
+  notes?: string;
+  web_research?: any;
+  attachment_info?: any;
 }
 
 interface Stats {
@@ -94,14 +109,47 @@ const ACTION_LABELS: Record<string, { label: string; icon: string }> = {
 export default function EmailHubPage() {
   const [emails, setEmails] = useState<Email[]>([]);
   const [actions, setActions] = useState<EmailAction[]>([]);
+  const [emailActionsById, setEmailActionsById] = useState<Record<string, EmailAction[]>>({});
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [ingesting, setIngesting] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [actionLoadingIds, setActionLoadingIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState({ account: '', classification: '', urgency: '', search: '' });
+  const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'unprocessed' | 'analyzed' | 'pending'>('all');
+  const [workflowView, setWorkflowView] = useState<'all' | 'triage' | 'decisions' | 'followup'>('all');
+  const [showAdvancedActions, setShowAdvancedActions] = useState(false);
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
+  const [selectedEmailDetail, setSelectedEmailDetail] = useState<EmailDetail | null>(null);
   const [setupNeeded, setSetupNeeded] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+
+  function resetQuickFilters(nextStatus: 'all' | 'unread' | 'unprocessed' | 'analyzed' | 'pending' = 'all') {
+    setStatusFilter(nextStatus);
+    setFilter((prev) => ({ ...prev, classification: '', urgency: '' }));
+  }
+
+  function applyWorkflowPreset(view: 'all' | 'triage' | 'decisions' | 'followup') {
+    setWorkflowView(view);
+    if (view === 'triage') {
+      setStatusFilter('unread');
+      setFilter((prev) => ({ ...prev, urgency: 'high', classification: '' }));
+      return;
+    }
+    if (view === 'decisions') {
+      setStatusFilter('unprocessed');
+      setFilter((prev) => ({ ...prev, urgency: '', classification: '' }));
+      return;
+    }
+    if (view === 'followup') {
+      setStatusFilter('analyzed');
+      setFilter((prev) => ({ ...prev, urgency: '', classification: 'partnership' }));
+      return;
+    }
+    resetQuickFilters('all');
+  }
 
   // Daten laden
   const loadData = useCallback(async () => {
@@ -111,6 +159,7 @@ export default function EmailHubPage() {
       if (filter.classification) params.set('classification', filter.classification);
       if (filter.urgency) params.set('urgency', filter.urgency);
       if (filter.search) params.set('search', filter.search);
+      if (statusFilter !== 'all') params.set('status', statusFilter);
 
       const [emailRes, actionRes] = await Promise.all([
         fetch(`/api/admin-v2/email/inbox?${params}`),
@@ -123,6 +172,11 @@ export default function EmailHubPage() {
           setSetupNeeded(true);
           return;
         }
+        setStatusMessage(`E-Mail-Daten konnten nicht geladen werden: ${err.error || 'Unbekannter Fehler'}`);
+        setEmails([]);
+        setStats(null);
+        setActions([]);
+        return;
       }
 
       const emailData = await emailRes.json();
@@ -131,13 +185,14 @@ export default function EmailHubPage() {
       setEmails(emailData.emails || []);
       setStats(emailData.stats || null);
       setActions(actionData.actions || []);
+      setEmailActionsById({});
       setSetupNeeded(false);
     } catch {
       setSetupNeeded(true);
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, statusFilter]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -183,8 +238,82 @@ export default function EmailHubPage() {
     }
   }
 
+  // Sync: Abrufen + Analyse in einem Schritt
+  async function handleSync() {
+    setSyncing(true);
+    setStatusMessage('Synchronisiere Postfächer und starte KI-Analyse...');
+    try {
+      const res = await fetch('/api/admin-v2/email/sync?days=14&limit=30', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        const accountErrors = (data.ingest?.accounts || [])
+          .filter((row: any) => row.error)
+          .map((row: any) => `${row.account}: ${row.error}`)
+          .slice(0, 2);
+        const details = accountErrors.length > 0 ? ` (${accountErrors.join(' | ')})` : '';
+        throw new Error((data.error || data.message || 'Sync fehlgeschlagen') + details);
+      }
+      setStatusMessage(
+        data.message ||
+          `Sync fertig: ${data.ingest?.saved || 0} neue Mails, ${data.analyze?.analyzed || 0} analysiert`
+      );
+      loadData();
+    } catch (err: any) {
+      setStatusMessage(`Fehler: ${err.message}`);
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  // E-Mail-Detail laden (inkl. Aktionen) und als gelesen markieren
+  async function loadEmailDetail(emailId: string) {
+    try {
+      const res = await fetch(`/api/admin-v2/email/${emailId}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Details konnten nicht geladen werden');
+      }
+
+      setSelectedEmailDetail(data.email || null);
+      const detailActions: EmailAction[] = data.actions || [];
+      setEmailActionsById((prev) => ({ ...prev, [emailId]: detailActions }));
+
+      // Lokalen Read-Status direkt synchron halten
+      setEmails((prev) =>
+        prev.map((email) => (email.id === emailId ? { ...email, is_read: true } : email))
+      );
+      setStats((prev) =>
+        prev
+          ? {
+              ...prev,
+              unread: Math.max(
+                0,
+                prev.unread - (emails.find((e) => e.id === emailId && !e.is_read) ? 1 : 0)
+              ),
+            }
+          : prev
+      );
+    } catch (err: any) {
+      setStatusMessage(`Fehler: ${err.message}`);
+    }
+  }
+
+  async function handleSelectEmail(emailId: string) {
+    const isSame = selectedEmail === emailId;
+    if (isSame) {
+      setSelectedEmail(null);
+      setSelectedEmailDetail(null);
+      return;
+    }
+
+    setSelectedEmail(emailId);
+    setSelectedEmailDetail(null);
+    await loadEmailDetail(emailId);
+  }
+
   // Aktion bestätigen/ablehnen
   async function handleAction(actionId: string, action: 'approve' | 'reject') {
+    setActionLoadingIds((prev) => new Set(prev).add(actionId));
     try {
       const res = await fetch(`/api/admin-v2/email/actions/${actionId}`, {
         method: 'POST',
@@ -192,10 +321,22 @@ export default function EmailHubPage() {
         body: JSON.stringify({ action }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Aktion konnte nicht verarbeitet werden');
+      }
       setStatusMessage(data.message || (action === 'approve' ? 'Angewendet' : 'Abgelehnt'));
+      if (selectedEmail) {
+        await loadEmailDetail(selectedEmail);
+      }
       loadData();
     } catch (err: any) {
       setStatusMessage(`Fehler: ${err.message}`);
+    } finally {
+      setActionLoadingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(actionId);
+        return next;
+      });
     }
   }
 
@@ -213,6 +354,32 @@ export default function EmailHubPage() {
       }
     } catch (err: any) {
       setStatusMessage(`Fehler: ${err.message}`);
+    }
+  }
+
+  function getActionPreview(action: EmailAction): string {
+    const data = action.action_data || {};
+    switch (action.action_type) {
+      case 'create_company':
+        return `Erstellt Unternehmen: ${data.name || data.organization || 'ohne Namen'}`;
+      case 'create_contact':
+        return `Erstellt Kontakt: ${[data.first_name, data.last_name].filter(Boolean).join(' ') || data.email || 'ohne Namen'}`;
+      case 'update_contact':
+        return `Aktualisiert Kontakt: ${data.email || 'bestehender Kontakt'}`;
+      case 'create_deal':
+        return `Erstellt Deal: ${data.title || 'Neuer Deal'}`;
+      case 'create_project':
+        return `Erstellt Projekt: ${data.title || data.name || 'Neues Projekt'}`;
+      case 'create_booking':
+        return `Erstellt Booking-Lead: ${data.booking_item || data.item || data.event_type || 'Anfrage'}`;
+      case 'create_vip':
+        return `Erstellt VIP-Anmeldung: ${data.name || data.email || 'Neuer VIP Kontakt'}`;
+      case 'add_note':
+        return `Fügt Notiz hinzu: ${data.note || data.reason || 'Interne Notiz'}`;
+      case 'web_research':
+        return `Startet Recherche: ${data.query || data.web_research_query || 'Organisation prüfen'}`;
+      default:
+        return 'Führt vorgeschlagene CRM-Aktion aus';
     }
   }
 
@@ -258,23 +425,46 @@ export default function EmailHubPage() {
             Alle E-Mails, KI-analysiert mit vorgeschlagenen CRM-Aktionen
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSync}
+            disabled={syncing || ingesting || analyzing}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 text-sm font-medium shadow-sm"
+          >
+            {syncing ? '⚡ Synchronisiert...' : '⚡ Synchronisieren'}
+          </button>
+          <button
+            onClick={() => setShowAdvancedActions((prev) => !prev)}
+            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
+          >
+            {showAdvancedActions ? 'Weniger' : 'Erweitert'}
+          </button>
+        </div>
+      </div>
+      {showAdvancedActions && (
+        <div className="mb-5 flex flex-wrap gap-2">
           <button
             onClick={handleIngest}
-            disabled={ingesting}
-            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:opacity-50 text-sm font-medium"
+            disabled={ingesting || syncing}
+            className="px-3 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:opacity-50 text-sm font-medium"
           >
             {ingesting ? '📥 Lädt...' : '📥 E-Mails abrufen'}
           </button>
           <button
             onClick={handleAnalyze}
-            disabled={analyzing}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm font-medium"
+            disabled={analyzing || syncing}
+            className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm font-medium"
           >
             {analyzing ? '🤖 Analysiert...' : '🤖 KI-Analyse'}
           </button>
+          <button
+            onClick={handleTestConnection}
+            className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-medium"
+          >
+            IMAP testen
+          </button>
         </div>
-      </div>
+      )}
 
       {/* Status */}
       {statusMessage && (
@@ -286,17 +476,114 @@ export default function EmailHubPage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
-          <StatCard label="Gesamt" value={stats.total} />
-          <StatCard label="Ungelesen" value={stats.unread} color="blue" />
-          <StatCard label="Analyse ausstehend" value={stats.pending_analysis} color="orange" />
-          <StatCard label="Dringend" value={stats.urgent} color="red" />
-          <StatCard label="Sponsoring" value={stats.sponsoring} color="yellow" />
-          <StatCard label="Booking" value={stats.booking} color="purple" />
-          <StatCard label="Partnerschaft" value={stats.partnership} color="blue" />
-          <StatCard label="Medien" value={stats.media} color="pink" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-3">
+          <StatCard
+            label="Gesamt"
+            value={stats.total}
+            active={statusFilter === 'all'}
+            onClick={() => resetQuickFilters('all')}
+            hint="Zeigt alle E-Mails"
+          />
+          <StatCard
+            label="Ungelesen"
+            value={stats.unread}
+            color="blue"
+            active={statusFilter === 'unread'}
+            onClick={() => resetQuickFilters('unread')}
+            hint="Nur ungelesene E-Mails"
+          />
+          <StatCard
+            label="Analyse ausstehend"
+            value={stats.pending_analysis}
+            color="orange"
+            active={statusFilter === 'pending'}
+            onClick={() => resetQuickFilters('pending')}
+            hint="KI noch nicht gelaufen"
+          />
+          <StatCard
+            label="Dringend"
+            value={stats.urgent}
+            color="red"
+            active={filter.urgency === 'high'}
+            onClick={() => {
+              setStatusFilter('all');
+              setFilter((prev) => ({ ...prev, urgency: 'high', classification: '' }));
+            }}
+            hint="Urgency high/critical"
+          />
+          <StatCard
+            label="Sponsoring"
+            value={stats.sponsoring}
+            color="yellow"
+            active={filter.classification === 'sponsoring'}
+            onClick={() => {
+              setStatusFilter('all');
+              setFilter((prev) => ({ ...prev, classification: 'sponsoring', urgency: '' }));
+            }}
+            hint="Nur Sponsoring-Anfragen"
+          />
+          <StatCard
+            label="Booking"
+            value={stats.booking}
+            color="purple"
+            active={filter.classification === 'booking'}
+            onClick={() => {
+              setStatusFilter('all');
+              setFilter((prev) => ({ ...prev, classification: 'booking', urgency: '' }));
+            }}
+            hint="Nur Booking-Anfragen"
+          />
+          <StatCard
+            label="Partnerschaft"
+            value={stats.partnership}
+            color="blue"
+            active={filter.classification === 'partnership'}
+            onClick={() => {
+              setStatusFilter('all');
+              setFilter((prev) => ({ ...prev, classification: 'partnership', urgency: '' }));
+            }}
+            hint="Nur Partnerschaftsanfragen"
+          />
+          <StatCard
+            label="Medien"
+            value={stats.media}
+            color="pink"
+            active={filter.classification === 'media'}
+            onClick={() => {
+              setStatusFilter('all');
+              setFilter((prev) => ({ ...prev, classification: 'media', urgency: '' }));
+            }}
+            hint="Nur Medienanfragen"
+          />
         </div>
       )}
+      <div className="mb-3 flex items-center gap-2 text-xs text-gray-500">
+        <span>Arbeitsansicht:</span>
+        <button
+          onClick={() => applyWorkflowPreset('all')}
+          className={`px-2 py-1 rounded ${workflowView === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+        >
+          Alles
+        </button>
+        <button
+          onClick={() => applyWorkflowPreset('triage')}
+          className={`px-2 py-1 rounded ${workflowView === 'triage' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+        >
+          Inbox Triage
+        </button>
+        <button
+          onClick={() => applyWorkflowPreset('decisions')}
+          className={`px-2 py-1 rounded ${workflowView === 'decisions' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+        >
+          KI Entscheidungen
+        </button>
+        <button
+          onClick={() => applyWorkflowPreset('followup')}
+          className={`px-2 py-1 rounded ${workflowView === 'followup' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+        >
+          Follow-up
+        </button>
+      </div>
 
       {/* Vorgeschlagene Aktionen */}
       {actions.length > 0 && (
@@ -304,15 +591,24 @@ export default function EmailHubPage() {
           <h2 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
             🤖 KI-Vorschläge ({actions.length} offene Aktionen)
           </h2>
+          <p className="text-xs text-purple-700 mb-3">
+            Klick auf einen Vorschlag öffnet die zugehörige E-Mail mit vollem Kontext.
+          </p>
           <div className="space-y-2">
-            {actions.slice(0, 10).map((action) => {
+            {(showAllSuggestions ? actions : actions.slice(0, 5)).map((action) => {
               const meta = ACTION_LABELS[action.action_type] || { label: action.action_type, icon: '❓' };
+              const isBusy = actionLoadingIds.has(action.id);
               return (
-                <div key={action.id} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
+                <div
+                  key={action.id}
+                  className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm border border-transparent hover:border-purple-200 transition-colors cursor-pointer"
+                  onClick={() => handleSelectEmail(action.email_id)}
+                >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <span className="text-lg">{meta.icon}</span>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{meta.label}</p>
+                      <p className="text-xs text-gray-700 truncate">{getActionPreview(action)}</p>
                       <p className="text-xs text-gray-500 truncate">
                         {action.email_from_name || action.email_from} – {action.email_subject}
                       </p>
@@ -323,14 +619,22 @@ export default function EmailHubPage() {
                   </div>
                   <div className="flex gap-2 ml-3">
                     <button
-                      onClick={() => handleAction(action.id, 'approve')}
-                      className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAction(action.id, 'approve');
+                      }}
+                      disabled={isBusy}
+                      className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 disabled:opacity-50"
                     >
-                      ✓ Anwenden
+                      {isBusy ? '...' : '✓ Anwenden'}
                     </button>
                     <button
-                      onClick={() => handleAction(action.id, 'reject')}
-                      className="px-3 py-1 bg-gray-200 text-gray-600 rounded text-xs font-medium hover:bg-gray-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAction(action.id, 'reject');
+                      }}
+                      disabled={isBusy}
+                      className="px-3 py-1 bg-gray-200 text-gray-600 rounded text-xs font-medium hover:bg-gray-300 disabled:opacity-50"
                     >
                       ✕
                     </button>
@@ -339,6 +643,16 @@ export default function EmailHubPage() {
               );
             })}
           </div>
+          {actions.length > 5 && (
+            <div className="mt-3">
+              <button
+                onClick={() => setShowAllSuggestions((prev) => !prev)}
+                className="text-xs text-purple-700 hover:text-purple-900 font-medium"
+              >
+                {showAllSuggestions ? 'Weniger anzeigen' : `Weitere ${actions.length - 5} Vorschläge anzeigen`}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -390,7 +704,7 @@ export default function EmailHubPage() {
       ) : emails.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-400 text-lg mb-2">Noch keine E-Mails</p>
-          <p className="text-gray-400 text-sm">Klicke &quot;E-Mails abrufen&quot; um zu starten.</p>
+          <p className="text-gray-400 text-sm">Klicke &quot;Synchronisieren&quot; um Abruf und KI-Analyse zu starten.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border shadow-sm divide-y">
@@ -406,7 +720,7 @@ export default function EmailHubPage() {
                 className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
                   !email.is_read ? 'bg-blue-50/30' : ''
                 } ${isSelected ? 'bg-purple-50' : ''}`}
-                onClick={() => setSelectedEmail(isSelected ? null : email.id)}
+                onClick={() => handleSelectEmail(email.id)}
               >
                 <div className="flex items-center gap-3">
                   {/* Urgency Indicator */}
@@ -470,12 +784,97 @@ export default function EmailHubPage() {
                 </div>
 
                 {/* Expanded Detail */}
-                {isSelected && email.ai_summary && (
+                {isSelected && (
                   <div className="mt-3 pl-8 pr-4 pb-2">
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-sm text-gray-700 mb-2"><strong>KI-Zusammenfassung:</strong> {email.ai_summary}</p>
-                      {email.ai_status === 'pending' && (
-                        <p className="text-xs text-orange-600">⏳ Analyse ausstehend – klicke &quot;KI-Analyse&quot;</p>
+                    <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+                      {selectedEmailDetail?.id === email.id ? (
+                        <>
+                          <div className="text-xs text-gray-500">
+                            <span className="mr-3">Von: {selectedEmailDetail.from_email}</span>
+                            {selectedEmailDetail.to_email && <span>An: {selectedEmailDetail.to_email}</span>}
+                          </div>
+                          <p className="text-sm text-gray-700">
+                            <strong>KI-Zusammenfassung:</strong>{' '}
+                            {selectedEmailDetail.ai_summary || 'Noch keine Zusammenfassung vorhanden.'}
+                          </p>
+                          {selectedEmailDetail.ai_analysis?.extracted?.intent && (
+                            <p className="text-sm text-gray-700">
+                              <strong>Intent:</strong> {selectedEmailDetail.ai_analysis.extracted.intent}
+                            </p>
+                          )}
+                          {Array.isArray(selectedEmailDetail.ai_analysis?.extracted?.key_topics) &&
+                            selectedEmailDetail.ai_analysis.extracted.key_topics.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {selectedEmailDetail.ai_analysis.extracted.key_topics.map((topic: string) => (
+                                  <span key={topic} className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">
+                                    {topic}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          {selectedEmailDetail.body_text && (
+                            <div className="bg-white border rounded p-2">
+                              <p className="text-xs font-medium text-gray-600 mb-1">E-Mail-Auszug</p>
+                              <p className="text-xs text-gray-600 whitespace-pre-wrap">
+                                {selectedEmailDetail.body_text.slice(0, 900)}
+                                {selectedEmailDetail.body_text.length > 900 ? '…' : ''}
+                              </p>
+                            </div>
+                          )}
+                          {(emailActionsById[email.id] || []).length > 0 && (
+                            <div>
+                              <p className="text-xs font-medium text-gray-600 mb-1">Aktionen zu dieser E-Mail</p>
+                              <div className="space-y-1">
+                                {(emailActionsById[email.id] || []).map((entry) => {
+                                  const isBusy = actionLoadingIds.has(entry.id);
+                                  const meta = ACTION_LABELS[entry.action_type] || { label: entry.action_type, icon: '❓' };
+                                  return (
+                                    <div key={entry.id} className="flex items-center justify-between bg-white border rounded px-2 py-1.5">
+                                      <div className="min-w-0">
+                                        <p className="text-xs font-medium text-gray-800 truncate">{meta.icon} {meta.label}</p>
+                                        <p className="text-xs text-gray-600 truncate">{getActionPreview(entry)}</p>
+                                        {entry.action_data?.reason && <p className="text-xs text-gray-500 truncate">{entry.action_data.reason}</p>}
+                                      </div>
+                                      <div className="flex items-center gap-1 ml-2">
+                                        {entry.status === 'suggested' ? (
+                                          <>
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleAction(entry.id, 'approve');
+                                              }}
+                                              disabled={isBusy}
+                                              className="px-2 py-0.5 text-xs bg-green-600 text-white rounded disabled:opacity-50"
+                                            >
+                                              Anwenden
+                                            </button>
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleAction(entry.id, 'reject');
+                                              }}
+                                              disabled={isBusy}
+                                              className="px-2 py-0.5 text-xs bg-gray-200 text-gray-700 rounded disabled:opacity-50"
+                                            >
+                                              ✕
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <span className="text-[11px] text-gray-500">{entry.status}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                          {selectedEmailDetail.ai_status === 'pending' && (
+                            <p className="text-xs text-orange-600">⏳ Analyse ausstehend – klicke &quot;KI-Analyse&quot;</p>
+                          )}
+                        </>
+                      ) : (
+                        <p className="text-xs text-gray-500">Lade Details...</p>
                       )}
                     </div>
                   </div>
@@ -493,7 +892,21 @@ export default function EmailHubPage() {
 // HILFSKOMPONENTEN
 // ============================================
 
-function StatCard({ label, value, color }: { label: string; value: number; color?: string }) {
+function StatCard({
+  label,
+  value,
+  color,
+  onClick,
+  active = false,
+  hint,
+}: {
+  label: string;
+  value: number;
+  color?: string;
+  onClick?: () => void;
+  active?: boolean;
+  hint?: string;
+}) {
   const colorClass = {
     blue: 'bg-blue-50 text-blue-700',
     red: 'bg-red-50 text-red-700',
@@ -505,10 +918,15 @@ function StatCard({ label, value, color }: { label: string; value: number; color
   }[color || ''] || 'bg-gray-50 text-gray-700';
 
   return (
-    <div className={`rounded-lg p-3 text-center ${colorClass}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      title={hint || label}
+      className={`rounded-lg p-3 text-center w-full transition-all ${colorClass} ${onClick ? 'hover:shadow-sm' : ''} ${active ? 'ring-2 ring-gray-900/25' : ''}`}
+    >
       <p className="text-2xl font-bold">{value}</p>
       <p className="text-xs mt-0.5">{label}</p>
-    </div>
+    </button>
   );
 }
 

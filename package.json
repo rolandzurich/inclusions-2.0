@@ -3,8 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx kill-port 3000 2>/dev/null; next dev -p 3000",
     "build": "next build",
+    "serve": "next build && npx kill-port 3000 2>/dev/null; next start -p 3000",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
@@ -19,6 +20,7 @@
     "mailparser": "^3.9.3",
     "next": "14.0.4",
     "node-cron": "^4.2.1",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.16.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",

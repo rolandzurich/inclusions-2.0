@@ -8,6 +8,8 @@ interface Deal {
   id: string;
   title: string;
   description?: string;
+  contact_id?: string;
+  company_id?: string;
   contact_name?: string;
   company_name?: string;
   amount_chf: number;
@@ -15,6 +17,18 @@ interface Deal {
   expected_close_date?: string;
   notes?: string;
   created_at: string;
+}
+
+interface ContactOption {
+  id: string;
+  first_name: string;
+  last_name: string;
+  company_id?: string | null;
+}
+
+interface CompanyOption {
+  id: string;
+  name: string;
 }
 
 const statusConfig: Record<DealStatus, { label: string; color: string; bgColor: string }> = {
@@ -328,13 +342,39 @@ function DealModal({
   const [formData, setFormData] = useState({
     title: deal?.title || '',
     description: deal?.description || '',
+    contact_id: deal?.contact_id || '',
+    company_id: deal?.company_id || '',
     amount_chf: deal?.amount_chf || 0,
     status: deal?.status || 'lead',
     expected_close_date: deal?.expected_close_date || '',
     notes: deal?.notes || '',
   });
+  const [contacts, setContacts] = useState<ContactOption[]>([]);
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchRelations();
+  }, []);
+
+  async function fetchRelations() {
+    try {
+      const [contactsRes, companiesRes] = await Promise.all([
+        fetch('/api/admin-v2/contacts'),
+        fetch('/api/admin-v2/companies'),
+      ]);
+      const [contactsData, companiesData] = await Promise.all([
+        contactsRes.json(),
+        companiesRes.json(),
+      ]);
+
+      if (contactsData.success) setContacts(contactsData.contacts || []);
+      if (companiesData.success) setCompanies(companiesData.companies || []);
+    } catch (err) {
+      console.error('Fehler beim Laden der CRM-Verknüpfungen:', err);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -405,6 +445,55 @@ function DealModal({
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               rows={3}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Kontakt
+              </label>
+              <select
+                value={formData.contact_id}
+                onChange={(e) => {
+                  const contactId = e.target.value;
+                  const selectedContact = contacts.find((c) => c.id === contactId);
+                  setFormData({
+                    ...formData,
+                    contact_id: contactId,
+                    company_id: selectedContact?.company_id || formData.company_id,
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              >
+                <option value="">Kein Kontakt</option>
+                {contacts
+                  .filter((contact) => !formData.company_id || contact.company_id === formData.company_id)
+                  .map((contact) => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.first_name} {contact.last_name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Unternehmen
+              </label>
+              <select
+                value={formData.company_id}
+                onChange={(e) =>
+                  setFormData({ ...formData, company_id: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              >
+                <option value="">Kein Unternehmen</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

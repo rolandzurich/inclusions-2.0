@@ -41,25 +41,45 @@ export async function GET(
   }
 }
 
-// PUT - Status/Notizen aktualisieren
+// PUT - Status/Notizen/Gratis-Eintritt aktualisieren
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
-    const { status, admin_notes } = body;
+    const { status, admin_notes, caregiver_free_entry, bulk_caregiver_phone } = body;
+
+    // Bulk-Update: alle Anmeldungen desselben Betreuers aktualisieren
+    if (caregiver_free_entry !== undefined && bulk_caregiver_phone) {
+      const bulkResult = await query(
+        `UPDATE vip_registrations SET caregiver_free_entry = $1, updated_at = NOW()
+         WHERE caregiver_phone = $2 RETURNING id`,
+        [caregiver_free_entry, bulk_caregiver_phone]
+      );
+      return NextResponse.json({
+        success: true,
+        message: `${bulkResult.data?.length || 0} Anmeldungen aktualisiert`,
+        updated_count: bulkResult.data?.length || 0,
+      });
+    }
 
     const sql = `
       UPDATE vip_registrations SET
         status = COALESCE($1, status),
         admin_notes = COALESCE($2, admin_notes),
+        caregiver_free_entry = COALESCE($3, caregiver_free_entry),
         updated_at = NOW()
-      WHERE id = $3
+      WHERE id = $4
       RETURNING *
     `;
 
-    const result = await query(sql, [status || null, admin_notes || null, params.id]);
+    const result = await query(sql, [
+      status || null,
+      admin_notes || null,
+      caregiver_free_entry !== undefined ? caregiver_free_entry : null,
+      params.id,
+    ]);
 
     if (!result.data || result.data.length === 0) {
       return NextResponse.json({ error: 'Nicht gefunden' }, { status: 404 });

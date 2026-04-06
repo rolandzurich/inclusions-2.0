@@ -72,9 +72,11 @@
     {
       "id": "sandro",
       "name": "Sandro",
-      "text": "Infos folgen",
+      "image": "/images/botschafter/sandro-am-deck.png",
+      "text": "Stolzer Botschafter und Co-DJ bei Inclusions. Sandro lebt mit generalisierter Muskeldystonie und beweist: Musik kennt keine Grenzen.",
       "hasDisability": true,
-      "bookableIndividually": false
+      "bookableIndividually": false,
+      "ambassadorUrl": "/botschafter/sandro"
     },
     {
       "id": "ashan",

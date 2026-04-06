@@ -3,6 +3,66 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db-postgres';
 
+async function resolveDealRelation(
+  contact_id?: string | null,
+  company_id?: string | null
+): Promise<{
+  error: string | null;
+  contactId: string | null;
+  companyId: string | null;
+}> {
+  const contactId = contact_id?.trim() || null;
+  let companyId = company_id?.trim() || null;
+
+  if (!contactId && !companyId) {
+    return {
+      error: 'Ein Deal braucht mindestens einen Kontakt oder ein Unternehmen',
+      contactId: null,
+      companyId: null,
+    };
+  }
+
+  if (contactId) {
+    const contactResult = await query(
+      `SELECT id, company_id FROM contacts WHERE id = $1 LIMIT 1`,
+      [contactId]
+    );
+    if (contactResult.error) {
+      return { error: contactResult.error, contactId: null, companyId: null };
+    }
+    if (!contactResult.data || contactResult.data.length === 0) {
+      return { error: 'Kontakt nicht gefunden', contactId: null, companyId: null };
+    }
+
+    const contactCompanyId: string | null = contactResult.data[0].company_id || null;
+    if (contactCompanyId) {
+      if (companyId && companyId !== contactCompanyId) {
+        return {
+          error: 'Kontakt gehört zu einem anderen Unternehmen als im Deal ausgewählt',
+          contactId: null,
+          companyId: null,
+        };
+      }
+      if (!companyId) companyId = contactCompanyId;
+    }
+  }
+
+  if (companyId) {
+    const companyResult = await query(
+      `SELECT id FROM companies WHERE id = $1 LIMIT 1`,
+      [companyId]
+    );
+    if (companyResult.error) {
+      return { error: companyResult.error, contactId: null, companyId: null };
+    }
+    if (!companyResult.data || companyResult.data.length === 0) {
+      return { error: 'Unternehmen nicht gefunden', contactId: null, companyId: null };
+    }
+  }
+
+  return { error: null, contactId, companyId };
+}
+
 // GET - Einzelner Deal
 export async function GET(
   request: Request,
@@ -74,6 +134,11 @@ export async function PUT(
       );
     }
 
+    const relation = await resolveDealRelation(contact_id, company_id);
+    if (relation.error) {
+      return NextResponse.json({ error: relation.error }, { status: 400 });
+    }
+
     const sql = `
       UPDATE deals SET
         title = $1,
@@ -92,8 +157,8 @@ export async function PUT(
     const result = await query(sql, [
       title,
       description || null,
-      contact_id || null,
-      company_id || null,
+      relation.contactId,
+      relation.companyId,
       amount_chf || 0,
       status || 'lead',
       expected_close_date || null,

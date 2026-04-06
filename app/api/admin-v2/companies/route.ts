@@ -2,6 +2,14 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db-postgres';
+import {
+  createCompanyLocal,
+  listCompaniesLocal,
+} from '@/lib/crm-local-store';
+
+const ALLOW_LOCAL_FALLBACK =
+  process.env.NODE_ENV !== 'production' &&
+  process.env.CRM_LOCAL_FALLBACK === 'true';
 
 // GET - Alle Unternehmen
 export async function GET(request: Request) {
@@ -12,7 +20,19 @@ export async function GET(request: Request) {
     let sql = `
       SELECT 
         c.*,
-        COUNT(DISTINCT co.id) as contact_count
+        COUNT(DISTINCT co.id) as contact_count,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', co.id,
+              'first_name', co.first_name,
+              'last_name', co.last_name,
+              'email', co.email,
+              'phone', co.phone,
+              'tags', co.tags
+            )
+          ) FILTER (WHERE co.id IS NOT NULL), '[]'
+        ) as contacts
       FROM companies c
       LEFT JOIN contacts co ON co.company_id = c.id
       WHERE 1=1
@@ -33,6 +53,15 @@ export async function GET(request: Request) {
     const result = await query(sql, params);
 
     if (result.error) {
+      if (ALLOW_LOCAL_FALLBACK) {
+        const companies = await listCompaniesLocal(search);
+        return NextResponse.json({
+          success: true,
+          companies,
+          count: companies.length,
+          source: 'local-fallback',
+        });
+      }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
@@ -65,6 +94,9 @@ export async function POST(request: Request) {
       country = 'CH',
       notes,
       tags,
+      company_type,
+      is_insieme,
+      insieme_region,
     } = body;
 
     if (!name) {
@@ -94,8 +126,8 @@ export async function POST(request: Request) {
       INSERT INTO companies (
         name, legal_name, uid, vat_number, email, phone, website,
         address_line1, address_line2, postal_code, city, country,
-        notes, tags
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+        notes, tags, company_type, is_insieme, insieme_region
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
       RETURNING *
     `;
 
@@ -114,9 +146,36 @@ export async function POST(request: Request) {
       country,
       notes || null,
       tags || null,
+      company_type || 'other',
+      is_insieme || false,
+      insieme_region || null,
     ]);
 
     if (result.error) {
+      if (ALLOW_LOCAL_FALLBACK) {
+        const localCompany = await createCompanyLocal({
+          name,
+          legal_name,
+          uid,
+          vat_number,
+          email,
+          phone,
+          website,
+          address_line1,
+          address_line2,
+          postal_code,
+          city,
+          country,
+          notes,
+          tags,
+        });
+        return NextResponse.json({
+          success: true,
+          message: 'Unternehmen erfolgreich erstellt',
+          company: localCompany,
+          source: 'local-fallback',
+        });
+      }
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 

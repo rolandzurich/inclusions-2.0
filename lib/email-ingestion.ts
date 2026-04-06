@@ -39,10 +39,16 @@ function getAccounts(): EmailAccount[] {
 }
 
 function getImapConfig(account: EmailAccount): any {
+  const imapHost = process.env.IMAP_HOST || 'mail.swisshosting.ch';
+  const tlsServername = process.env.IMAP_TLS_SERVERNAME || imapHost;
   return {
-    host: process.env.IMAP_HOST || 'mail.swisshosting.ch',
+    host: imapHost,
     port: parseInt(process.env.IMAP_PORT || '993'),
     secure: true,
+    tls: {
+      servername: tlsServername,
+      rejectUnauthorized: process.env.IMAP_TLS_REJECT_UNAUTHORIZED !== 'false',
+    },
     auth: {
       user: account.user,
       pass: account.pass,

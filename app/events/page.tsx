@@ -78,11 +78,11 @@ export default function EventsPage() {
                   <h3 className="text-xl font-semibold mb-3">Line-up</h3>
                   <div className="space-y-2">
                     {[
-                      "Zagara",
-                      "Coco.bewegt B2B Lina's Lab",
-                      "Samy Jackson",
-                      "Hoibaer",
-                      "_miniArt°°°",
+                      "Samy Jackson & Jimmytschanga",
+                      "Zagara & Sarita Duracel",
+                      "Coco.bewegt B2B AndreasK",
+                      "_miniArt°°° & SandroM",
+                      "Hoibaer & Jerry",
                       "Ashan (live)"
                     ].map((djName) => (
                       <div

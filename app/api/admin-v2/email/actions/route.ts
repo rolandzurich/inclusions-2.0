@@ -7,6 +7,38 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/db-postgres';
 
+function buildDemoActionsResponse() {
+  return {
+    actions: [
+      {
+        id: 'demo-action-1',
+        email_id: 'demo-email-1',
+        action_type: 'create_company',
+        action_data: { name: 'Stiftung Beispiel', reason: 'Organisation als Partner erfassen' },
+        status: 'suggested',
+        is_research: false,
+        email_subject: 'Partnerschaftsanfrage 2026',
+        email_from: 'partners@beispiel.ch',
+        email_from_name: 'Lea Sandoz',
+      },
+      {
+        id: 'demo-action-2',
+        email_id: 'demo-email-1',
+        action_type: 'add_note',
+        action_data: { reason: 'Follow-up Termin in 48h vorschlagen' },
+        status: 'suggested',
+        is_research: false,
+        email_subject: 'Partnerschaftsanfrage 2026',
+        email_from: 'partners@beispiel.ch',
+        email_from_name: 'Lea Sandoz',
+      },
+    ],
+    total: 2,
+    demo: true,
+    message: 'KI-Hub Demo-Modus aktiv (kein DB/IMAP).',
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -43,12 +75,21 @@ export async function GET(request: NextRequest) {
       ORDER BY ea.created_at DESC
       LIMIT 100
     `, params);
+    if (result.error) {
+      if (process.env.KI_HUB_DEMO === 'true') {
+        return NextResponse.json(buildDemoActionsResponse());
+      }
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
     
     return NextResponse.json({
       actions: result.data || [],
       total: (result.data || []).length,
     });
   } catch (err: any) {
+    if (process.env.KI_HUB_DEMO === 'true') {
+      return NextResponse.json(buildDemoActionsResponse());
+    }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

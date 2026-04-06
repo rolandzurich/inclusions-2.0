@@ -4,6 +4,7 @@ export interface DJ {
   image?: string;
   text?: string;
   soundcloud?: string;
+  ambassadorUrl?: string;
   hasDisability: boolean;
   bookableIndividually: boolean;
 }

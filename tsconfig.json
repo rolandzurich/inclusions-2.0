@@ -39,6 +39,7 @@
   "exclude": [
     "node_modules",
     "scripts",
-    "lib/_deprecated"
+    "lib/_deprecated",
+    "pitch-desk-standalone"
   ]
 }

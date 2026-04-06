@@ -47,6 +47,7 @@ const NAV_ITEMS = [
     section: 'Finanzen',
     items: [
       { href: '/admin-v2/accounting', label: 'Buchhaltung', icon: '💵' },
+      { href: '/admin-v2/accounting/reports', label: 'Report Center', icon: '📑' },
     ],
   },
   {

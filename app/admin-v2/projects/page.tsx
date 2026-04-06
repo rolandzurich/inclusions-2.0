@@ -13,10 +13,28 @@ interface Project {
   start_date?: string;
   end_date?: string;
   budget_chf?: number;
+  client_id?: string;
   client_name?: string;
+  primary_contact_name?: string;
+  metadata?: {
+    primary_contact_id?: string | null;
+    [key: string]: unknown;
+  } | null;
   task_count: number;
   completed_task_count: number;
   created_at: string;
+}
+
+interface CompanyOption {
+  id: string;
+  name: string;
+}
+
+interface ContactOption {
+  id: string;
+  first_name: string;
+  last_name: string;
+  company_id?: string | null;
 }
 
 const statusConfig: Record<ProjectStatus, { label: string; color: string; bgColor: string }> = {
@@ -233,6 +251,12 @@ export default function ProjectsPage() {
                     {project.client_name}
                   </div>
                 )}
+                {project.primary_contact_name && (
+                  <div className="flex items-center text-sm text-gray-600 mb-4">
+                    <span className="mr-2">👤</span>
+                    {project.primary_contact_name}
+                  </div>
+                )}
 
                 {/* Dates */}
                 {(project.start_date || project.end_date) && (
@@ -328,9 +352,35 @@ function ProjectModal({
     start_date: project?.start_date || '',
     end_date: project?.end_date || '',
     budget_chf: project?.budget_chf || 0,
+    client_id: project?.client_id || '',
+    primary_contact_id: project?.metadata?.primary_contact_id || '',
   });
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
+  const [contacts, setContacts] = useState<ContactOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchRelations();
+  }, []);
+
+  async function fetchRelations() {
+    try {
+      const [contactsRes, companiesRes] = await Promise.all([
+        fetch('/api/admin-v2/contacts'),
+        fetch('/api/admin-v2/companies'),
+      ]);
+      const [contactsData, companiesData] = await Promise.all([
+        contactsRes.json(),
+        companiesRes.json(),
+      ]);
+
+      if (contactsData.success) setContacts(contactsData.contacts || []);
+      if (companiesData.success) setCompanies(companiesData.companies || []);
+    } catch (err) {
+      console.error('Fehler beim Laden der CRM-Verknüpfungen:', err);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -431,6 +481,55 @@ function ProjectModal({
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 placeholder="10000"
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Unternehmen (Kunde)
+              </label>
+              <select
+                value={formData.client_id}
+                onChange={(e) =>
+                  setFormData({ ...formData, client_id: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              >
+                <option value="">Kein Unternehmen</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Primärkontakt
+              </label>
+              <select
+                value={formData.primary_contact_id}
+                onChange={(e) => {
+                  const contactId = e.target.value;
+                  const selectedContact = contacts.find((c) => c.id === contactId);
+                  setFormData({
+                    ...formData,
+                    primary_contact_id: contactId,
+                    client_id: selectedContact?.company_id || formData.client_id,
+                  });
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+              >
+                <option value="">Kein Primärkontakt</option>
+                {contacts
+                  .filter((contact) => !formData.client_id || contact.company_id === formData.client_id)
+                  .map((contact) => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.first_name} {contact.last_name}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
 

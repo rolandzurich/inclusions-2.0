@@ -15,6 +15,19 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    if (process.env.KI_HUB_DEMO === 'true') {
+      const body = await request.json();
+      const action = body?.action;
+      return NextResponse.json({
+        success: true,
+        message: action === 'approve' ? 'Demo: Aktion angewendet' : 'Demo: Aktion abgelehnt',
+        resultId: params.id,
+        resultType: 'email_messages',
+        openUrl: '/admin-v2/email',
+        demo: true,
+      });
+    }
+
     const user = await authenticateRequest(request);
     const userEmail = user?.email || 'unknown';
     
@@ -24,10 +37,22 @@ export async function POST(
     if (action === 'approve') {
       const result = await applyAction(params.id, userEmail);
       if (result.success) {
+        const routeMap: Record<string, string> = {
+          contacts: '/admin-v2/crm/contacts',
+          companies: '/admin-v2/crm/companies',
+          deals: '/admin-v2/crm/deals',
+          projects: '/admin-v2/projects',
+          events_v2: '/admin-v2/events',
+          vip_registrations: '/admin-v2/crm/vip',
+          contact_requests: '/admin-v2',
+          email_messages: '/admin-v2/email',
+        };
         return NextResponse.json({
           success: true,
           message: 'Aktion angewendet',
           resultId: result.resultId,
+          resultType: result.resultType,
+          openUrl: result.resultType ? routeMap[result.resultType] || null : null,
         });
       } else {
         return NextResponse.json({ error: result.error }, { status: 400 });

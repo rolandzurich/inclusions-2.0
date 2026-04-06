@@ -3,6 +3,55 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db-postgres';
 
+async function resolveProjectRelation(
+  client_id?: string | null,
+  primary_contact_id?: string | null
+): Promise<{
+  error: string | null;
+  clientId: string | null;
+  primaryContactId: string | null;
+}> {
+  let clientId = client_id?.trim() || null;
+  const primaryContactId = primary_contact_id?.trim() || null;
+
+  if (clientId) {
+    const companyResult = await query(`SELECT id FROM companies WHERE id = $1 LIMIT 1`, [clientId]);
+    if (companyResult.error) {
+      return { error: companyResult.error, clientId: null, primaryContactId: null };
+    }
+    if (!companyResult.data || companyResult.data.length === 0) {
+      return { error: 'Unternehmen nicht gefunden', clientId: null, primaryContactId: null };
+    }
+  }
+
+  if (primaryContactId) {
+    const contactResult = await query(
+      `SELECT id, company_id FROM contacts WHERE id = $1 LIMIT 1`,
+      [primaryContactId]
+    );
+    if (contactResult.error) {
+      return { error: contactResult.error, clientId: null, primaryContactId: null };
+    }
+    if (!contactResult.data || contactResult.data.length === 0) {
+      return { error: 'Kontakt nicht gefunden', clientId: null, primaryContactId: null };
+    }
+
+    const contactCompanyId: string | null = contactResult.data[0].company_id || null;
+    if (contactCompanyId) {
+      if (clientId && clientId !== contactCompanyId) {
+        return {
+          error: 'Primärkontakt gehört zu einem anderen Unternehmen als im Projekt ausgewählt',
+          clientId: null,
+          primaryContactId: null,
+        };
+      }
+      if (!clientId) clientId = contactCompanyId;
+    }
+  }
+
+  return { error: null, clientId, primaryContactId };
+}
+
 // GET - Einzelnes Projekt mit Tasks
 export async function GET(
   request: Request,
@@ -13,13 +62,15 @@ export async function GET(
       SELECT 
         p.*,
         comp.name as client_name,
+        CONCAT(pc.first_name, ' ', pc.last_name) as primary_contact_name,
         COUNT(DISTINCT t.id) as task_count,
         COUNT(DISTINCT t.id) FILTER (WHERE t.status = 'completed') as completed_task_count
       FROM projects p
       LEFT JOIN companies comp ON p.client_id = comp.id
+      LEFT JOIN contacts pc ON pc.id::text = p.metadata->>'primary_contact_id'
       LEFT JOIN project_tasks t ON p.id = t.project_id
       WHERE p.id = $1
-      GROUP BY p.id, comp.name
+      GROUP BY p.id, comp.name, pc.first_name, pc.last_name
     `;
 
     const tasksSql = `
@@ -78,6 +129,7 @@ export async function PUT(
       end_date,
       budget_chf,
       client_id,
+      primary_contact_id,
       tags,
       metadata,
     } = body;
@@ -103,6 +155,23 @@ export async function PUT(
       );
     }
 
+    const relation = await resolveProjectRelation(client_id, primary_contact_id);
+    if (relation.error) {
+      return NextResponse.json({ error: relation.error }, { status: 400 });
+    }
+
+    const hasMetadataObject =
+      metadata && typeof metadata === 'object' && !Array.isArray(metadata);
+    const metadataInput: Record<string, unknown> = hasMetadataObject ? { ...metadata } : {};
+
+    let metadataParam: string | null = null;
+    if (hasMetadataObject || primary_contact_id !== undefined) {
+      if (primary_contact_id !== undefined) {
+        metadataInput.primary_contact_id = relation.primaryContactId;
+      }
+      metadataParam = JSON.stringify(metadataInput);
+    }
+
     const sql = `
       UPDATE projects SET
         title = $1,
@@ -113,7 +182,10 @@ export async function PUT(
         budget_chf = $6,
         client_id = $7,
         tags = $8,
-        metadata = $9,
+        metadata = CASE
+          WHEN $9::jsonb IS NULL THEN metadata
+          ELSE $9::jsonb
+        END,
         updated_at = NOW()
       WHERE id = $10
       RETURNING *
@@ -126,9 +198,9 @@ export async function PUT(
       start_date || null,
       end_date || null,
       budget_chf || null,
-      client_id || null,
+      relation.clientId,
       tags || null,
-      metadata || null,
+      metadataParam,
       params.id,
     ]);
 

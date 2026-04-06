@@ -7,11 +7,30 @@ import { Pool, QueryResult } from 'pg';
 
 let pool: Pool | null = null;
 
+function ensureDatabaseConfigIsSafe(): void {
+  const requiredVars = ['DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USER', 'DB_PASSWORD'] as const;
+  const missing = requiredVars.filter((key) => !process.env[key] || String(process.env[key]).trim() === '');
+
+  if (missing.length > 0) {
+    throw new Error(`Fehlende DB-Umgebungsvariablen: ${missing.join(', ')}`);
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    const host = (process.env.DB_HOST || '').trim().toLowerCase();
+    const allowLocalhost = process.env.DB_ALLOW_LOCALHOST_IN_PRODUCTION === 'true';
+    if ((host === 'localhost' || host === '127.0.0.1') && !allowLocalhost) {
+      throw new Error('Unsichere DB-Konfiguration in Produktion: DB_HOST darf nicht localhost sein');
+    }
+  }
+}
+
 /**
  * Holt oder erstellt den PostgreSQL Connection Pool
  */
 export function getPool(): Pool {
   if (!pool) {
+    ensureDatabaseConfigIsSafe();
+
     pool = new Pool({
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
@@ -20,9 +39,9 @@ export function getPool(): Pool {
       password: process.env.DB_PASSWORD,
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
       max: 5,
-      idleTimeoutMillis: 60000,
-      connectionTimeoutMillis: 30000,
-      statement_timeout: 60000,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 3000,
+      statement_timeout: 10000,
     });
 
     console.log('✅ PostgreSQL Pool erstellt:', {
@@ -48,7 +67,8 @@ export async function query(
     return { data: result.rows, error: null };
   } catch (error: any) {
     console.error('❌ PostgreSQL Query Fehler:', error);
-    return { data: null, error: error.message };
+    const msg = error?.message || error?.toString() || 'Datenbankverbindung fehlgeschlagen';
+    return { data: null, error: msg || 'Datenbankverbindung fehlgeschlagen' };
   }
 }
 

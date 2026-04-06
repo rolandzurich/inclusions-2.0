@@ -26,7 +26,14 @@ export async function GET(request: Request) {
     `;
     const params: any[] = [];
 
-    if (status) {
+    if (status === 'needs_clarification') {
+      sql += ` AND (v.status = 'needs_clarification' OR (
+        (v.tixi_taxi = true AND (v.tixi_address IS NULL OR v.tixi_address = '')) OR
+        (v.needs_caregiver = true AND (v.caregiver_name IS NULL OR v.caregiver_name = '')) OR
+        (v.registration_type = 'caregiver' AND v.caregiver_id IS NULL) OR
+        c.email IS NULL
+      ))`;
+    } else if (status) {
       sql += ` AND v.status = $${params.length + 1}`;
       params.push(status);
     }
@@ -56,11 +63,28 @@ export async function GET(request: Request) {
     // Zaehle nach Status
     const countResult = await query(`
       SELECT
-        COUNT(*) FILTER (WHERE status = 'pending') as pending_count,
-        COUNT(*) FILTER (WHERE status = 'confirmed') as confirmed_count,
-        COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled_count,
+        COUNT(*) FILTER (WHERE v.status = 'pending') as pending_count,
+        COUNT(*) FILTER (WHERE v.status = 'confirmed') as confirmed_count,
+        COUNT(*) FILTER (WHERE v.status = 'cancelled') as cancelled_count,
+        COUNT(*) FILTER (WHERE v.status = 'needs_clarification') as clarification_count,
         COUNT(*) as total_count
+      FROM vip_registrations v
+      JOIN contacts c ON v.contact_id = c.id
+    `);
+
+    // Betreuer-Übersicht: gruppiert nach caregiver_phone/name
+    const caregiverResult = await query(`
+      SELECT
+        caregiver_name,
+        caregiver_phone,
+        caregiver_free_entry,
+        COUNT(*) as vip_count,
+        array_agg(id) as registration_ids
       FROM vip_registrations
+      WHERE (caregiver_name IS NOT NULL AND caregiver_name != '')
+        AND event_date = '2026-04-25'
+      GROUP BY caregiver_name, caregiver_phone, caregiver_free_entry
+      ORDER BY vip_count DESC
     `);
 
     return NextResponse.json({
@@ -68,6 +92,7 @@ export async function GET(request: Request) {
       registrations: result.data || [],
       count: result.data?.length || 0,
       stats: countResult.data?.[0] || {},
+      caregivers: caregiverResult.data || [],
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

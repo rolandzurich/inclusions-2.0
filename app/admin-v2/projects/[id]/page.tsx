@@ -17,6 +17,7 @@ interface Project {
   end_date?: string;
   budget_chf?: number;
   client_name?: string;
+  primary_contact_name?: string;
   task_count: number;
   completed_task_count: number;
 }
@@ -182,6 +183,12 @@ export default function ProjectDetailPage() {
             <div>
               <div className="text-sm text-gray-600">Kunde</div>
               <div className="font-medium text-gray-900">{project.client_name}</div>
+            </div>
+          )}
+          {project.primary_contact_name && (
+            <div>
+              <div className="text-sm text-gray-600">Primärkontakt</div>
+              <div className="font-medium text-gray-900">{project.primary_contact_name}</div>
             </div>
           )}
           {project.budget_chf && (

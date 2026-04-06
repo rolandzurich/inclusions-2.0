@@ -13,6 +13,8 @@ const navLinks = [
 
 const ueberUnsSubmenu = [
   { href: "/ueber-uns", label: "Über uns" },
+  { href: "/partner/anormal", label: "Partner ANORMAL Fashion" },
+  { href: "/botschafter/sandro", label: "Botschafter Sandro" },
   { href: "/rueckblick", label: "Rückblick" },
   { href: "/ki-innovator", label: "KI-First Social Innovator" },
   { href: "/faq", label: "Fragen & Antworten" },
@@ -126,6 +128,36 @@ export function Header() {
           </div>
         </button>
       </div>
+      <div className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <Link
+            href="/ki-innovator"
+            className="text-xs sm:text-sm uppercase tracking-[0.25em] text-brand-pink hover:text-brand-pink/80 transition-colors"
+          >
+            Inclusions KI-First Social Innovator
+          </Link>
+
+          {/* Strategischer Partner – unterhalb Menü, rechtsbündig */}
+          <Link
+            href="https://insieme-zuerich.ch/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 sm:gap-3"
+            aria-label="Strategischer Partner: insieme Zürich"
+          >
+            <span className="hidden sm:inline text-xs text-white/60 uppercase tracking-[0.25em]">
+              Strategischer Partner:
+            </span>
+            <Image
+              src="/images/partners/insieme-zuerich-banner-white.png"
+              alt="insieme Zürich"
+              width={140}
+              height={50}
+              className="h-7 sm:h-8 w-auto object-contain opacity-90 hover:brightness-110 transition-all duration-200"
+            />
+          </Link>
+        </div>
+      </div>
       {open && (
         <div className="bg-brand-dark lg:hidden">
           <div className="space-y-4 px-4 pb-6 pt-2 text-lg">
@@ -180,12 +212,12 @@ export function Header() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3"
               >
-                <span className="text-xs text-white/40">in Partnerschaft mit</span>
+                <span className="text-xs text-white/40">Strategischer Partner:</span>
                 <Image
-                  src="/images/partners/insieme.png"
+                  src="/images/partners/insieme-zuerich-banner-white.png"
                   alt="insieme Zürich"
-                  width={80}
-                  height={28}
+                  width={96}
+                  height={34}
                   className="h-6 w-auto object-contain opacity-70"
                 />
               </Link>

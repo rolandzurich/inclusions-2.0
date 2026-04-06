@@ -15,11 +15,12 @@ export function RueckblickImage({ src, alt, title, description, onClick }: Rueck
     <div
       className="relative h-64 rounded-2xl overflow-hidden group cursor-pointer bg-white/5"
       onClick={onClick}
+      aria-label={alt}
     >
       <div className="absolute inset-0 animate-float">
         <Image
           src={src}
-          alt={alt}
+          alt=""
           fill
           className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[20s] ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
