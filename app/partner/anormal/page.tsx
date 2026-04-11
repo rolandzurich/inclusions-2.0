@@ -2,11 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-/**
- * Sobald ANORMAL das offizielle Statement liefert: hier einfügen (mehrzeilig als Array oder ein String mit \n\n).
- * `null` = Platzhalter-Anzeige auf der Seite.
- */
-const ANORMAL_PARTNER_STATEMENT: string | null = null;
+/** Offizielles Partner-Statement von ANORMAL Fashion (Absätze mit \n\n). */
+const ANORMAL_PARTNER_STATEMENT: string | null = `Unsere Tochter lebt mit Trisomie 21 – und genau dadurch wurde uns noch klarer, wie wichtig echte Teilhabe, Verständnis und Chancen sind. Nicht nur im Alltag, sondern auch in der Gesellschaft und im Arbeitsleben.
+
+Mit ANORMAL gehen wir diesen Weg konsequent weiter. Neben unserer Marke befinden wir uns aktuell in der Gründung eines gemeinnützigen Vereins, der Arbeitsplätze für Menschen schafft, die im klassischen Arbeitsmarkt oft keinen Platz finden – sei es durch Suchterkrankungen, psychische oder physische Herausforderungen.
+
+Unsere Kleidung ist dabei Mittel zum Zweck: Durch Bereiche wie Siebdruck, Stickerei und kreative Produktion entstehen sinnvolle Tätigkeiten, Perspektiven und echte Teilhabe.
+
+Wir wollen Strukturen schaffen, die Menschen stärken – und zeigen, dass jeder Mensch Wert hat und etwas beitragen kann.
+
+INCLUSIONS steht für genau diese Haltung.
+
+Deshalb sind wir Teil davon.`;
 
 export const metadata: Metadata = {
   title: "ANORMAL Fashion – Partner | Inclusions",
