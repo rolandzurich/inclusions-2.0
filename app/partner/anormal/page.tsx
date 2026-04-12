@@ -18,7 +18,7 @@ Deshalb sind wir Teil davon.`;
 export const metadata: Metadata = {
   title: "ANORMAL Fashion – Partner | Inclusions",
   description:
-    "ANORMAL Fashion verbindet Mode mit echten Geschichten – «Represents Solidarity». Ronny und Livia sind bei INCLUSIONS 2 am Mercstand dabei; ihre Wege berühren und teilen unsere Werte.",
+    "ANORMAL Fashion verbindet Mode mit echten Geschichten – «Represents Solidarity». Ronny und Livia sind bei INCLUSIONS 2 am Merchstand dabei; ihre Wege berühren und teilen unsere Werte.",
   openGraph: {
     title: "ANORMAL Fashion – Partner | Inclusions",
     description:
@@ -62,7 +62,7 @@ export default function AnormalPartnerPage() {
                 Partner
               </span>
               <span className="inline-block rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-sm font-medium text-white/90">
-                Mercstand · INCLUSIONS 2
+                Merchstand · INCLUSIONS 2
               </span>
             </div>
             <div className="mb-2 rounded-xl bg-black/50 backdrop-blur-sm p-3 md:p-4 inline-block">
@@ -318,7 +318,7 @@ export default function AnormalPartnerPage() {
                 Du musst nicht «normal» sein, um dazuzugehören.
               </strong>{" "}
               Deshalb freuen wir uns, dass ANORMAL Fashion an der INCLUSIONS 2
-              am Mercstand präsent ist – Mode, die trägt, was wir auf der
+              am Merchstand präsent ist – Mode, die trägt, was wir auf der
               Tanzfläche leben: Gemeinschaft jenseits von Schubladen.
             </p>
           </div>
@@ -347,7 +347,7 @@ export default function AnormalPartnerPage() {
 
         <section className="text-center space-y-6 py-8">
           <h2 className="text-2xl md:text-3xl font-bold">
-            Mercstand · INCLUSIONS 2
+            Merchstand · INCLUSIONS 2
           </h2>
           <p className="text-white/70 max-w-xl mx-auto">
             Komm vorbei, entdecke die Kollektion und die Geschichte hinter der
