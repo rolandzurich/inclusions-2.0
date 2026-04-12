@@ -1,0 +1,26 @@
+---
+description: Verbindliche Abschlussregeln, damit «erledigt» nicht irreführt (lokal vs. Live, Tippfehler, Deploy).
+alwaysApply: true
+---
+
+# Aufgaben abschliessen: was «erledigt» heissen darf
+
+## Text / Tippfehler / Copy in Code
+
+1. **Vor dem Abschluss:** `rg`/`grep` im **gesamten Repo** nach dem **alten** String (z. B. falscher Begriff). Erst wenn **0 Treffer** (oder bewusst ausgenommene Ausnahmen dokumentiert), ist die Ersetzung im Code vollständig.
+2. **Nach dem Abschluss:** Kurz `grep` nach dem **neuen** String an mindestens einer erwarteten Stelle – bestätigt, dass nichts Leeres übrig blieb.
+3. **Nicht behaupten «live» / «auf der Seite»**, wenn nur lokal gespeichert wurde. Dann explizit: **«lokal im Repo, noch nicht deployt»** oder Deploy ausführen.
+
+## Sichtbare Änderungen an inclusions.zone (Produktion)
+
+Wenn die Änderung für Nutzer sichtbar sein soll:
+
+1. **Git:** Sinnvoller Commit (nicht nur uncommittete Änderung auf der Platte), damit Stand nachvollziehbar bleibt.
+2. **Deploy:** Nach Projektregel `./scripts/deploy/deploy.sh ship …` oder gleichwertiger dokumentierter Weg; Build auf dem Server muss **erfolgreich** enden.
+3. **Nachweis:** Mindestens einer von: `./scripts/deploy/verify-live.sh "einzigartiger Marker" "pfad/zur/Datei"` **oder** Remote-`grep` auf dem Server nach dem neuen Text / `rg` nach **keinem** Treffer des alten Texts in der deployten Datei.
+
+Erst wenn Punkt 2 (und sinnvollerweise 3) erfüllt sind, darf die Antwort **«ist live»** oder **«auf der Website»** lauten.
+
+## Kurz: typischer Fehler
+
+**«Task erledigt» nur weil `search_replace` lief** – während der Fix uncommittet bleibt und der Server noch den alten Build ausliefert. Dagegen: obige Checks; bei Copy-Fixes immer **Repo-weiter** grep nach dem Fehlerwort.
