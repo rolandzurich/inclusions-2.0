@@ -1,16 +1,15 @@
-import Link from "next/link";
 import Image from "next/image";
 import { getUpcomingEvents, getPastEvents, formatDate } from "@/lib/event-utils";
-import { getLineupItems, getDJById, getDJPairById, getLineupPairDisplayName } from "@/lib/dj-utils";
+import { getLineupItems, getLineupPairDisplayName } from "@/lib/dj-utils";
 import { getEventSchema, getBreadcrumbSchema, getBaseUrl } from "@/lib/geo-schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Events & Erlebnisse - Inclusions",
-  description: "Kommende INCLUSIONS Events und Rückblicke auf vergangene Veranstaltungen. Inklusives Event am 25. April 2026 im Supermarket Zürich. DJ-Line-up, Dance Crew und mehr.",
+  description: "Kommende INCLUSIONS Events und Rückblicke auf vergangene Veranstaltungen. Nächstes Event: INCLUSIONS 3 am 3. Oktober 2026 im Supermarket Zürich. Line-up folgt.",
   openGraph: {
     title: "Events & Erlebnisse - Inclusions",
-    description: "Kommende Inclusions Events und Rückblicke auf vergangene Veranstaltungen. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
+    description: "Kommende Inclusions Events und Rückblicke auf vergangene Veranstaltungen. Nächstes Event: INCLUSIONS 3 am 3. Oktober 2026 im Supermarket Zürich.",
     images: [
       {
         url: "/images/1-edition-moment.png",
@@ -33,10 +32,10 @@ export default function EventsPage() {
       id: e.id,
       name: e.name,
       description: e.description || `Inclusions Event im Supermarket Zürich. ${e.name}.`,
-      startDate: e.id === "inclusions-2nd-edition" ? "2026-04-25T13:00:00+02:00" : `${e.date}T13:00:00+02:00`,
-      endDate: e.id === "inclusions-2nd-edition" ? "2026-04-25T21:00:00+02:00" : undefined,
+      startDate: `${e.date}T13:00:00+02:00`,
+      endDate: `${e.date}T21:00:00+02:00`,
       location: e.location,
-      offers: e.id === "inclusions-2nd-edition" ? { url: "https://supermarket.li/events/inclusions/" } : undefined,
+      offers: undefined,
     })
   );
 
@@ -66,104 +65,64 @@ export default function EventsPage() {
               <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Nächster Event</p>
               <h2 className="mt-2 text-3xl font-semibold">{nextEvent.name}</h2>
               <p className="mt-2 text-lg">
-                {formatDate(nextEvent.date)}{nextEvent.id === "inclusions-2nd-edition" ? ", 13:00 - 21:00" : ""} · {nextEvent.location}
+                {formatDate(nextEvent.date)}, 13:00 - 21:00 · {nextEvent.location}
               </p>
               {nextEvent.description && (
                 <p className="mt-4 text-white/70">{nextEvent.description}</p>
               )}
 
               {/* Line-up */}
-              {nextEvent && (
-                <div className="mt-6">
-                  <h3 className="text-xl font-semibold mb-3">Line-up</h3>
+              <div className="mt-6">
+                <h3 className="text-xl font-semibold mb-3">Line-up</h3>
+                {nextEvent.lineup && nextEvent.lineup.length > 0 ? (
                   <div className="space-y-2">
-                    {[
-                      "Samy Jackson & Jimmytschanga",
-                      "Zagara & Sarita Duracel",
-                      "Coco.bewegt B2B AndreasK",
-                      "_miniArt°°° & SandroM",
-                      "Hoibaer & Jerry",
-                      "Ashan (live)"
-                    ].map((djName) => (
-                      <div
-                        key={djName}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                          <svg
-                            className="w-5 h-5 text-brand-pink"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                            />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="font-semibold">{djName}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    {getLineupItems(nextEvent.lineup).map((item) => {
+                      if (item.type === "dj") {
+                        const name = item.data.name;
+                        return (
+                          <div key={item.data.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <svg className="w-5 h-5 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                              </svg>
+                            </div>
+                            <div>
+                              <p className="font-semibold">{name}</p>
+                            </div>
+                          </div>
+                        );
+                      }
 
-              {/* CTAs für beide Zielgruppen */}
-              <div className="mt-6 space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Ticket kaufen - Party People */}
-                  <a
-                    href="https://supermarket.li/events/inclusions/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
-                  >
-                    <span>Ticket kaufen</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-
-                  {/* VIP-Anmeldung */}
-                  <Link
-                    href="/anmeldung/vip"
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-brand-pink px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
-                  >
-                    <span>VIP-Anmeldung</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-                
-                {/* VIP-Hinweis */}
-                <div className="rounded-xl bg-brand-pink/10 border border-brand-pink/30 p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-pink/20 flex items-center justify-center mt-0.5">
-                      <svg className="w-4 h-4 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white mb-1">VIP-Anmeldung: Gratis Eintritt</p>
-                      <p className="text-xs text-white/80">
-                        Menschen mit Beeinträchtigung erhalten mit IV-Ausweis kostenlosen Eintritt. 
-                        Melde dich als VIP an und erlebe Inclusions gratis!
-                      </p>
-                    </div>
+                      const display = getLineupPairDisplayName(item.data.id) || item.data.name;
+                      return (
+                        <div key={item.data.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-semibold">{display}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+                ) : (
+                  <div className="rounded-2xl bg-white/5 p-4 border border-white/10 text-white/80">
+                    Details folgen – das Line-up veröffentlichen wir später.
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 rounded-2xl bg-white/5 p-4 border border-white/10 text-white/80">
+                Details zu Tickets und weiteren Infos folgen.
               </div>
             </div>
             <div className="w-full mt-6 md:mt-0 aspect-[3/4] relative rounded-2xl overflow-hidden">
               <Image
-                src="/images/dance-crew-background.jpg"
-                alt="Inclusions Dance Crew - Menschen mit und ohne Beeinträchtigung tanzen gemeinsam"
+                src="/rueckblick-inclusions2/optimized/dancefloor-magie-1600.jpg"
+                alt="INCLUSIONS 2 – Magie auf dem Dancefloor"
                 fill
                 className="object-cover"
                 loading="lazy"
@@ -229,6 +188,56 @@ export default function EventsPage() {
                 {event.description && (
                   <p className="mt-2 text-white/70">{event.description}</p>
                 )}
+                {event.id === "inclusions-2nd-edition" && (
+                  <div className="mt-4 space-y-3">
+                    <div className="relative h-64 rounded-xl overflow-hidden">
+                      <Image
+                        src="/rueckblick-inclusions2/optimized/verstand-herz-1600.jpg"
+                        alt="INCLUSIONS 2 – Wenn der Verstand ins Herzen rückt"
+                        fill
+                        className="object-cover"
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        style={{ filter: "brightness(0.6) contrast(1.1) saturate(1.05)" }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium mb-2">Line-up:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "Samy Jackson & Jimmytschanga",
+                          "Zagara & Sarita Duracel",
+                          "_miniArt°°° & SandroM",
+                          "Hoibaer & Jerry",
+                          "Coco.bewegt B2B Andreas K",
+                          "Ashan (live)",
+                        ].map((name) => (
+                          <span key={name} className="text-xs px-2 py-1 rounded-full bg-white/10">
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium mb-2">Highlights:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "INCLUSIONS Dance Crew Show",
+                          "Trina’s Gwunder Bar",
+                          "Barrierefrei & Care Team",
+                          "Foodstand",
+                        ].map((h) => (
+                          <span key={h} className="text-xs px-2 py-1 rounded-full bg-brand-pink/15 border border-brand-pink/30 text-white/90">
+                            {h}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {event.id === "inclusions-1st-edition" && (
                   <div className="mt-4 relative h-64 rounded-xl overflow-hidden group">
                     <Image
@@ -246,21 +255,7 @@ export default function EventsPage() {
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
                   </div>
                 )}
-                {event.lineup && event.lineup.length > 0 && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Line-up:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {getLineupItems(event.lineup).map((item) => (
-                        <span
-                          key={item.data.id}
-                          className="text-xs px-2 py-1 rounded-full bg-white/10"
-                        >
-                          {item.data.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {/* Line-up wird aktuell nur für INCLUSIONS 2 explizit aufgeführt (siehe oben). */}
               </article>
             ))}
           </div>

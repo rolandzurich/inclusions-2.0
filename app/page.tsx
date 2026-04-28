@@ -9,23 +9,23 @@ import { getEventSchema, getBaseUrl } from "@/lib/geo-schema";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Inclusions 2.0 - Inklusives Event Zürich | Vom Event zur Bewegung",
-  description: "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026, 13:00 - 21:00 im Supermarket Zürich. DJ-Workshops, Dance Crew, inklusive Clubkultur.",
+  title: "Inclusions 3.0 - Inklusives Event Zürich | Vom Event zur Bewegung",
+  description: "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Nächstes Event: INCLUSIONS 3 am 3. Oktober 2026 im Supermarket Zürich. Details wie Line-up folgen.",
   openGraph: {
-    title: "Inclusions 2.0 - Inklusives Event Zürich",
-    description: "Inclusions verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event am 25. April 2026 im Supermarket Zürich.",
+    title: "Inclusions 3.0 - Inklusives Event Zürich",
+    description: "Nächstes Event: INCLUSIONS 3 am 3. Oktober 2026 im Supermarket Zürich. Details wie Line-up folgen.",
     images: [
       {
-        url: "/images/hero.jpg",
+        url: "/rueckblick-inclusions2/optimized/verstand-herz-1600.jpg",
         width: 1200,
         height: 630,
-        alt: "Inclusions Event - Menschen mit und ohne Beeinträchtigung tanzen zusammen im Supermarket Zürich",
+        alt: "INCLUSIONS - Wenn der Verstand ins Herzen rückt",
       },
     ],
   },
   other: {
-    "event:start_time": "2026-04-25T13:00:00+02:00",
-    "event:end_time": "2026-04-25T21:00:00+02:00",
+    "event:start_time": "2026-10-03T13:00:00+02:00",
+    "event:end_time": "2026-10-03T21:00:00+02:00",
     "event:location": "Supermarket, Zürich",
   },
 };
@@ -98,11 +98,11 @@ function ColoredText({ text }: { text: string }) {
 const baseUrl = getBaseUrl();
 
 const jsonLdEvent = getEventSchema({
-  id: "inclusions-2",
-  name: "INCLUSIONS 2",
-  description: "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Inklusives Event mit DJ-Workshops, Dance Crew und inklusiver Clubkultur im Supermarket Zürich.",
-  startDate: "2026-04-25T13:00:00+02:00",
-  endDate: "2026-04-25T21:00:00+02:00",
+  id: "inclusions-3",
+  name: "INCLUSIONS 3",
+  description: "INCLUSIONS verbindet Menschen mit und ohne Beeinträchtigung durch Musik, Begegnung und echte Menschlichkeit. Nächstes Event: INCLUSIONS 3 am 3. Oktober 2026 im Supermarket Zürich. Details wie Line-up folgen.",
+  startDate: "2026-10-03T13:00:00+02:00",
+  endDate: "2026-10-03T21:00:00+02:00",
   location: "Supermarket Zürich",
   offers: { url: "https://supermarket.li/events/inclusions/" },
 });
@@ -121,8 +121,8 @@ export default function HomePage() {
         <div className="relative w-full h-[500px] sm:h-[550px] md:h-[600px] lg:h-[700px] rounded-2xl overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
-              src="/images/hero.jpg"
-              alt="INCLUSIONS Event im Supermarket Zürich - Über 400 Menschen mit und ohne Beeinträchtigung tanzen zusammen in einer inklusiven Atmosphäre"
+              src="/rueckblick-inclusions2/optimized/verstand-herz-2400.jpg"
+              alt="INCLUSIONS – Wenn der Verstand ins Herzen rückt"
               fill
               className="object-cover"
               quality={90}
@@ -141,53 +141,34 @@ export default function HomePage() {
               {/* Titel oben */}
               <div className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold font-bangers tracking-wider [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] pt-8 md:pt-12 lg:pt-16 mb-4 md:mb-6 animate-fade-in">
                 <div className="text-center">
-                  <ColoredText text="INCLUSIONS" /> <ColoredText text="2" />
+                  <ColoredText text="INCLUSIONS" /> <ColoredText text="3" />
                 </div>
               </div>
               
               {/* Datum/Zeit/Ort - größere Schrift */}
               <div className="animate-fade-in">
                 <p className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  25.04.2026 | 13:00 - 21:00 | Club Supermarket, Zürich
+                  03.10.2026 | 13:00 - 21:00 | Club Supermarket, Zürich
+                </p>
+                <p className="mt-2 text-sm md:text-base text-white/85 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
+                  Details wie Line-up folgen bald.
                 </p>
               </div>
 
               {/* Countdown */}
               <Countdown />
 
-              {/* Spacer für DJ-Gesichter - flex-grow um Platz zu schaffen */}
+              {/* Spacer */}
               <div className="flex-grow"></div>
 
-              {/* Content unten: Choregrafie, Line-Up und Buttons */}
+              {/* Content unten (ohne Ticket/VIP-Buttons) */}
               <div className="space-y-4 animate-fade-in pb-8 md:pb-12 lg:pb-16 w-full max-w-4xl">
                 <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  Neue Choreografie der INCLUSIONS Dance Crew
+                  Wieder im Supermarket – und wieder ein Dancefloor für alle.
                 </p>
                 <p className="text-xl md:text-2xl lg:text-3xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                  Line-up: Samy Jackson & Jimmytschanga | Zagara & Sarita Duracel | _miniArt°°° & SandroM | Hoibaer & Jerry | Coco.bewegt B2b AndreasK | Ashan (live)
+                  Details wie Line-up folgen bald.
                 </p>
-
-                <div className="mt-6 flex flex-wrap gap-4 justify-center items-start">
-                  <Link
-                    href="https://supermarket.li/events/inclusions/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors duration-200 ease-in-out"
-                  >
-                    Ticket kaufen
-                  </Link>
-                  <div className="flex flex-col items-center">
-                    <Link
-                      href="/anmeldung/vip"
-                      className="rounded-full border-2 border-brand-pink bg-black/70 px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors duration-200 ease-in-out [text-shadow:_0_0_8px_rgb(255_4_211_/_50%)]"
-                    >
-                      VIP-Anmeldung
-                    </Link>
-                    <p className="mt-2 text-xs md:text-sm text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] text-center">
-                      Gratis Eintritt mit IV-Ausweis/Behinderung/Beeinträchtigung
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -208,50 +189,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Nächster Event – Prio 1: Ticket + VIP direkt nach Hero */}
+      {/* Neuer Bereich unterhalb vom Hero */}
       <section className="rounded-3xl bg-white/10 p-8 text-white shadow-lg">
         <div className="grid gap-6 md:grid-cols-2 items-center">
-          <div>
-            <h2 className="text-3xl font-semibold">Nächster Event</h2>
-            <p className="mt-4 text-2xl font-bold text-brand-pink">INCLUSIONS 2</p>
-            <p className="mt-2 text-lg">25. April 2026, 13:00 - 21:00 · Supermarket Zürich</p>
-            
-            <ul className="mt-4 space-y-2 text-white/90 list-disc list-outside pl-6">
-              <li>Techno vom Feinsten – Zürcher Top-DJ's back-to-back mit INCLUSIONS DJ's.</li>
-              <li>Gratis VIP Eintritt mit IV-Ausweis/Beeinträchtigung/Behinderung mit günstigen Getränken/Essen, Helferteam, barrierefrei.</li>
-              <li>Ein Dancefloor für ALLE – Menschen mit und ohne Beeinträchtigung feiern gemeinsam.</li>
-              <li>INCLUSIONS Dance-Crew – neue Choreografie, stark, berührend, einzigartig.</li>
-              <li>Bunte Nägel & gute Vibes – <Link href="https://trina.bar/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Trina's Gwunder Nagelbar</Link> mit Hunderten Farben.</li>
-            </ul>
-            
-            <div className="mt-6 flex flex-col sm:flex-row gap-4">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-semibold leading-snug">
+              INCLUSIONS 2 lässt sich schwer in Worte fassen. Man muss es erleben.
+            </h2>
+            <p className="text-lg text-white/80">
+              Jeder Gast, jeder Helfer, jeder Beat hat den 25. April zu einer bleibenden Erinnerung gemacht.
+            </p>
+            <div className="pt-2">
               <Link
-                href="https://supermarket.li/events/inclusions/"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/rueckblick/inclusions-2"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
               >
-                <span>Ticket kaufen</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-
-              <Link
-                href="/anmeldung/vip"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-pink px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-brand-pink hover:text-black transition-colors"
-              >
-                <span>VIP-Anmeldung</span>
+                <span>Zum persönlichen Rückblick von Roland</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
             </div>
           </div>
-          <div className="w-full mt-6 md:mt-0 aspect-square relative rounded-2xl overflow-hidden">
+
+          <div className="w-full mt-2 md:mt-0 aspect-square relative rounded-2xl overflow-hidden">
             <Image
-              src="/images/dance-crew-next-event-home.jpg"
-              alt="INCLUSIONS Dance Crew - Nächster Event"
+              src="/rueckblick-inclusions2/optimized/dancefloor-magie-1600.jpg"
+              alt="INCLUSIONS 2 – Magie auf dem Dancefloor"
               fill
               className="object-cover rounded-2xl"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -268,7 +232,7 @@ export default function HomePage() {
           </h2>
           <p className="text-lg text-white/80 max-w-3xl mx-auto">
             Mit der 1. Edition haben wir gezeigt: Es funktioniert! Menschen mit und ohne Beeinträchtigung 
-            feiern gemeinsam auf Augenhöhe. Wähle deinen Weg zur INCLUSIONS 2.
+            feiern gemeinsam auf Augenhöhe. Wähle deinen Weg zur INCLUSIONS 3.
           </p>
         </div>
 
@@ -343,20 +307,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* CTA */}
-              <div className="pt-4">
-                <Link
-                  href="https://supermarket.li/events/inclusions/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors w-full justify-center"
-                >
-                  <span>Ticket kaufen</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
+              <div className="pt-2" />
             </div>
           </div>
 
@@ -412,26 +363,13 @@ export default function HomePage() {
                 <div className="space-y-2 text-sm text-white/80">
                   <p>• Du musst mindestens 20 Jahre alt sein</p>
                   <p>• Anmeldung im Vorfeld erforderlich</p>
-                  <p>• <strong>Nur VIPs kommen gratis:</strong> Freunde, Familie und Betreuer:in müssen ein Ticket kaufen. <a href="https://supermarket.li/events/inclusions/" target="_blank" rel="noopener noreferrer" className="text-brand-pink hover:underline">Link zum Ticketkauf</a></p>
+                  <p>• <strong>Nur VIPs kommen gratis:</strong> Freunde, Familie und Betreuer:in sind reguläre Gäste.</p>
                   <p>• Betreuer:in kommen nur gratis, wenn du auf 1-zu-1 Betreuung angewiesen bist</p>
                 </div>
               </div>
 
               {/* CTA */}
-              <div className="pt-4">
-                <Link
-                  href="/anmeldung/vip"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-lg font-semibold text-brand-pink hover:bg-white/90 transition-colors w-full justify-center"
-                >
-                  <span>Jetzt als VIP anmelden</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-                <p className="text-xs text-white/60 mt-3 text-center">
-                  Nur mit Anmeldung kommst du sicher rein
-                </p>
-              </div>
+              <div className="pt-2" />
             </div>
           </div>
         </div>
@@ -516,7 +454,14 @@ export default function HomePage() {
       <section className="rounded-2xl bg-white/5 p-6" aria-labelledby="faq-cta-heading">
         <h2 id="faq-cta-heading" className="text-xl font-semibold text-white mb-2">Fragen?</h2>
         <p className="text-white/80">
-          In unseren <Link href="/faq" className="text-brand-pink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded">Fragen & Antworten</Link> finden Sie die wichtigsten Infos zu INCLUSIONS, Tickets, VIP-Anmeldung und mehr.
+          In unseren{" "}
+          <Link
+            href="/faq"
+            className="text-brand-pink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark rounded"
+          >
+            Fragen & Antworten
+          </Link>{" "}
+          findest du die wichtigsten Infos zu INCLUSIONS.
         </p>
       </section>
 
@@ -535,15 +480,13 @@ export default function HomePage() {
                 rel="noopener noreferrer"
                 className="inline-block group/logo"
               >
-                <div className="bg-white rounded-2xl p-4 shadow-lg group-hover/logo:shadow-xl transition-shadow">
-                  <Image
-                    src="/images/partners/insieme-zuerich-banner.png"
-                    alt="insieme Zürich – Gemeinsam anders – Strategischer Partner von INCLUSIONS"
-                    width={280}
-                    height={100}
-                    className="h-auto w-[240px] md:w-[280px] object-contain"
-                  />
-                </div>
+                <Image
+                  src="/images/partners/insieme-zuerich-gemeinsam-anders.png"
+                  alt="insieme Zürich – Gemeinsam anders – Strategischer Partner von INCLUSIONS"
+                  width={340}
+                  height={85}
+                  className="h-auto w-[260px] md:w-[340px] object-contain opacity-95 group-hover/logo:brightness-110 transition-all"
+                />
               </Link>
             </div>
             <div className="flex-1 text-center md:text-left space-y-3">
@@ -597,6 +540,7 @@ export default function HomePage() {
             { name: "AVTL Content", logo: "/images/partners/avtl.png", hasLogo: true, url: "https://avtlcontent.com/" },
             { name: "Alex Flach", logo: "/images/partners/alex-flach.png", hasLogo: true, url: "https://www.instagram.com/alex_flach2605/" },
             { name: "Hitschfilm", logo: "/images/partners/hitschfilm.png", hasLogo: true, url: "https://www.hitschfilm.zuerich/" },
+            { name: "mad hairstyling", logo: "/images/partners/mad-hairstyling.svg", hasLogo: true, url: "https://www.madhairstyling.ch/" },
             { name: "Watchman", logo: "/images/partners/watchman.png", hasLogo: true, url: "https://www.watchman.academy/" },
             { name: "Tanz am Morgen", logo: "/images/partners/tanz-am-morgen.jpg", hasLogo: true, url: "https://www.instagram.com/coco.bewegt/" },
           ].map((partner, index) => {

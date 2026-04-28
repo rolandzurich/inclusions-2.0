@@ -1,0 +1,702 @@
+{
+  "generatedAt": "2026-04-28T06:30:01.865Z",
+  "sourceDir": "public/rueckblick-inclusions2",
+  "outDir": "public/rueckblick-inclusions2/optimized",
+  "sizes": [
+    800,
+    1600,
+    2400
+  ],
+  "images": [
+    {
+      "id": "dancefloor-magie",
+      "inputFile": "Dancefloor-magie.jpg",
+      "width": 4080,
+      "height": 3072,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "dancefloor-magie-800.webp",
+          "jpg": "dancefloor-magie-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "dancefloor-magie-1600.webp",
+          "jpg": "dancefloor-magie-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "dancefloor-magie-2400.webp",
+          "jpg": "dancefloor-magie-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "neo",
+      "inputFile": "Neo.jpeg",
+      "width": 3554,
+      "height": 3183,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "neo-800.webp",
+          "jpg": "neo-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "neo-1600.webp",
+          "jpg": "neo-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "neo-2400.webp",
+          "jpg": "neo-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "reto-sandro",
+      "inputFile": "Reto-Sandro.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "reto-sandro-800.webp",
+          "jpg": "reto-sandro-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "reto-sandro-1600.webp",
+          "jpg": "reto-sandro-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "reto-sandro-2400.webp",
+          "jpg": "reto-sandro-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "rollstuhl",
+      "inputFile": "Rollstuhl.jpg",
+      "width": 1388,
+      "height": 1232,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "rollstuhl-800.webp",
+          "jpg": "rollstuhl-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "rollstuhl-1600.webp",
+          "jpg": "rollstuhl-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "rollstuhl-2400.webp",
+          "jpg": "rollstuhl-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "anormal",
+      "inputFile": "anormal.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "anormal-800.webp",
+          "jpg": "anormal-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "anormal-1600.webp",
+          "jpg": "anormal-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "anormal-2400.webp",
+          "jpg": "anormal-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ashan",
+      "inputFile": "ashan.jpg",
+      "width": 2892,
+      "height": 2194,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "ashan-800.webp",
+          "jpg": "ashan-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "ashan-1600.webp",
+          "jpg": "ashan-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "ashan-2400.webp",
+          "jpg": "ashan-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "backstage-1-mp",
+      "inputFile": "backstage-1.MP.jpg",
+      "width": 3236,
+      "height": 2173,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "backstage-1-mp-800.webp",
+          "jpg": "backstage-1-mp-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "backstage-1-mp-1600.webp",
+          "jpg": "backstage-1-mp-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "backstage-1-mp-2400.webp",
+          "jpg": "backstage-1-mp-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "backstage-2-mp",
+      "inputFile": "backstage-2.MP.jpg",
+      "width": 3200,
+      "height": 2112,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "backstage-2-mp-800.webp",
+          "jpg": "backstage-2-mp-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "backstage-2-mp-1600.webp",
+          "jpg": "backstage-2-mp-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "backstage-2-mp-2400.webp",
+          "jpg": "backstage-2-mp-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "backstage-3",
+      "inputFile": "backstage-3.jpg",
+      "width": 2999,
+      "height": 2623,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "backstage-3-800.webp",
+          "jpg": "backstage-3-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "backstage-3-1600.webp",
+          "jpg": "backstage-3-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "backstage-3-2400.webp",
+          "jpg": "backstage-3-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "bunte-nagel",
+      "inputFile": "bunte-nägel.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "bunte-nagel-800.webp",
+          "jpg": "bunte-nagel-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "bunte-nagel-1600.webp",
+          "jpg": "bunte-nagel-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "bunte-nagel-2400.webp",
+          "jpg": "bunte-nagel-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "coco-timo",
+      "inputFile": "coco-timo.jpg",
+      "width": 2225,
+      "height": 1954,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "coco-timo-800.webp",
+          "jpg": "coco-timo-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "coco-timo-1600.webp",
+          "jpg": "coco-timo-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "coco-timo-2400.webp",
+          "jpg": "coco-timo-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "dance-1",
+      "inputFile": "dance-1.jpg",
+      "width": 1912,
+      "height": 2145,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "dance-1-800.webp",
+          "jpg": "dance-1-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "dance-1-1600.webp",
+          "jpg": "dance-1-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "dance-1-2400.webp",
+          "jpg": "dance-1-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "dance-2",
+      "inputFile": "dance-2.jpg",
+      "width": 3547,
+      "height": 2455,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "dance-2-800.webp",
+          "jpg": "dance-2-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "dance-2-1600.webp",
+          "jpg": "dance-2-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "dance-2-2400.webp",
+          "jpg": "dance-2-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "eingang",
+      "inputFile": "eingang.jpg",
+      "width": 3527,
+      "height": 2465,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "eingang-800.webp",
+          "jpg": "eingang-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "eingang-1600.webp",
+          "jpg": "eingang-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "eingang-2400.webp",
+          "jpg": "eingang-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "ersten-gaste",
+      "inputFile": "ersten-gäste.jpg",
+      "width": 3519,
+      "height": 2212,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "ersten-gaste-800.webp",
+          "jpg": "ersten-gaste-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "ersten-gaste-1600.webp",
+          "jpg": "ersten-gaste-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "ersten-gaste-2400.webp",
+          "jpg": "ersten-gaste-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "gluck1",
+      "inputFile": "glück1.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "gluck1-800.webp",
+          "jpg": "gluck1-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "gluck1-1600.webp",
+          "jpg": "gluck1-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "gluck1-2400.webp",
+          "jpg": "gluck1-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "gluck2",
+      "inputFile": "glück2.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "gluck2-800.webp",
+          "jpg": "gluck2-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "gluck2-1600.webp",
+          "jpg": "gluck2-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "gluck2-2400.webp",
+          "jpg": "gluck2-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "gluck3",
+      "inputFile": "glück3.jpeg",
+      "width": 3621,
+      "height": 2807,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "gluck3-800.webp",
+          "jpg": "gluck3-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "gluck3-1600.webp",
+          "jpg": "gluck3-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "gluck3-2400.webp",
+          "jpg": "gluck3-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "hafner",
+      "inputFile": "hafner.jpeg",
+      "width": 3128,
+      "height": 2141,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "hafner-800.webp",
+          "jpg": "hafner-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "hafner-1600.webp",
+          "jpg": "hafner-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "hafner-2400.webp",
+          "jpg": "hafner-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "hitsch",
+      "inputFile": "hitsch.jpg",
+      "width": 4080,
+      "height": 3072,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "hitsch-800.webp",
+          "jpg": "hitsch-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "hitsch-1600.webp",
+          "jpg": "hitsch-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "hitsch-2400.webp",
+          "jpg": "hitsch-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "hoibaer-jerry",
+      "inputFile": "hoibaer-jerry.jpeg",
+      "width": 2800,
+      "height": 2618,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "hoibaer-jerry-800.webp",
+          "jpg": "hoibaer-jerry-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "hoibaer-jerry-1600.webp",
+          "jpg": "hoibaer-jerry-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "hoibaer-jerry-2400.webp",
+          "jpg": "hoibaer-jerry-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "hotdog",
+      "inputFile": "hotdog.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "hotdog-800.webp",
+          "jpg": "hotdog-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "hotdog-1600.webp",
+          "jpg": "hotdog-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "hotdog-2400.webp",
+          "jpg": "hotdog-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "markthalle",
+      "inputFile": "markthalle.jpeg",
+      "width": 1200,
+      "height": 1600,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "markthalle-800.webp",
+          "jpg": "markthalle-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "markthalle-1600.webp",
+          "jpg": "markthalle-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "markthalle-2400.webp",
+          "jpg": "markthalle-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "pure-magie",
+      "inputFile": "pure-magie.jpg",
+      "width": 3085,
+      "height": 2188,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "pure-magie-800.webp",
+          "jpg": "pure-magie-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "pure-magie-1600.webp",
+          "jpg": "pure-magie-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "pure-magie-2400.webp",
+          "jpg": "pure-magie-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "rgz",
+      "inputFile": "rgz.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "rgz-800.webp",
+          "jpg": "rgz-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "rgz-1600.webp",
+          "jpg": "rgz-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "rgz-2400.webp",
+          "jpg": "rgz-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "samy-jimmy-mp",
+      "inputFile": "samy-jimmy.MP.jpg",
+      "width": 3585,
+      "height": 2074,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "samy-jimmy-mp-800.webp",
+          "jpg": "samy-jimmy-mp-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "samy-jimmy-mp-1600.webp",
+          "jpg": "samy-jimmy-mp-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "samy-jimmy-mp-2400.webp",
+          "jpg": "samy-jimmy-mp-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "schon",
+      "inputFile": "schön.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "schon-800.webp",
+          "jpg": "schon-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "schon-1600.webp",
+          "jpg": "schon-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "schon-2400.webp",
+          "jpg": "schon-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "trina",
+      "inputFile": "trina.jpeg",
+      "width": 3565,
+      "height": 2398,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "trina-800.webp",
+          "jpg": "trina-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "trina-1600.webp",
+          "jpg": "trina-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "trina-2400.webp",
+          "jpg": "trina-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "verstand-herz",
+      "inputFile": "verstand-herz.jpeg",
+      "width": 4898,
+      "height": 3265,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "verstand-herz-800.webp",
+          "jpg": "verstand-herz-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "verstand-herz-1600.webp",
+          "jpg": "verstand-herz-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "verstand-herz-2400.webp",
+          "jpg": "verstand-herz-2400.jpg"
+        }
+      ]
+    },
+    {
+      "id": "zagara",
+      "inputFile": "zagara.jpeg",
+      "width": 3726,
+      "height": 2899,
+      "outputs": [
+        {
+          "width": 800,
+          "webp": "zagara-800.webp",
+          "jpg": "zagara-800.jpg"
+        },
+        {
+          "width": 1600,
+          "webp": "zagara-1600.webp",
+          "jpg": "zagara-1600.jpg"
+        },
+        {
+          "width": 2400,
+          "webp": "zagara-2400.webp",
+          "jpg": "zagara-2400.jpg"
+        }
+      ]
+    }
+  ]
+}

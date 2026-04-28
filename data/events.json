@@ -1,11 +1,19 @@
 {
   "events": [
     {
+      "id": "inclusions-3rd-edition",
+      "name": "Inclusions 3",
+      "date": "2026-10-03",
+      "location": "Supermarket Zürich",
+      "description": "Wir sind zurück im Supermarket. Details (inkl. Line-up) folgen in Kürze.",
+      "status": "upcoming"
+    },
+    {
       "id": "inclusions-2nd-edition",
       "name": "Inclusions 2",
       "date": "2026-04-25",
       "location": "Supermarket Zürich",
-      "description": "Wir feiern wieder gemeinsam – mit DJs, Dance Crew und vielen Begegnungen. Die Profi DJ's werden zusammen mit Inclusions DJ's (Menschen mit Beeinträchtigung) auflegen. Die Inclusions DJ's werden von den Resident DJ's gecoached.",
+      "description": "INCLUSIONS 2 war pure Magie. Ein Tag voller Begegnungen, Umarmungen und einem Dancefloor für alle.",
       "lineup": [
         "samy-jackson-dj-baechli",
         "hoibaer-jerry",
@@ -13,16 +21,8 @@
         "zagara",
         "coco-bewegt"
       ],
-      "status": "upcoming",
+      "status": "past",
       "video": "/videos/next-event.mp4"
-    },
-    {
-      "id": "inclusions-3rd-edition",
-      "name": "Inclusions 3",
-      "date": "2026-10-03",
-      "location": "Supermarket Zürich",
-      "description": "Weitere Details folgen in Kürze.",
-      "status": "upcoming"
     },
     {
       "id": "inclusions-1st-edition",

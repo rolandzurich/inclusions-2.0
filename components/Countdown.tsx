@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const TARGET = new Date("2026-04-25T13:00:00+02:00");
+const TARGET = new Date("2026-10-03T13:00:00+02:00");
 
 function getTimeLeft() {
   const now = new Date();
@@ -57,13 +57,7 @@ export function Countdown() {
   }
 
   if (timeLeft.isPast) {
-    return (
-      <div className="mb-6 md:mb-8 animate-fade-in">
-        <p className="text-xl md:text-2xl font-bangers text-white/90 [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-          Danke fürs Dabeisein! 🎉
-        </p>
-      </div>
-    );
+    return null;
   }
 
   const units = [

@@ -97,6 +97,33 @@ export default function RueckblickPage() {
         </div>
       </section>
 
+      {/* Neuer Rückblick – Inclusions 2 */}
+      <section className="space-y-6">
+        <div className="rounded-3xl bg-white/10 p-8 md:p-10 border border-white/10">
+          <div className="flex flex-col md:flex-row gap-6 md:items-center md:justify-between">
+            <div className="space-y-2">
+              <p className="text-sm uppercase tracking-[0.3em] text-brand-pink">Neu</p>
+              <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                Persönlicher Rückblick: INCLUSIONS 2
+              </h2>
+              <p className="text-white/80 max-w-2xl">
+                “Wenn der Verstand ins Herzen rückt” – roh und ungefiltert. Ein visueller Story-Rückblick voller Begegnungen,
+                Gänsehaut und Magie.
+              </p>
+            </div>
+            <Link
+              href="/rueckblick/inclusions-2"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-pink px-6 py-3 text-lg font-semibold text-black hover:bg-brand-pink/90 transition-colors"
+            >
+              <span>Zur Story</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Bildergalerie nach Kategorien */}
       <section className="space-y-12">
         {Object.entries(groupedImages).map(([category, categoryImages]) => (
